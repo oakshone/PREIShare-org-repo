@@ -1,80 +1,91 @@
-# Setup Log
-
-## Environment
-
-- **Machine:** ProductName:		macOS
+**Learner:** Jackson Nieporte
+**Date:** 2026-08-30
+**OS:** macOS ProductName:		macOS
 ProductVersion:		26.5.1
 BuildVersion:		25F80
-- **Shell:** /bin/zsh
-- **Git version:** git version 2.54.0
-- **Date:** 8/30/26
+**Team repo (upstream):** https://github.com/EdTechForLearning/PREIShare-org-repo
+**Orientation notes used:** `docs/onboarding/team-orientation-notes.md`
 
-## Steps Completed
+## 1. Accounts and fork
 
-### 1. Clone the repository
+| Check | Result | Notes |
+| --- | --- | --- |
+| GitHub sign-in works | PASS | Account username: @oakshone |
+| Can view team repo https://github.com/EdTechForLearning/PREIShare-org-repo | PASS | |
+| Fork created in my account | PASS | My fork URL: https://github.com/oakshone/PREIShare-org-repo |
 
-**Command:**
+## 2. Git install and identity
 
-git clone https://github.com/oakshone/PREIShare-org-repo
+```text
+# git --version
+git version 2.54.0
 
+# git config --global user.name
+Jackson Nieporte
 
-**Output (verified via `git log -1`):**
+# git config --global user.email
+jacksonlibre@gmail.com
+```
 
-commit 20d98f9f3f9d29c83ec96787e1bbeb3e5f1662a0 (HEAD -> main, origin/main, origin/HEAD)
-Merge: fd91696 c7cb5cf
-Author: Thor Anderson ta.anderson@gmail.com
-Date: Mon Jul 27 20:22:46 2026 -0600
+Identity configured: PASS
 
-Merge pull request #1 from thortek/onboarding/first-pr
+## 3. Clone (of MY fork)
 
-Onboarding/first pr
+- Parent directory used: `~/projects`
+- Clone command used: `git clone https://github.com/oakshone/PREIShare-org-repo`
+- Cloned my fork (not the team repo): PASS
+- Clone completed without error: PASS
+- Local project path: `~/projects/PREIShare-org-repo`
 
-**Result:** ✅ Pass
+## 4. Remotes (run inside the repo)
 
-### 2. Add upstream remote
+- `git remote add upstream https://github.com/EdTechForLearning/PREIShare-org-repo.git` run: PASS
 
-**Command:**
+### git remote -v
 
-git remote add upstream https://github.com/EdTechForLearning/PREIShare-org-repo.git
+```text
+origin    https://github.com/oakshone/PREIShare-org-repo (fetch)
+origin    https://github.com/oakshone/PREIShare-org-repo (push)
+upstream  https://github.com/EdTechForLearning/PREIShare-org-repo.git (fetch)
+upstream  https://github.com/EdTechForLearning/PREIShare-org-repo.git (push)
+```
 
+origin points at MY fork: PASS
+upstream points at the team repo: PASS
 
-**Verification command:**
+## 5. Post-clone verification
 
-git remote -v
+### git status
 
-
-**Output:**
-
-origin https://github.com/oakshone/PREIShare-org-repo (fetch)
-origin https://github.com/oakshone/PREIShare-org-repo (push)
-upstream https://github.com/EdTechForLearning/PREIShare-org-repo.git (fetch)
-upstream https://github.com/EdTechForLearning/PREIShare-org-repo.git (push)
-
-
-**Result:** ✅ Pass
-
-### 3. Confirm working tree is clean
-
-**Command:**
-
-git status
-
-
-**Output:**
-
+```text
 On branch main
 Your branch is up to date with 'origin/main'.
 
 nothing to commit, working tree clean
+```
 
+### Default branch
 
-**Result:** ✅ Pass
+```text
+main
+```
 
-## Issues Encountered
+Default branch name: `main`
+Working tree clean after clone: PASS
 
-- Initially ran `git remote add` from the parent `~/projects` folder instead of inside the repo — got "not a git repository" error. Fixed by `cd`-ing into `~/projects/PREIShare-org-repo` first.
-- Ran `open` with no argument, which just printed usage help instead of opening Finder. Fixed with `open .`
+## 6. Auth notes (no secrets)
 
-## Notes
+- Clone method: HTTPS
+- Auth method used (if prompted): credential helper
+- Auth succeeded: PASS
 
-- Assistant used to help draft this log structure: Claude (chat assistant)
+## 7. Issues and fixes
+
+| Issue | What I tried | Outcome |
+| --- | --- | --- |
+| Ran `git remote add upstream` from the parent `~/projects` folder instead of inside the cloned repo, got "fatal: not a git repository" | Used `find` to locate the actual clone path, then `cd`'d into `~/projects/PREIShare-org-repo` before retrying | Resolved — remote added successfully |
+| Ran `open` with no argument, got usage help instead of opening Finder | Used `open .` to open the current directory | Resolved |
+
+## 8. Ready for next step
+
+I have a fork I own, a local clone of it with origin and upstream set, and a setup log another teammate could audit: YES
