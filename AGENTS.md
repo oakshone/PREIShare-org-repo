@@ -59,7 +59,7 @@ npm run generate-routes # regenerates src/routeTree.gen.ts
 ## Agent Workflow: plan → small diff → verify
 
 1. **Plan** — skim `docs/onboarding/repo-map.md` and [.cursor/rules/preishare.mdc](.cursor/rules/preishare.mdc) before non-trivial changes. For Start/Router/Devtools work, check `npx @tanstack/intent@latest list` for a matching skill first.
-2. **Small diff** — make the minimal, scoped edit. Don't touch `src/routeTree.gen.ts` (generated), `package-lock.json`, or tooling config without a reason.
+2. **Small diff** — make the minimal, scoped edit. Don't touch `src/routeTree.gen.ts` (generated), `package-lock.json`, or tooling config without a reason. For a first change, touch one file (or one small group of related files) and avoid opening unrelated edits in the same branch/PR.
 3. **Verify** — re-read the changed file(s), check for errors, and run the relevant script (`npm run build` / `npm run dev`) when the change affects runtime behavior.
 
 See [.cursor/rules/preishare.mdc](.cursor/rules/preishare.mdc) for the full edit-surface and do-not rules.
