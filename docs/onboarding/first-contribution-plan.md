@@ -2,7 +2,7 @@
 
 ## Author
 - Name / GitHub handle: oakshone
-- Feature branch: docs/first-contribution-oakshone
+- Feature branch: docs/first-contribution-jackson
 - Date: 2026-09-07
 
 ## One-sentence goal
@@ -36,11 +36,11 @@ Add myself as a new contributor in a contributors doc and make one minimal, revi
 | docs/onboarding/first-contribution-notes.md | create (next step) | Record what the agent did and what I verified |
 
 ## Acceptance criteria
-- [ ] I am on feature branch `docs/first-contribution-oakshone` (not the default branch).
-- [ ] `CONTRIBUTORS.md` lists my name and GitHub handle in a consistent format.
-- [ ] Any second touch is limited to the single file named above and does not change behavior beyond copy/docs.
-- [ ] No secrets, `.env` files, or generated build artifacts are included.
-- [ ] A teammate can review the diff in under 10 minutes without product-context deep dives.
+- [x] I am on feature branch `docs/first-contribution-jackson` (not the default branch).
+- [x] `CONTRIBUTORS.md` lists my name and GitHub handle in a consistent format.
+- [x] Any second touch is limited to the single file named above and does not change behavior beyond copy/docs.
+- [x] No secrets, `.env` files, or generated build artifacts are included.
+- [x] A teammate can review the diff in under 10 minutes without product-context deep dives.
 
 ## Verification plan (how I will know it worked)
 1. `git status` / `git branch` show I am on the feature branch with only expected files modified.
@@ -53,6 +53,6 @@ Add myself as a new contributor in a contributors doc and make one minimal, revi
 - Risk: Editing default branch by mistake. Mitigation: check `git branch` before every edit session.
 
 ## Definition of done for this planning step
-- [ ] Feature branch created from updated default branch.
-- [ ] This plan file saved at `docs/onboarding/first-contribution-plan.md` with all sections filled (no angle-bracket placeholders left).
-- [ ] Ready to implement in the next step without re-deciding scope.
+- [x] Feature branch created from updated default branch.
+- [x] This plan file saved at `docs/onboarding/first-contribution-plan.md` with all sections filled (no angle-bracket placeholders left).
+- [x] Ready to implement in the next step without re-deciding scope.
