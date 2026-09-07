@@ -38,10 +38,10 @@ The frontend is a TanStack Start React app rooted in `src/`.
 
 ## Backend and Data
 
-No data layer is currently implemented.
+No data layer is currently implemented. **Supabase is this repo's own stated intended data provider** — `.cursorrules` instructs using a Supabase client from `src/lib/supabase.ts` — so treat Supabase as the team's chosen direction, not as an unconfirmed guess on the same footing as Prisma or another ORM. Supabase is a managed PostgreSQL backend, so its database is PostgreSQL specifically; don't treat another engine (MySQL, MongoDB, SQLite, Firebase, etc.) as an equally valid pairing under the Supabase name. Still, no Supabase client, schema, or credentials exist in the tree yet: do not fabricate one when describing or building this project.
 
 - No Supabase client or configuration file exists. `.cursorrules` refers to an expected `src/lib/supabase.ts`, but that path is not present.
-- No PostgreSQL configuration, SQL files, migrations, migration folder, or database tooling is present.
+- No PostgreSQL configuration, SQL files, migrations, migration folder, or database tooling is present yet — PostgreSQL is the database Supabase would bring, not a separate unconfirmed option.
 - No `.env.example` or other committed environment template is present. `.env` is ignored by `.gitignore`, and `AGENTS.md` states that this blank scaffold currently needs no environment variables.
 - No implemented server functions or API routes were found. TanStack Start supports these capabilities, but the references in `README.md` are starter documentation rather than application code.
 

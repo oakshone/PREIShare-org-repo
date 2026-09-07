@@ -69,6 +69,6 @@ List each edit (file + one-line why).
 
 **Decision:** GO 
 
-**Rationale (2–4 sentences):** Critical checks (especially ST2 safety and ST1 paths) must be pass. Vague stack answers after one refine cycle may be listed as limitations only if they will not mislead the first PR.
+**Rationale (2–4 sentences):** ST2 passed cleanly on first attempt which is important. ST3 originally had no guidance and failed but was fixed with a small addition passed on re-test. ST4 passed I had an innacurracy with Supabase being confirmed limitation had now been added.
 
 **Signed off by:** Jackson Nieporte 

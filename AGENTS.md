@@ -62,6 +62,8 @@ npm run generate-routes # regenerates src/routeTree.gen.ts
 2. **Small diff** — make the minimal, scoped edit. Don't touch `src/routeTree.gen.ts` (generated), `package-lock.json`, or tooling config without a reason. For a first change, touch one file (or one small group of related files) and avoid opening unrelated edits in the same branch/PR.
 3. **Verify** — re-read the changed file(s), check for errors, and run the relevant script (`npm run build` / `npm run dev`) when the change affects runtime behavior.
 
+If an onboarding check (e.g. a smoke test in `docs/onboarding/`) finds a gap in this file or in `.cursor/rules/preishare.mdc`, patch that specific file with a small, targeted addition and re-test — don't leave the gap, and don't rewrite the file's broader scope to fix it.
+
 See [.cursor/rules/preishare.mdc](.cursor/rules/preishare.mdc) for the full edit-surface and do-not rules.
 
 ## Environment variables
