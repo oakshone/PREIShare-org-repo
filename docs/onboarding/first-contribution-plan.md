@@ -36,7 +36,7 @@ Add myself as a new contributor in a contributors doc and make one minimal, revi
 | docs/onboarding/first-contribution-notes.md | create (next step) | Record what the agent did and what I verified |
 
 ## Acceptance criteria
-- [ ] I am on feature branch `docs/first-contribution-<your-handle>` (not the default branch).
+- [ ] I am on feature branch `docs/first-contribution-oakshone` (not the default branch).
 - [ ] `CONTRIBUTORS.md` lists my name and GitHub handle in a consistent format.
 - [ ] Any second touch is limited to the single file named above and does not change behavior beyond copy/docs.
 - [ ] No secrets, `.env` files, or generated build artifacts are included.
