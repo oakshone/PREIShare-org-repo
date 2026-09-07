@@ -20,7 +20,7 @@
 - **My decision:** accept-now
 - **Why:** The change is a low-risk docs update and matches the safe edit surfaces described in the repo’s onboarding guidance. This is the correct boundary for a first PR and it avoids product-runtime risk.
 - **Action taken:** edit PR description
-- **Evidence:** The PR summary already says it is a docs-only change, but I will make the scope boundary explicit by saying the PR is limited to the contributor entry only and excludes broader onboarding artifacts and runtime code.
+- **Evidence:** The PR summary already says it is a docs-only change, but I made the scope boundary explicit by saying the PR is limited to the contributor entry only and excludes broader onboarding artifacts and runtime code.
 
 ### Comment 2
 - **Theme:** PR clarity
@@ -29,7 +29,7 @@
 - **My decision:** accept now 
 - **Why:** A reviewer should understand this is a first-PR training exercise and a proof of the standard Git review flow, not just a roster update. The value is not just that the file changed, but that the team can practice review on a low-risk contribution.
 - **Action taken:** edit PR description
-- **Evidence:** I will add a sentence explaining that this PR demonstrates the standard review path for a new contributor without introducing product or runtime risk.
+- **Evidence:** I added a sentence explaining that this PR demonstrates the standard review path for a new contributor without introducing product or runtime risk.
 
 
 ### Comment 3
@@ -39,7 +39,7 @@
 - **My decision:** accept-now
 - **Why:** A mentor reviewer wants evidence that the branch, diff, and file content were actually checked before the PR was opened. A good first PR should show real verification steps, not just a description of intent.
 - **Action taken:** edit PR description
-- **Evidence:**  I will add a short evidence list with commands run and outcomes, such as git status, git diff --stat, and a quick check that only docs/onboarding/CONTRIBUTORS.md changed.
+- **Evidence:**  I added a short evidence list with commands run and outcomes, such as git status, git diff --stat, and a quick check that only docs/onboarding/CONTRIBUTORS.md changed.
 
 
 (Add Comment 4–5 if your reviewer provided more.)
