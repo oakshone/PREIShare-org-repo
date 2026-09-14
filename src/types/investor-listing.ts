@@ -1,6 +1,3 @@
-import type { ListingStatus } from "./listing-status";
-import type { PropertyType } from "./property-type";
-
 export interface InvestorListing {
   /** Stable unique identifier for the listing. */
   id: string;
@@ -8,14 +5,11 @@ export interface InvestorListing {
   /** Short name shown to investors. */
   title: string;
 
-  /** Controlled lifecycle status for the listing. */
-  status: ListingStatus;
+  /** Investor-facing summary of the listing. */
+  summary: string;
 
-  /** Controlled property category for the listing. */
-  propertyType: PropertyType;
-
-  /** Investor-facing summary, required before the listing is visible. */
-  description?: string;
+  /** Asking price in whole US dollars. */
+  askingPrice: number;
 
   /** Timestamp for when the listing record was created. */
   createdAt: string;
