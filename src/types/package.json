@@ -1,0 +1,12 @@
+{
+	"name": "preishare-investor-listing-types",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Strict TypeScript types for PREIshare investor listings (Sprint 2 Topic 1)",
+	"scripts": {
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"typescript": "^5.6.0"
+	}
+}
