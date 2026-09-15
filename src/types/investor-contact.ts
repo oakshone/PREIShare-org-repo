@@ -1,24 +1,17 @@
-export type ContactId = string & { readonly __brand: 'ContactId' };
-
-export type ContactRole =
-  | 'broker'
-  | 'owner_rep'
-  | 'property_manager'
-  | 'advisor';
-
+/** A person the team can reach about an investor listing. */
 export interface InvestorContact {
-  /** Stable contact identifier. */
-  id: ContactId;
+  /** Stable id within the listing's contact list (string is fine for now). */
+  id: string;
 
-  /** Person or firm name. */
-  name: string;
+  /** Full name of the contact. */
+  fullName: string;
 
-  /** Why this contact appears on the listing. */
-  role: ContactRole;
+  /** Role relative to the deal, e.g. "broker", "owner", "assistant". */
+  role: string;
 
-  /** Email channel when used. */
-  email?: string;
+  /** Email address for the contact. */
+  email: string;
 
-  /** Phone channel when used. */
+  /** Optional — not every contact shares a phone. */
   phone?: string;
 }

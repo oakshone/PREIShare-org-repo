@@ -1,6 +1,6 @@
 import type { Address } from './address';
-import type { InvestorContact } from './investor-contact';
 import type { FinancialSummary } from './financial-summary';
+import type { InvestorContact } from './investor-contact';
 import type { Ownership } from './ownership';
 
 export interface InvestorListing {
@@ -19,14 +19,18 @@ export interface InvestorListing {
   /** Financial summary for the listing. */
   financialSummary?: FinancialSummary;
 
-  /** Investor contacts associated with the listing. */
+  /** One or more people associated with this listing. */
   contacts: InvestorContact[];
 
-  /** Primary contact for the listing. */
+  /**
+   * Must match InvestorContact.id of one entry in `contacts`.
+   * TypeScript cannot fully enforce "id exists in array" alone;
+   * we still type it as string so callers pass an id, not a whole loose object.
+   */
   primaryContactId: string;
 
-  /** Ownership relationships tied to listing contacts. */
-  ownership: Ownership[];
+  /** Ownership information for the listing. */
+  ownership: Ownership;
 
   /** Timestamp for when the listing record was created. */
   createdAt: string;
