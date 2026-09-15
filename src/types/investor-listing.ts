@@ -1,5 +1,7 @@
 import type { Address } from './address';
+import type { InvestorContact } from './investor-contact';
 import type { FinancialSummary } from './financial-summary';
+import type { Ownership } from './ownership';
 
 export interface InvestorListing {
   /** Stable unique identifier for the listing. */
@@ -16,6 +18,15 @@ export interface InvestorListing {
 
   /** Financial summary for the listing. */
   financialSummary?: FinancialSummary;
+
+  /** Investor contacts associated with the listing. */
+  contacts: InvestorContact[];
+
+  /** Primary contact for the listing. */
+  primaryContactId: string;
+
+  /** Ownership relationships tied to listing contacts. */
+  ownership: Ownership[];
 
   /** Timestamp for when the listing record was created. */
   createdAt: string;
