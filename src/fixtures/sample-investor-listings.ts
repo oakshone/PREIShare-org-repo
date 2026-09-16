@@ -6,7 +6,7 @@ export const samplePublishedListing: InvestorListing = {
   title: 'Riverfront Commercial Workshop',
   summary: 'A furnished workshop available for community projects.',
   status: 'published',
-  propertyType: 'commercial',
+  propertyType: 'mixed_use',
   address: {
     line1: '1200 River Road',
     line2: 'Suite 100',
@@ -69,7 +69,7 @@ export const sampleUnderOfferListing: InvestorListing = {
   title: 'Cedar Commercial Site Under Offer',
   summary: 'A commercial site with an active offer under review.',
   status: 'under_offer',
-  propertyType: 'commercial',
+  propertyType: 'retail',
   address: {
     line1: '4500 Cedar Boulevard',
     city: 'Houston',
@@ -107,7 +107,7 @@ export const sampleSoldListing: InvestorListing = {
   summary: 'A commercial unit with a completed transfer.',
   status: 'sold',
   closedAt: '2026-08-20T12:00:00Z',
-  propertyType: 'commercial',
+  propertyType: 'industrial',
   address: {
     line1: '1 Summit Plaza',
     city: 'San Antonio',
@@ -144,7 +144,7 @@ export const sampleArchivedListing: InvestorListing = {
   title: 'Old Commercial Yard',
   summary: 'An archived commercial listing retained for records.',
   status: 'archived',
-  propertyType: 'commercial',
+  propertyType: 'office',
   address: {
     line1: '1200 Foundry Lane',
     city: 'Cleveland',
