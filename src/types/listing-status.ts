@@ -1,7 +1,8 @@
-// Closed set of lifecycle states from the field inventory.
+// Closed set of lifecycle states from the domain brief.
 // Only these exact strings are allowed; no free text.
 export type ListingStatus =
   | "draft"
-  | "active"
-  | "under_contract"
-  | "closed";
+  | "published"
+  | "under_offer"
+  | "sold"
+  | "archived";

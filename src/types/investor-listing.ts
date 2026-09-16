@@ -2,16 +2,21 @@ import type { Address } from './address';
 import type { FinancialSummary } from './financial-summary';
 import type { InvestorContact } from './investor-contact';
 import type { Ownership } from './ownership';
+import type { PropertyType } from './property-type';
 
-export interface InvestorListing {
+/** Fields every investor listing has, regardless of status. */
+export interface InvestorListingBase {
   /** Stable unique identifier for the listing. */
-  id: string;
+  readonly id: string;
 
   /** Short name shown to investors. */
   title: string;
 
   /** Investor-facing summary of the listing. */
   summary: string;
+
+  /** Controlled property category for the listing. */
+  propertyType: PropertyType;
 
   /** Physical location for the listing. */
   address: Address;
@@ -33,8 +38,55 @@ export interface InvestorListing {
   ownership: Ownership;
 
   /** Timestamp for when the listing record was created. */
-  createdAt: string;
+  readonly createdAt: string;
 
   /** Timestamp for the listing's last meaningful edit. */
-  updatedAt: string;
+  readonly updatedAt: string;
 }
+
+/** The status field is the discriminant: its literal value selects one branch. */
+export type InvestorListing =
+  | DraftInvestorListing
+  | PublishedInvestorListing
+  | UnderOfferInvestorListing
+  | SoldInvestorListing
+  | ArchivedInvestorListing;
+
+export interface DraftInvestorListing extends InvestorListingBase {
+  status: 'draft';
+  /** Only present on the closed-equivalent sold branch. */
+  closedAt?: undefined;
+}
+
+export interface PublishedInvestorListing extends InvestorListingBase {
+  status: 'published';
+  financialSummary: FinancialSummary;
+  contacts: [InvestorContact, ...InvestorContact[]];
+  /** Only present on the closed-equivalent sold branch. */
+  closedAt?: undefined;
+}
+
+export interface UnderOfferInvestorListing extends InvestorListingBase {
+  status: 'under_offer';
+  financialSummary: FinancialSummary;
+  contacts: [InvestorContact, ...InvestorContact[]];
+  /** Only present on the closed-equivalent sold branch. */
+  closedAt?: undefined;
+}
+
+export interface SoldInvestorListing extends InvestorListingBase {
+  status: 'sold';
+  financialSummary: FinancialSummary;
+  contacts: [InvestorContact, ...InvestorContact[]];
+  /** ISO date string required when the listing is sold. */
+  closedAt: string;
+}
+
+export interface ArchivedInvestorListing extends InvestorListingBase {
+  status: 'archived';
+  /** Only present on the closed-equivalent sold branch. */
+  closedAt?: undefined;
+}
+
+export type ClosedInvestorListing = SoldInvestorListing;
+export type OpenInvestorListing = Exclude<InvestorListing, SoldInvestorListing>;

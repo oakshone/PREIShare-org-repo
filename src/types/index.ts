@@ -1,4 +1,14 @@
-export type { InvestorListing } from './investor-listing';
+export type {
+	ArchivedInvestorListing,
+	ClosedInvestorListing,
+	DraftInvestorListing,
+	InvestorListing,
+	InvestorListingBase,
+	OpenInvestorListing,
+	PublishedInvestorListing,
+	SoldInvestorListing,
+	UnderOfferInvestorListing,
+} from './investor-listing';
 export type { InvestorContact } from './investor-contact';
 export type { Ownership } from './ownership';
 export type { Address } from './address';
