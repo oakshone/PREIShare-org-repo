@@ -26,6 +26,12 @@ This note documents the intentional failures in `src/fixtures/invalid-listings.e
 - **Rule that should catch it:** `FinancialSummary.askingPrice` must be a `number` so financial calculations do not receive text.
 - **Expected TypeScript error:** Type mismatch; a string is not assignable to `number`.
 
+## `invalidPropertyTypeListing`
+
+- **Business problem:** The listing uses `commercial`, but the domain brief defines the property categories as `multifamily`, `office`, `retail`, `industrial`, `mixed_use`, and `land`.
+- **Rule that should catch it:** `InvestorListing.propertyType` must use the closed `PropertyType` union.
+- **Expected TypeScript error:** Wrong string literal; `"commercial"` is not assignable to the allowed property-type union.
+
 ## Invalid values that currently still type-check
 
 The current types catch the four examples above, but they do not yet validate every business constraint. The following values would still be accepted because the fields are currently broad `string` or `number` types:
@@ -34,11 +40,6 @@ The current types catch the four examples above, but they do not yet validate ev
 
 - `financialSummary.currency: 'NOT-A-CURRENCY'` — accepted because currency is currently `string`; a closed currency-code type or runtime validation would be needed.
 - `financialSummary.askingPrice: -500` — accepted because the field is `number`; the type does not enforce a positive amount.
-## `invalidPropertyTypeListing`
-
-- **Business problem:** The listing uses `commercial`, but the domain brief defines the property categories as `multifamily`, `office`, `retail`, `industrial`, `mixed_use`, and `land`.
-- **Rule that should catch it:** `InvestorListing.propertyType` must use the closed `PropertyType` union.
-- **Expected TypeScript error:** Wrong string literal; `"commercial"` is not assignable to the allowed property-type union.
 - `financialSummary.projectedIrrPercent: 250` — accepted because the field is `number`; no percentage range is enforced.
 - `financialSummary.capRatePercent: -4` — accepted because the field is `number`; no non-negative range is enforced.
 
@@ -56,8 +57,9 @@ The current types catch the four examples above, but they do not yet validate ev
 - `address.line1: ''`, `address.postalCode: 'wrong'`, or `address.country: ''` — accepted because these fields are plain strings.
 - `createdAt: 'yesterday'`, `updatedAt: 'not-a-date'`, or `closedAt: 'sometime'` — accepted because timestamps are represented as strings without date-format validation.
 
-### Property type vocabulary
-
-The current `PropertyType` union accepts `single_family`, `multi_family`, `commercial`, and `land`. The domain brief instead names `multifamily`, `office`, `retail`, `industrial`, `mixed_use`, and `land`. This vocabulary mismatch means some domain-approved values currently fail while `commercial` currently passes.
-
 These gaps are not errors in the five teaching fixtures. They mark the boundary between the current compile-time shape checks and future stricter types or runtime validation.
+
+## Checking strategy
+
+- `npm run typecheck` runs the clean root check with `tsc --noEmit`. It includes valid project sources and `src/fixtures/sample-investor-listings.ts`, but excludes `src/fixtures/invalid-listings.errors.ts`.
+- The invalid fixture is checked separately with a focused TypeScript command and is expected to fail with the five documented diagnostics.
