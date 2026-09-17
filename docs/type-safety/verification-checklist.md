@@ -41,10 +41,11 @@ Use this list before review. Check each box only when you have evidence.
 
 ## D. Typecheck gate
 
-- [ ] `src/types/package.json` defines a `typecheck` script that runs `tsc --noEmit`.
-- [ ] From the repository root, run `npm --prefix src/types run typecheck`.
-- [ ] Expect the scoped types check to exit with code `0` and report no diagnostics for valid sources.
-- [ ] Remember that the intentional invalid fixture is outside the `src/types` package and is not part of that clean check.
+- [ ] `package.json` defines a `typecheck` script that runs `tsc --noEmit`.
+- [ ] From the repository root, run `npm run typecheck`.
+- [ ] Expect the root check to exit with code `0` and report no diagnostics for valid project sources.
+- [ ] Confirm `src/fixtures/invalid-listings.errors.ts` is excluded from the root clean gate.
+- [ ] Optionally run the narrower package check with `npm --prefix src/types run typecheck`.
 - [ ] To inspect intentional failures, run the focused command documented in `src/types/README.md`.
 - [ ] Expect the focused invalid-fixture check to fail and report the documented diagnostics.
 - [ ] Do not treat a failing intentional-error check as a regression unless its errors or count differ from the documentation.

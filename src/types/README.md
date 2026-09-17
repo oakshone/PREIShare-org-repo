@@ -18,26 +18,32 @@ These types catch those mistakes at **compile time**—before users see them.
 From the repository root:
 
 ```bash
+npm run typecheck
+```
+
+That root command checks the valid project TypeScript sources, including the
+shared types and valid sample fixtures, without emitting JavaScript. The
+intentional invalid fixture is excluded from the root gate.
+
+For the narrower types-package check, run from the repository root:
+
+```bash
 npm --prefix src/types run typecheck
 ```
 
-Or from this folder:
+Or run from this folder:
 
 ```bash
 npm run typecheck
 ```
 
-That runs `tsc --noEmit`: TypeScript checks the files under this folder and
-reports errors without writing JavaScript output files.
-
-Valid sources include `src/types/**` and the valid sample fixture at
-`src/fixtures/sample-investor-listings.ts` when it is checked separately.
+Both commands run `tsc --noEmit`: TypeScript reports errors without writing
+JavaScript output files.
 
 ### What success looks like
 
 If the check passes, the command exits with code 0 and reports no TypeScript
-errors. That means the shared type files in this folder agree with one another.
-No JavaScript files are created.
+errors. No JavaScript files are created.
 
 ### Intentional error examples
 
@@ -55,7 +61,7 @@ npx tsc --ignoreConfig --noEmit --strict --target ES2020 --module ESNext \
 
 That command is expected to exit with an error and print the documented
 diagnostics. A failing result there is intentional; a failing result from
-`npm --prefix src/types run typecheck` means the shared types need attention.
+either clean typecheck command means the checked project sources need attention.
 
 ## Strict mode (plain language)
 
