@@ -41,11 +41,16 @@ These paths and contents are planned for the shell; they are not current routes.
 
 ## Notes for later route files
 
-- Planned parent layout route: `dashboard`
-- Planned child routes: index (Home), `portfolio`, `deals`, and `profile`
+- Planned parent layout file: `src/routes/dashboard.tsx` (dashboard layout)
+- Planned child route files:
+  - `src/routes/dashboard.index.tsx` → `/dashboard` (Home)
+  - `src/routes/dashboard.portfolio.tsx` → `/dashboard/portfolio`
+  - `src/routes/dashboard.deals.tsx` → `/dashboard/deals`
+  - `src/routes/dashboard.profile.tsx` → `/dashboard/profile`
 - Route files have not been created. When implementation begins, use TanStack
-	Start file-based routing and regenerate generated route definitions through
-	the project script rather than editing generated files by hand.
+	Start's file-based routing to generate these nested URLs. Regenerate generated
+	route definitions through the project script rather than editing generated
+	files by hand.
 
 ## Planned component responsibilities
 

@@ -1,15 +1,23 @@
-Welcome to your new TanStack Start app!
+# PREIshare Investor Dashboard Shell
 
-# Getting Started
+This project is the starting point for PREIshare's investor dashboard shell.
+The app currently has the TanStack Start starter Home and About pages; the
+dashboard areas and their routes will be added in a later step. The planned
+dashboard uses mock data only, not live account data or sign-in.
 
-To run this application:
+## Getting Started
+
+To install the project and start the development server:
 
 ```bash
 npm install
 npm run dev
 ```
 
-# Building For Production
+Open the local URL printed by the dev server in your browser. Leave the server
+running while you work; press `Ctrl+C` in the terminal to stop it.
+
+## Building For Production
 
 To build this application for production:
 
