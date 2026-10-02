@@ -8,10 +8,7 @@ type AppShellProps = {
 }
 
 /** Child dashboard routes render inside `children`. */
-export function AppShell({
-  title = 'Investor Dashboard',
-  children,
-}: AppShellProps) {
+export function AppShell({ title, children }: AppShellProps) {
   return (
     <>
       <a

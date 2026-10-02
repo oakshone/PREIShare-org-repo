@@ -49,6 +49,17 @@ npm run generate-routes # regenerates src/routeTree.gen.ts
 - `vite.config.ts` — `devtools()`, `tailwindcss()`, `tanstackStart()`, `viteReact()`
 - `tsr.config.json` — route generation config
 
+## Dashboard shell rules
+
+Apply to `/dashboard` routes and `src/components/layout/`. For this work they override the Supabase and "write tests" lines in `.cursorrules` and the Supabase direction in `.cursor/rules/preishare.mdc`.
+
+- **Source of truth:** `docs/dashboard-ia.md` (URLs, pages) and `docs/component-plan.md` (component responsibilities). Ask before adding pages or changing scope.
+- **Mock only:** all data is placeholder and labeled as mock. No Supabase/PostgreSQL, fetching, sign-in, auth, or payments.
+- **Shared frame:** `src/routes/dashboard.tsx` wraps its `<Outlet />` in `AppShell`. Pages render only their own content (`<section>` and `h2`) and never build their own sidebar, header, `<main>`, or `h1`. The existing child pages under `src/routes/dashboard/` still use `<main>` and `h1` and haven't been migrated yet.
+- **Landmarks:** an `<aside>` containing a labelled `<nav>`, one `<header>`, and one `<main id="main-content">`.
+- **Spacing:** keep the shell's `gap-6` and the padded content card so page content doesn't sit against the frame.
+- **One job per component:** `AppShell`, `Sidebar` and `Header` hold no page widgets (stats cards, tables, lists); those belong to page components. Nav links come from the single `navConfig` in `Sidebar.tsx`.
+
 ## Docs & Onboarding
 
 `docs/onboarding/` holds:
