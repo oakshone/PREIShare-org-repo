@@ -1,14 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard/deals')({
-  component: DealsPage,
+  component: RouteComponent,
 })
 
-function DealsPage() {
-  return (
-    <main>
-      <h1>Deals</h1>
-      <p>Mock content: open and past investment deals.</p>
-    </main>
-  )
+function RouteComponent() {
+  return <div>Hello "/dashboard/deals"!</div>
 }

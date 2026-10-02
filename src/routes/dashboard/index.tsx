@@ -1,14 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/dashboard/')({
-  component: DashboardHomePage,
+  component: RouteComponent,
 })
 
-function DashboardHomePage() {
-  return (
-    <main>
-      <h1>Dashboard overview</h1>
-      <p>Mock content: portfolio value, open deals, and recent activity.</p>
-    </main>
-  )
+function RouteComponent() {
+  return <div>Hello "/dashboard/"!</div>
 }
