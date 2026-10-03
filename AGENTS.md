@@ -51,7 +51,7 @@ npm run generate-routes # regenerates src/routeTree.gen.ts
 
 ## Dashboard shell rules
 
-Apply to `/dashboard` routes and `src/components/layout/`. For this work they override the Supabase and "write tests" lines in `.cursorrules` and the Supabase direction in `.cursor/rules/preishare.mdc`.
+Apply to `/dashboard` routes, `src/components/layout/`, and `src/components/dashboard/`. For this work they override the Supabase and "write tests" lines in `.cursorrules` and the Supabase direction in `.cursor/rules/preishare.mdc`.
 
 - **Source of truth:** `docs/dashboard-ia.md` (URLs, pages) and `docs/component-plan.md` (component responsibilities). Ask before adding pages or changing scope.
 - **Mock only:** all data is placeholder and labeled as mock. No Supabase/PostgreSQL, fetching, sign-in, auth, or payments.
