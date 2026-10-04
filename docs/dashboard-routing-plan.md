@@ -13,7 +13,7 @@ Checked against `src/routes/` and the generated `src/routeTree.gen.ts` on 2026-1
 | `src/routes/__root.tsx` | (app root layout) | Existing shared root — do not replace casually. Renders the starter site `Header` and `Footer` around **every** route, including `/dashboard` (see Open questions). |
 | `src/routes/index.tsx` | `/` | Existing starter home with an "Open Dashboard" link. Copy still says dashboard areas "will be added in a later step". |
 | `src/routes/about.tsx` | `/about` | Existing starter About page. Leave as is. |
-| `src/routes/dashboard.tsx` | `/dashboard` (layout) | Layout route: renders `AppShell` around `<Outlet />`. |
+| `src/routes/dashboard/route.tsx` | `/dashboard` (layout) | Layout route: renders `AppShell` around `<Outlet />`. |
 | `src/routes/dashboard/index.tsx` | `/dashboard` | Home overview: sample banner, three `StatsCard` tiles, `PortfolioSummary`, `RecentActivity`. |
 | `src/routes/dashboard/portfolio.tsx` | `/dashboard/portfolio` | Generated stub (`Hello "/dashboard/portfolio"!`). |
 | `src/routes/dashboard/deals.tsx` | `/dashboard/deals` | Generated stub (`Hello "/dashboard/deals"!`). |
@@ -33,18 +33,18 @@ Checked against `src/routes/` and the generated `src/routeTree.gen.ts` on 2026-1
 These are the only four pages in scope (requirements brief, section 3). There is no separate `/dashboard/activity` page; recent activity lives on Home.
 
 ## File map (exact files to create in a later step)
-All five files already exist, so later steps **edit** them rather than create them. Do not add a `src/routes/dashboard/route.tsx`: the layout already lives in `src/routes/dashboard.tsx`, and having both would define the same route twice.
+All five files already exist, so later steps **edit** them rather than create them. Do not add a `src/routes/dashboard.tsx`: the layout lives in `src/routes/dashboard/route.tsx` (the same route under the folder naming convention), and having both would define the same route twice.
 
 | URL | Role | File to create | Wraps / renders |
 | --- | --- | --- | --- |
-| `/dashboard` | Layout route | `src/routes/dashboard.tsx` (exists) | `AppShell` (sidebar, header, `<main>`) around `<Outlet />` |
+| `/dashboard` | Layout route | `src/routes/dashboard/route.tsx` (exists) | `AppShell` (sidebar, header, `<main>`) around `<Outlet />` |
 | `/dashboard` | Index page | `src/routes/dashboard/index.tsx` (exists) | Home overview: `StatsCard` ×3, `PortfolioSummary`, `RecentActivity` |
 | `/dashboard/portfolio` | Placeholder | `src/routes/dashboard/portfolio.tsx` (exists, stub) | Stub page / “coming soon”; later `PortfolioTable` |
 | `/dashboard/deals` | Placeholder | `src/routes/dashboard/deals.tsx` (exists, stub) | Stub page / “coming soon”; later `DealsList` |
 | `/dashboard/profile` | Placeholder | `src/routes/dashboard/profile.tsx` (exists, stub) | Stub page / “coming soon”; later `ProfileCard` |
 
 ## Layout vs page responsibilities
-- **Layout (`dashboard.tsx`)**: persistent navigation regions only (header, sidebar/mobile nav, main outlet) via `AppShell` from `src/components/layout/`. No metric cards or other page content. Rendered once and kept mounted while child pages swap.
+- **Layout (`dashboard/route.tsx`)**: persistent navigation regions only (header, sidebar/mobile nav, main outlet) via `AppShell` from `src/components/layout/`. No metric cards or other page content. Rendered once and kept mounted while child pages swap.
 - **Index (`dashboard/index.tsx`)**: dashboard home composition (summary widgets with mock values). Uses the parent layout. Renders no header, sidebar, `<main>`, or `h1`.
 - **Placeholders**: minimal pages so nav links have real targets, each a `<section>` with an `h2` and a "coming soon" line. Full UI comes in later topics.
 - **Current page**: the URL is the single source of truth. The sidebar highlights the active link and the header shows the page title by reading it; no page passes this in.

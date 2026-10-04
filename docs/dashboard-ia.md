@@ -41,7 +41,7 @@ These paths and contents are planned for the shell; they are not current routes.
 
 ## Notes for later route files
 
-- Planned parent layout file: `src/routes/dashboard.tsx` (dashboard layout)
+- Planned parent layout file: `src/routes/dashboard/route.tsx` (dashboard layout)
 - Planned child route files:
   - `src/routes/dashboard.index.tsx` → `/dashboard` (Home)
   - `src/routes/dashboard.portfolio.tsx` → `/dashboard/portfolio`
