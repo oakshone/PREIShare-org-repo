@@ -65,10 +65,10 @@ Sidebar (brand, then the four links in a wrapping row) → Header → Main.
 - **Props (beginner):** `children` (the page content to show in Main); `title` (text, optional — passed to Header to override the page title).
 
 ### Header
-- **Responsibility:** Top bar showing the current page title and a mock member placeholder.
+- **Responsibility:** Top bar showing the PREIshare brand line, the current page title, and a clearly marked placeholder member (not a signed-in user or session).
 - **Parent:** AppShell.
 - **Children:** none required.
-- **Props:** `title` (text, optional — by default it looks up the current page's title in `navConfig` from the URL, falling back to "Investor Dashboard"); `children` (optional — replaces the "Mock investor (demo data)" label).
+- **Props:** `brandLabel` (text, optional — default "PREIshare"); `title` (text, optional — by default it looks up the current page's title in `navConfig` from the URL, falling back to "Investor Dashboard"); `userLabel` (text, optional — default "Demo investor", shown with "Not signed in · sample data"). No user or session object is passed in.
 
 ### Sidebar
 - **Responsibility:** PREIshare branding and the dashboard navigation, inside a labelled `<aside>` and `<nav>`.
