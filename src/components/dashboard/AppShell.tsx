@@ -1,18 +1,19 @@
 import type { ReactNode } from 'react'
 import { Header } from './Header'
+import { MobileNav } from './MobileNav'
+import { Sidebar } from './Sidebar'
 
 export type AppShellProps = {
   children: ReactNode
   /** Forwarded to Header; by default Header uses the current page's title. */
   title?: string
-  /** Sidebar slot; the dashboard layout route passes the real Sidebar here. */
-  sidebar?: ReactNode
 }
 
 /**
- * Shared frame for all /dashboard routes: header, sidebar region, main slot.
+ * Shared frame for all /dashboard routes: header, navigation, main slot.
+ * Navigation: MobileNav below 768px, Sidebar from 768px up.
  */
-export function AppShell({ children, title, sidebar }: AppShellProps) {
+export function AppShell({ children, title }: AppShellProps) {
   return (
     <>
       <a
@@ -24,16 +25,16 @@ export function AppShell({ children, title, sidebar }: AppShellProps) {
       <div className="page-wrap flex flex-col gap-6 px-4 py-8">
         <Header title={title} />
 
+        <div className="md:hidden">
+          <MobileNav />
+        </div>
+
         <div className="flex flex-col gap-6 md:flex-row md:items-start">
           <aside
             aria-label="Investor navigation"
-            className="island-shell w-full shrink-0 rounded-2xl p-5 md:w-60"
+            className="island-shell hidden w-60 shrink-0 rounded-2xl p-5 md:block"
           >
-            {sidebar ?? (
-              <p className="m-0 text-sm text-(--sea-ink-soft)">
-                Navigation coming soon
-              </p>
-            )}
+            <Sidebar />
           </aside>
 
           <main

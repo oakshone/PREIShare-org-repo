@@ -8,8 +8,8 @@ all content is mock and labeled as sample data.
 Names and file paths below match the code already in the repo
 (`src/components/layout/`, `src/components/dashboard/`). Where the original
 template used a different name, the project name wins: `StatsCard` (not
-`MetricCard`). `AppShell` and `Header` live in `src/components/dashboard/`;
-`Sidebar`, `NavItems`, and `navConfig` live in `src/components/layout/`.
+`MetricCard`). `AppShell`, `Header`, and `Sidebar` live in
+`src/components/dashboard/`; the shared `navConfig` lives in `src/components/layout/`.
 
 ## Sources
 - docs/preishare-dashboard-requirements.md — scope, screens, layout regions, must-haves, out of scope
@@ -22,8 +22,8 @@ and the dashboard shell rules in `AGENTS.md`.
 | Region | Role | Typical components |
 |--------|------|--------------------|
 | Header | Full-width top bar: PREIshare brand, current page title, demo user placeholder | Header |
-| Sidebar | AppShell's `<aside>` region holding the four nav links; beside Main on tablet/desktop | Sidebar, NavItems |
-| Mobile nav | On small screens the same sidebar region stacks between Header and Main and its links wrap into a row | Sidebar, NavItems (no separate MobileNav this sprint) |
+| Sidebar | AppShell's `<aside>` region holding the four nav links; beside Main on tablet/desktop | Sidebar |
+| Mobile nav | Below 768px a "Menu" button between Header and Main opens and closes the same four links; the sidebar region is hidden | MobileNav |
 | Main | Page content for the active route | Route outlet + page widgets |
 
 AppShell is the frame that places Header, Sidebar, and Main together. The
@@ -57,15 +57,16 @@ fixed-width column on the left and the main content card fills the rest. Only
 the inside of Main changes when the investor picks another page.
 
 **Mobile (under 768px):** everything stacks in one column, top to bottom:
-Header → Sidebar (the four links in a wrapping row) → Main.
+Header → "Menu" button (tapping it shows the four links underneath) → Main.
+The sidebar region is hidden.
 
 ## Component inventory
 
 ### AppShell
 - **Responsibility:** Outer dashboard frame; places the header on top, a sidebar region (`<aside>`) and the main area below, plus a "Skip to content" link.
 - **Parent:** Dashboard layout route (`src/routes/dashboard/route.tsx`).
-- **Children:** Header, sidebar slot, main content slot (`<main id="main-content">`).
-- **Props (beginner):** `children` (the page content to show in Main); `title` (text, optional — passed to Header to override the page title); `sidebar` (optional — what to show in the sidebar region; the layout route passes `<Sidebar />`, and without it the region shows "Navigation coming soon").
+- **Children:** Header, MobileNav (below 768px), `<aside>` with Sidebar (768px and up), main content slot (`<main id="main-content">`).
+- **Props (beginner):** `children` (the page content to show in Main); `title` (text, optional — passed to Header to override the page title). Navigation isn't a prop: AppShell always renders MobileNav below 768px and Sidebar (inside its `<aside>`) from 768px up.
 
 ### Header
 - **Responsibility:** Top bar showing a "P" mark and PREIshare brand line, the current page title, and a clearly marked placeholder member (not a signed-in user or session).
@@ -74,23 +75,20 @@ Header → Sidebar (the four links in a wrapping row) → Main.
 - **Props:** `title` (text, optional — by default it looks up the current page's title in `navConfig` from the URL, falling back to "Investor Dashboard"); `actions` (optional — buttons or links shown to the left of the user placeholder; empty for now); `userLabel` (text, optional — default "Demo investor", shown with "Not signed in · sample data"). No user or session object is passed in.
 
 ### Sidebar
-- **Responsibility:** The dashboard navigation inside a labelled `<nav>`. It renders inside AppShell's `<aside>`, so it doesn't create its own.
-- **Parent:** AppShell's `sidebar` slot (passed in by the layout route).
-- **Children:** NavItems.
+- **Responsibility:** The dashboard navigation: a labelled `<nav>` with a list of router links, one per `navConfig` entry, highlighting the link for the current URL (`aria-current="page"`). Laid out as a vertical list for tablet/desktop; on small screens the links wrap into a row. It renders inside AppShell's `<aside>`, so it doesn't create its own.
+- **Parent:** AppShell, inside its `<aside>` (shown from 768px up).
+- **Children:** router `Link` elements in a `<ul>`.
 - **Props:** `children` (optional extra content under the links). Nav links are **not** a prop: they always come from `navConfig`, so there is one list to edit.
-
-### NavItems
-- **Responsibility:** Renders one link per `navConfig` entry and highlights the link that matches the current URL.
-- **Parent:** Sidebar.
-- **Children:** router `Link` elements.
-- **Props:** none. Reads `navConfig` directly; the router supplies the "current page" highlight.
 
 ### navConfig (data, not a component)
 - **Responsibility:** The single list of nav destinations: `{ label, to, title }` for Home, Portfolio, Deals, Profile (from the routing plan).
-- **Used by:** NavItems (links) and Header (page title).
+- **Used by:** Sidebar (links) and Header (page title).
 
 ### MobileNav
-- **Not built this sprint.** Decision: on small screens the Sidebar stacks above the content instead of opening as a drawer. This meets the requirement that nav "collapses or stacks" without adding open/close state. If a drawer is wanted later, add it as a new component with the same destinations from `navConfig`, with its open state kept in AppShell.
+- **Responsibility:** Small-screen navigation: a "Menu" toggle button and a panel with the same four links as Sidebar. Tapping a link closes the panel.
+- **Parent:** AppShell, which shows it only below 768px.
+- **Children:** a `<button>` and a labelled `<nav>` with router `Link` elements.
+- **Props:** none. Open/closed is a single `useState(false)` inside MobileNav. The button has an accessible label ("Open dashboard menu" / "Close dashboard menu"), `aria-expanded`, and `aria-controls` pointing at the panel, which is hidden with the `hidden` attribute while closed. Links come from `navConfig` and share Sidebar's link style (`navLinkClassName`). No animation library.
 
 ### StatsCard
 - **Responsibility:** One reusable metric tile (label + value + optional hint). Only displays what it's given.
@@ -134,7 +132,7 @@ whole shell is centred with a maximum width of 1080px.
 
 | Viewport | Approx width | Nav behavior | Main content |
 |----------|--------------|--------------|--------------|
-| Mobile | < 768px | Sidebar full width between Header and Main; links wrap into a row. No drawer. | Single column. StatsCards stack under 640px and sit 3 across from 640px. Summary and activity stack. |
+| Mobile | < 768px | Sidebar hidden; a full-width "Menu" button between Header and Main shows or hides the four links. | Single column. StatsCards stack under 640px and sit 3 across from 640px. Summary and activity stack. |
 | Tablet | 768px–1024px | Sidebar visible as a fixed 15rem (240px) column beside the content; links stack vertically. | 3 StatsCards across; PortfolioSummary and RecentActivity stack. |
 | Desktop | > 1024px | Same sidebar column, always visible. It scrolls with the page (not sticky) this sprint. | 3 StatsCards across; PortfolioSummary and RecentActivity side by side. |
 
@@ -149,8 +147,8 @@ Notes for implementers:
 Already exist (edit, don't recreate):
 - src/components/dashboard/AppShell.tsx
 - src/components/dashboard/Header.tsx
-- src/components/layout/Sidebar.tsx
-- src/components/layout/NavItems.tsx
+- src/components/dashboard/Sidebar.tsx
+- src/components/dashboard/MobileNav.tsx
 - src/components/layout/navConfig.ts
 - src/components/dashboard/StatsCard.tsx
 - src/components/dashboard/PortfolioSummary.tsx
@@ -161,8 +159,8 @@ To create in later steps:
 - src/components/dashboard/DealsList.tsx
 - src/components/dashboard/ProfileCard.tsx
 
-Do not create `MobileNav.tsx` or `MetricCard.tsx`, or a second `AppShell` or
-`Header` under `src/components/layout/`. That would duplicate components that
+Do not create `MetricCard.tsx`, a second `MobileNav`, or a second `AppShell`,
+`Header`, `Sidebar`, or `NavItems` under `src/components/layout/`. That would duplicate components that
 already exist.
 
 ## Out of scope (prevent scope creep)
