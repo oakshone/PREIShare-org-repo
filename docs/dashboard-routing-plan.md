@@ -44,7 +44,7 @@ All five files already exist, so later steps **edit** them rather than create th
 | `/dashboard/profile` | Placeholder | `src/routes/dashboard/profile.tsx` (exists, stub) | Stub page / “coming soon”; later `ProfileCard` |
 
 ## Layout vs page responsibilities
-- **Layout (`dashboard/route.tsx`)**: persistent navigation regions only (header, sidebar/mobile nav, main outlet) via `AppShell` from `src/components/layout/`. No metric cards or other page content. Rendered once and kept mounted while child pages swap.
+- **Layout (`dashboard/route.tsx`)**: persistent navigation regions only (header, sidebar/mobile nav, main outlet) via `AppShell` from `src/components/dashboard/`. No metric cards or other page content. Rendered once and kept mounted while child pages swap.
 - **Index (`dashboard/index.tsx`)**: dashboard home composition (summary widgets with mock values). Uses the parent layout. Renders no header, sidebar, `<main>`, or `h1`.
 - **Placeholders**: minimal pages so nav links have real targets, each a `<section>` with an `h2` and a "coming soon" line. Full UI comes in later topics.
 - **Current page**: the URL is the single source of truth. The sidebar highlights the active link and the header shows the page title by reading it; no page passes this in.

@@ -8,7 +8,8 @@ all content is mock and labeled as sample data.
 Names and file paths below match the code already in the repo
 (`src/components/layout/`, `src/components/dashboard/`). Where the original
 template used a different name, the project name wins: `StatsCard` (not
-`MetricCard`), and shell pieces live in `src/components/layout/`.
+`MetricCard`). `AppShell` and `Header` live in `src/components/dashboard/`;
+`Sidebar`, `NavItems`, and `navConfig` live in `src/components/layout/`.
 
 ## Sources
 - docs/preishare-dashboard-requirements.md — scope, screens, layout regions, must-haves, out of scope
@@ -20,9 +21,9 @@ and the dashboard shell rules in `AGENTS.md`.
 ## Layout regions
 | Region | Role | Typical components |
 |--------|------|--------------------|
-| Header | Top bar: current page title and a mock member label | Header |
-| Sidebar | PREIshare branding and the four nav links; beside the content on tablet/desktop | Sidebar, NavItems |
-| Mobile nav | On small screens the same Sidebar stacks above the content and its links wrap into a row | Sidebar, NavItems (no separate MobileNav this sprint) |
+| Header | Full-width top bar: PREIshare brand, current page title, demo user placeholder | Header |
+| Sidebar | AppShell's `<aside>` region holding the four nav links; beside Main on tablet/desktop | Sidebar, NavItems |
+| Mobile nav | On small screens the same sidebar region stacks between Header and Main and its links wrap into a row | Sidebar, NavItems (no separate MobileNav this sprint) |
 | Main | Page content for the active route | Route outlet + page widgets |
 
 AppShell is the frame that places Header, Sidebar, and Main together. The
@@ -35,46 +36,48 @@ each page renders inside Main.
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │ [Skip to content link — visible only when focused]           │
+│ ┌──────────────────────────────────────────────────────────┐ │
+│ │ [P] PREIshare               [?] Demo investor            │ │
+│ │     Page title (h1)             Not signed in · sample   │ │
+│ └──────────────────────────────────────────────────────────┘ │
 │ ┌────────────┐  ┌──────────────────────────────────────────┐ │
-│ │ Sidebar    │  │ Header: page title · "Mock investor"     │ │
-│ │ PREIshare  │  └──────────────────────────────────────────┘ │
-│ │ Investor   │  ┌──────────────────────────────────────────┐ │
-│ │ dashboard  │  │ Main (#main-content)                     │ │
-│ │            │  │   ← the active page renders here →       │ │
-│ │ • Home     │  │   Home: sample banner                    │ │
-│ │ • Portfolio│  │         [Stats] [Stats] [Stats]          │ │
-│ │ • Deals    │  │         [Portfolio summary][Activity]    │ │
+│ │ Sidebar    │  │ Main (#main-content)                     │ │
+│ │ Investor   │  │   ← the active page renders here →       │ │
+│ │ dashboard  │  │   Home: sample banner                    │ │
+│ │ • Home     │  │         [Stats] [Stats] [Stats]          │ │
+│ │ • Portfolio│  │         [Portfolio summary][Activity]    │ │
+│ │ • Deals    │  │                                          │ │
 │ │ • Profile  │  │                                          │ │
 │ └────────────┘  └──────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────────┘
 ```
 
-In words: the sidebar is a fixed-width column on the left. To its right, the
-header sits on top and the main content card fills the rest. Only the inside of
-Main changes when the investor picks another page.
+In words: the header runs across the top. Below it, the sidebar is a
+fixed-width column on the left and the main content card fills the rest. Only
+the inside of Main changes when the investor picks another page.
 
 **Mobile (under 768px):** everything stacks in one column, top to bottom:
-Sidebar (brand, then the four links in a wrapping row) → Header → Main.
+Header → Sidebar (the four links in a wrapping row) → Main.
 
 ## Component inventory
 
 ### AppShell
-- **Responsibility:** Outer dashboard frame; arranges the sidebar, header, and main area, plus a "Skip to content" link.
+- **Responsibility:** Outer dashboard frame; places the header on top, a sidebar region (`<aside>`) and the main area below, plus a "Skip to content" link.
 - **Parent:** Dashboard layout route (`src/routes/dashboard/route.tsx`).
-- **Children:** Sidebar, Header, main content slot (`<main id="main-content">`).
-- **Props (beginner):** `children` (the page content to show in Main); `title` (text, optional — passed to Header to override the page title).
+- **Children:** Header, sidebar slot, main content slot (`<main id="main-content">`).
+- **Props (beginner):** `children` (the page content to show in Main); `title` (text, optional — passed to Header to override the page title); `sidebar` (optional — what to show in the sidebar region; the layout route passes `<Sidebar />`, and without it the region shows "Navigation coming soon").
 
 ### Header
-- **Responsibility:** Top bar showing the PREIshare brand line, the current page title, and a clearly marked placeholder member (not a signed-in user or session).
+- **Responsibility:** Top bar showing a "P" mark and PREIshare brand line, the current page title, and a clearly marked placeholder member (not a signed-in user or session).
 - **Parent:** AppShell.
 - **Children:** none required.
-- **Props:** `brandLabel` (text, optional — default "PREIshare"); `title` (text, optional — by default it looks up the current page's title in `navConfig` from the URL, falling back to "Investor Dashboard"); `userLabel` (text, optional — default "Demo investor", shown with "Not signed in · sample data"). No user or session object is passed in.
+- **Props:** `title` (text, optional — by default it looks up the current page's title in `navConfig` from the URL, falling back to "Investor Dashboard"); `actions` (optional — buttons or links shown to the left of the user placeholder; empty for now); `userLabel` (text, optional — default "Demo investor", shown with "Not signed in · sample data"). No user or session object is passed in.
 
 ### Sidebar
-- **Responsibility:** PREIshare branding and the dashboard navigation, inside a labelled `<aside>` and `<nav>`.
-- **Parent:** AppShell.
+- **Responsibility:** The dashboard navigation inside a labelled `<nav>`. It renders inside AppShell's `<aside>`, so it doesn't create its own.
+- **Parent:** AppShell's `sidebar` slot (passed in by the layout route).
 - **Children:** NavItems.
-- **Props:** `brandLabel` (text, optional — default "PREIshare"); `children` (optional extra content under the links). Nav links are **not** a prop: they always come from `navConfig`, so there is one list to edit.
+- **Props:** `children` (optional extra content under the links). Nav links are **not** a prop: they always come from `navConfig`, so there is one list to edit.
 
 ### NavItems
 - **Responsibility:** Renders one link per `navConfig` entry and highlights the link that matches the current URL.
@@ -131,7 +134,7 @@ whole shell is centred with a maximum width of 1080px.
 
 | Viewport | Approx width | Nav behavior | Main content |
 |----------|--------------|--------------|--------------|
-| Mobile | < 768px | Sidebar full width above Header and Main; links wrap into a row. No drawer. | Single column. StatsCards stack under 640px and sit 3 across from 640px. Summary and activity stack. |
+| Mobile | < 768px | Sidebar full width between Header and Main; links wrap into a row. No drawer. | Single column. StatsCards stack under 640px and sit 3 across from 640px. Summary and activity stack. |
 | Tablet | 768px–1024px | Sidebar visible as a fixed 15rem (240px) column beside the content; links stack vertically. | 3 StatsCards across; PortfolioSummary and RecentActivity stack. |
 | Desktop | > 1024px | Same sidebar column, always visible. It scrolls with the page (not sticky) this sprint. | 3 StatsCards across; PortfolioSummary and RecentActivity side by side. |
 
@@ -144,8 +147,8 @@ Notes for implementers:
 
 ## File targets (for later steps—do not create all here)
 Already exist (edit, don't recreate):
-- src/components/layout/AppShell.tsx
-- src/components/layout/Header.tsx
+- src/components/dashboard/AppShell.tsx
+- src/components/dashboard/Header.tsx
 - src/components/layout/Sidebar.tsx
 - src/components/layout/NavItems.tsx
 - src/components/layout/navConfig.ts
@@ -158,8 +161,9 @@ To create in later steps:
 - src/components/dashboard/DealsList.tsx
 - src/components/dashboard/ProfileCard.tsx
 
-Do not create `MobileNav.tsx` or `MetricCard.tsx`, or move the shell into
-`src/components/dashboard/`. That would duplicate components that already exist.
+Do not create `MobileNav.tsx` or `MetricCard.tsx`, or a second `AppShell` or
+`Header` under `src/components/layout/`. That would duplicate components that
+already exist.
 
 ## Out of scope (prevent scope creep)
 - Real Supabase/PostgreSQL data fetching, loaders, server functions, or API routes
