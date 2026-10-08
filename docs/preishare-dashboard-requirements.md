@@ -25,7 +25,7 @@ across Home, Portfolio, Deals, and Profile), not live data or account management
 ## 4. Dashboard layout regions (must describe in UI work)
 1. **Header** — current page title and a simple mock member placeholder
 2. **Navigation** — sidebar on desktop; collapses or stacks on small screens without overlapping content
-3. **Metrics region** — `StatsCard` tiles on Home (mock values)
+3. **Metrics region** — `MetricCard` tiles on Home (mock values)
 4. **Activity region** — `RecentActivity` list on Home (mock items)
 5. **Main content area** — where page-specific content renders inside `AppShell`
 

@@ -1,50 +1,74 @@
+import { useId } from 'react'
+
+/** The kinds of activity the list knows how to label. */
+export type ActivityType = 'distribution' | 'capital_call' | 'document' | 'update'
+
 export type ActivityItem = {
   id: string
-  title: string
-  detail: string
-  dateLabel: string
+  /** When it happened, already formatted for display, e.g. "Mar 1, 2026". */
+  timestamp: string
+  /** What happened, in plain words. */
+  description: string
+  /** Optional kind of activity, shown as a small tag. */
+  type?: ActivityType
 }
 
 export type RecentActivityProps = {
   title?: string
+  /** Activity to list; defaults to the built-in MOCK items below. */
   items?: ActivityItem[]
+  /** Shows the sample-data note; leave true for mock data. */
   isSampleData?: boolean
+  /** Shown when `items` is an empty list. */
+  emptyMessage?: string
 }
 
+const TYPE_LABELS: Record<ActivityType, string> = {
+  distribution: 'Distribution',
+  capital_call: 'Capital call',
+  document: 'Document',
+  update: 'Update',
+}
+
+// MOCK placeholder activity — made-up events and dates, not live account history.
 const DEFAULT_MOCK_ACTIVITY: ActivityItem[] = [
   {
     id: 'a1',
-    title: 'Distribution posted (sample)',
-    detail: 'Sample Multifamily Fund A',
-    dateLabel: 'Mar 1, 2026',
+    timestamp: 'Mar 1, 2026',
+    description: 'Distribution posted for Sample Multifamily Fund A (sample)',
+    type: 'distribution',
   },
   {
     id: 'a2',
-    title: 'Capital call notice (sample)',
-    detail: 'Sample Industrial Note B',
-    dateLabel: 'Feb 18, 2026',
+    timestamp: 'Feb 18, 2026',
+    description: 'Capital call notice for Sample Industrial Note B (sample)',
+    type: 'capital_call',
   },
   {
     id: 'a3',
-    title: 'Profile document uploaded (sample)',
-    detail: 'Accreditation letter',
-    dateLabel: 'Feb 5, 2026',
+    timestamp: 'Feb 5, 2026',
+    description: 'Accreditation letter uploaded to profile (sample)',
+    type: 'document',
   },
 ]
 
+/**
+ * Short list of recent investor activity for the dashboard home.
+ * Presentational only: it shows the props it's given and never fetches data.
+ */
 export function RecentActivity({
   title = 'Recent activity',
   items = DEFAULT_MOCK_ACTIVITY,
   isSampleData = true,
+  emptyMessage = 'No recent activity yet.',
 }: RecentActivityProps) {
+  const headingId = useId()
+
   return (
-    <section
-      className="island-shell rounded-2xl p-5"
-      aria-labelledby="recent-activity-heading"
-    >
+    <section className="island-shell rounded-2xl p-5" aria-labelledby={headingId}>
       <div className="mb-4 flex flex-col gap-2">
         <h2
-          id="recent-activity-heading"
+          id={headingId}
           className="display-title m-0 text-xl font-bold text-(--sea-ink)"
         >
           {title}
@@ -58,24 +82,25 @@ export function RecentActivity({
           </p>
         ) : null}
       </div>
-      <ol className="m-0 list-none divide-y divide-(--line) p-0">
-        {items.map((item) => (
-          <li
-            key={item.id}
-            className="flex items-start justify-between gap-3 py-3"
-          >
-            <div>
-              <p className="m-0 text-sm font-semibold text-(--sea-ink)">
-                {item.title}
-              </p>
-              <p className="m-0 text-sm text-(--sea-ink-soft)">{item.detail}</p>
-            </div>
-            <span className="shrink-0 text-xs text-(--sea-ink-soft)">
-              {item.dateLabel}
-            </span>
-          </li>
-        ))}
-      </ol>
+      {items.length === 0 ? (
+        <p className="m-0 text-sm text-(--sea-ink-soft)">{emptyMessage}</p>
+      ) : (
+        <ol className="m-0 list-none divide-y divide-(--line) p-0">
+          {items.map((item) => (
+            <li key={item.id} className="flex items-start justify-between gap-3 py-3">
+              <div className="min-w-0">
+                {item.type ? (
+                  <p className="island-kicker m-0 mb-1">{TYPE_LABELS[item.type]}</p>
+                ) : null}
+                <p className="m-0 text-sm text-(--sea-ink)">{item.description}</p>
+              </div>
+              <span className="shrink-0 text-xs text-(--sea-ink-soft)">
+                {item.timestamp}
+              </span>
+            </li>
+          ))}
+        </ol>
+      )}
     </section>
   )
 }

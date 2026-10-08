@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { MetricCard } from '../../components/dashboard/MetricCard'
 import { PortfolioSummary } from '../../components/dashboard/PortfolioSummary'
 import { RecentActivity } from '../../components/dashboard/RecentActivity'
-import { StatsCard } from '../../components/dashboard/StatsCard'
 
 export const Route = createFileRoute('/dashboard/')({
   component: DashboardHomePage,
@@ -16,14 +16,15 @@ function DashboardHomePage() {
       >
         Demo shell — all figures are placeholders
       </p>
+      {/* MOCK metric values — placeholders, not live investor data */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatsCard
+        <MetricCard
           label="Total portfolio value"
           value="$300,000"
           hint="Sample total"
         />
-        <StatsCard label="Open deals" value="3" hint="Sample count" />
-        <StatsCard
+        <MetricCard label="Open deals" value="3" hint="Sample count" />
+        <MetricCard
           label="Contributions YTD"
           value="$24,000"
           hint="Sample YTD"

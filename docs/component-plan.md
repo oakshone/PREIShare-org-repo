@@ -20,7 +20,7 @@ The four planned pages are Home, Portfolio, Deals, and Profile, as mapped in
 
 | Component | Responsibility | Used on | Must NOT do |
 | --- | --- | --- | --- |
-| `StatsCard` | Displays one mock metric with a label, value, and optional hint. | Home | Fetch or calculate live portfolio data, or arrange the whole page. |
+| `MetricCard` | Displays one mock metric with a label, value, and optional hint. | Home | Fetch or calculate live portfolio data, or arrange the whole page. |
 | `PortfolioSummary` | Shows a brief mock snapshot of portfolio value or allocation. | Home | Replace or duplicate the full holdings view on Portfolio. |
 | `RecentActivity` | Lists a small set of clearly labeled mock activity items. | Home | Represent live account history or own global navigation. |
 

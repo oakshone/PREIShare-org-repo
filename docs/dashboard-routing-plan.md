@@ -14,7 +14,7 @@ Checked against `src/routes/` and the generated `src/routeTree.gen.ts` on 2026-1
 | `src/routes/index.tsx` | `/` | Existing starter home with an "Open Dashboard" link. Copy still says dashboard areas "will be added in a later step". |
 | `src/routes/about.tsx` | `/about` | Existing starter About page. Leave as is. |
 | `src/routes/dashboard/route.tsx` | `/dashboard` (layout) | Layout route: renders `AppShell` around `<Outlet />`. |
-| `src/routes/dashboard/index.tsx` | `/dashboard` | Home overview: sample banner, three `StatsCard` tiles, `PortfolioSummary`, `RecentActivity`. |
+| `src/routes/dashboard/index.tsx` | `/dashboard` | Home overview: sample banner, three `MetricCard` tiles, `PortfolioSummary`, `RecentActivity`. |
 | `src/routes/dashboard/portfolio.tsx` | `/dashboard/portfolio` | Generated stub (`Hello "/dashboard/portfolio"!`). |
 | `src/routes/dashboard/deals.tsx` | `/dashboard/deals` | Generated stub (`Hello "/dashboard/deals"!`). |
 | `src/routes/dashboard/profile.tsx` | `/dashboard/profile` | Generated stub (`Hello "/dashboard/profile"!`). |
@@ -38,7 +38,7 @@ All five files already exist, so later steps **edit** them rather than create th
 | URL | Role | File to create | Wraps / renders |
 | --- | --- | --- | --- |
 | `/dashboard` | Layout route | `src/routes/dashboard/route.tsx` (exists) | `AppShell` (sidebar, header, `<main>`) around `<Outlet />` |
-| `/dashboard` | Index page | `src/routes/dashboard/index.tsx` (exists) | Home overview: `StatsCard` ×3, `PortfolioSummary`, `RecentActivity` |
+| `/dashboard` | Index page | `src/routes/dashboard/index.tsx` (exists) | Home overview: `MetricCard` ×3, `PortfolioSummary`, `RecentActivity` |
 | `/dashboard/portfolio` | Placeholder | `src/routes/dashboard/portfolio.tsx` (exists, stub) | Stub page / “coming soon”; later `PortfolioTable` |
 | `/dashboard/deals` | Placeholder | `src/routes/dashboard/deals.tsx` (exists, stub) | Stub page / “coming soon”; later `DealsList` |
 | `/dashboard/profile` | Placeholder | `src/routes/dashboard/profile.tsx` (exists, stub) | Stub page / “coming soon”; later `ProfileCard` |

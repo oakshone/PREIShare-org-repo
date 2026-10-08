@@ -7,8 +7,7 @@ all content is mock and labeled as sample data.
 
 Names and file paths below match the code already in the repo
 (`src/components/layout/`, `src/components/dashboard/`). Where the original
-template used a different name, the project name wins: `StatsCard` (not
-`MetricCard`). `AppShell`, `Header`, and `Sidebar` live in
+template used a different name, the project name wins. `AppShell`, `Header`, and `Sidebar` live in
 `src/components/dashboard/`; the shared `navConfig` lives in `src/components/layout/`.
 
 ## Sources
@@ -90,10 +89,10 @@ The sidebar region is hidden.
 - **Children:** a `<button>` and a labelled `<nav>` with router `Link` elements.
 - **Props:** none. Open/closed is a single `useState(false)` inside MobileNav. The button has an accessible label ("Open dashboard menu" / "Close dashboard menu"), `aria-expanded`, and `aria-controls` pointing at the panel, which is hidden with the `hidden` attribute while closed. Links come from `navConfig` and share Sidebar's link style (`navLinkClassName`). No animation library.
 
-### StatsCard
-- **Responsibility:** One reusable metric tile (label + value + optional hint). Only displays what it's given.
+### MetricCard
+- **Responsibility:** One reusable metric tile (label + value + optional helper/change line). Presentational only: displays what it's given, never fetches or calculates.
 - **Parent:** Dashboard home (`src/routes/dashboard/index.tsx`).
-- **Props:** `label` (text), `value` (text, e.g. "$300,000"), `hint` (text, optional — use it to mark the value as sample, e.g. "Sample total"), `icon` (optional small icon or badge).
+- **Props:** `label` (text), `value` (text, e.g. "$300,000"), `hint` (text, optional — a helper or change line under the value; on Home it marks the value as sample, e.g. "Sample total"), `icon` (optional small icon or badge).
 
 ### PortfolioSummary
 - **Responsibility:** Short snapshot of total value and a few sample holdings. A preview, not the full Portfolio page.
@@ -101,9 +100,9 @@ The sidebar region is hidden.
 - **Props:** `totalLabel` (text, required — the total to show); `holdings` (optional list of `{ id, name, allocationLabel, valueLabel }` — defaults to built-in sample holdings); `title` (text, optional — default "Portfolio summary"); `isSampleData` (true/false, optional — default true, shows the sample-data note).
 
 ### RecentActivity
-- **Responsibility:** Short list of sample activity events for the investor.
+- **Responsibility:** Short list of sample activity events for the investor. Presentational only: never fetches data.
 - **Parent:** Dashboard home.
-- **Props:** `items` (optional list of `{ id, title, detail, dateLabel }` — defaults to built-in sample events); `title` (text, optional — default "Recent activity"); `isSampleData` (true/false, optional — default true, shows the sample-data note).
+- **Props:** `items` (optional list of `{ id, timestamp, description, type? }` — `timestamp` is display text like "Mar 1, 2026", `type` is one of `distribution`, `capital_call`, `document`, `update` and shows as a small tag; defaults to built-in items marked MOCK); `title` (text, optional — default "Recent activity"); `isSampleData` (true/false, optional — default true, shows the sample-data note); `emptyMessage` (text, optional — default "No recent activity yet.", shown when `items` is an empty list).
 
 ### Planned page components (later steps)
 One per child route in the routing plan; each renders only inside Main.
@@ -117,12 +116,12 @@ One per child route in the routing plan; each renders only inside Main.
 ## Composition (dashboard home)
 Main content on `/dashboard` composes:
 1. A page-level sample banner ("Demo shell — all figures are placeholders")
-2. Row/grid of StatsCard (3 placeholders: total portfolio value, open deals, contributions YTD)
+2. Row/grid of MetricCard (3 placeholders: total portfolio value, open deals, contributions YTD)
 3. PortfolioSummary
 4. RecentActivity
 
 Sample labels: every widget must make clear its content is sample data — the
-page banner, plus a sample hint on each StatsCard and the `isSampleData` note on
+page banner, plus a sample hint on each MetricCard and the `isSampleData` note on
 PortfolioSummary and RecentActivity. No realistic-looking "production" numbers
 or names.
 
@@ -132,9 +131,9 @@ whole shell is centred with a maximum width of 1080px.
 
 | Viewport | Approx width | Nav behavior | Main content |
 |----------|--------------|--------------|--------------|
-| Mobile | < 768px | Sidebar hidden; a full-width "Menu" button between Header and Main shows or hides the four links. | Single column. StatsCards stack under 640px and sit 3 across from 640px. Summary and activity stack. |
-| Tablet | 768px–1024px | Sidebar visible as a fixed 15rem (240px) column beside the content; links stack vertically. | 3 StatsCards across; PortfolioSummary and RecentActivity stack. |
-| Desktop | > 1024px | Same sidebar column, always visible. It scrolls with the page (not sticky) this sprint. | 3 StatsCards across; PortfolioSummary and RecentActivity side by side. |
+| Mobile | < 768px | Sidebar hidden; a full-width "Menu" button between Header and Main shows or hides the four links. | Single column. MetricCards stack under 640px and sit 3 across from 640px. Summary and activity stack. |
+| Tablet | 768px–1024px | Sidebar visible as a fixed 15rem (240px) column beside the content; links stack vertically. | 3 MetricCards across; PortfolioSummary and RecentActivity stack. |
+| Desktop | > 1024px | Same sidebar column, always visible. It scrolls with the page (not sticky) this sprint. | 3 MetricCards across; PortfolioSummary and RecentActivity side by side. |
 
 Notes for implementers:
 - Touch targets on mobile controls should be easy to tap; nav links keep their padded block style (`px-3 py-2.5`).
@@ -150,7 +149,7 @@ Already exist (edit, don't recreate):
 - src/components/dashboard/Sidebar.tsx
 - src/components/dashboard/MobileNav.tsx
 - src/components/layout/navConfig.ts
-- src/components/dashboard/StatsCard.tsx
+- src/components/dashboard/MetricCard.tsx
 - src/components/dashboard/PortfolioSummary.tsx
 - src/components/dashboard/RecentActivity.tsx
 
@@ -159,7 +158,7 @@ To create in later steps:
 - src/components/dashboard/DealsList.tsx
 - src/components/dashboard/ProfileCard.tsx
 
-Do not create `MetricCard.tsx`, a second `MobileNav`, or a second `AppShell`,
+Do not create `StatsCard.tsx` (renamed to `MetricCard.tsx`), a second `MobileNav`, or a second `AppShell`,
 `Header`, `Sidebar`, or `NavItems` under `src/components/layout/`. That would duplicate components that
 already exist.
 

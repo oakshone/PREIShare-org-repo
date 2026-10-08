@@ -70,7 +70,7 @@ dashboard components do not exist in the current app yet.
 
 | Component | Responsibility | Used on | Must NOT do |
 |-----------|----------------|---------|-------------|
-| `StatsCard` | Planned display of one metric label and value, with an optional hint | Dashboard home; reusable elsewhere if needed | Fetch data or own page layout |
+| `MetricCard` | Planned display of one metric label and value, with an optional hint | Dashboard home; reusable elsewhere if needed | Fetch data or own page layout |
 | `PortfolioSummary` | Planned short snapshot of portfolio value or allocation | Dashboard home | Replace the full Portfolio page |
 | `RecentActivity` | Planned simple list of recent mock events | Dashboard home | Own global navigation |
 
@@ -92,7 +92,7 @@ dashboard components do not exist in the current app yet.
 
 ### Page-to-component map
 
-- Home → `StatsCard`, `PortfolioSummary`, and `RecentActivity` inside `AppShell`
+- Home → `MetricCard`, `PortfolioSummary`, and `RecentActivity` inside `AppShell`
 - Portfolio → `PortfolioTable` inside `AppShell`
 - Deals → `DealsList` inside `AppShell`
 - Profile → `ProfileCard` inside `AppShell`
