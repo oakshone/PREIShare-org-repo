@@ -97,7 +97,7 @@ The sidebar region is hidden.
 ### PortfolioSummary
 - **Responsibility:** Short snapshot of total value and a few sample holdings. A preview, not the full Portfolio page.
 - **Parent:** Dashboard home.
-- **Props:** `totalLabel` (text, required — the total to show); `holdings` (optional list of `{ id, name, allocationLabel, valueLabel }` — defaults to built-in sample holdings); `title` (text, optional — default "Portfolio summary"); `isSampleData` (true/false, optional — default true, shows the sample-data note).
+- **Props:** `totalLabel` (text, optional — the total to show; "—" when omitted); `holdings` (optional list of `{ id, name, allocationLabel, valueLabel }` — defaults to built-in sample holdings); `title` (text, optional — default "Portfolio summary"); `isSampleData` (true/false, optional — default true, shows the sample-data note); `emptyMessage` (text, optional — default "No holdings to show yet.", shown when `holdings` is an empty list). Presentational only: never fetches data.
 
 ### RecentActivity
 - **Responsibility:** Short list of sample activity events for the investor. Presentational only: never fetches data.
@@ -114,16 +114,17 @@ One per child route in the routing plan; each renders only inside Main.
 | ProfileCard | Mock member name, contact placeholders, preferences | `/dashboard/profile` | Add sign-in, password changes, or auth |
 
 ## Composition (dashboard home)
-Main content on `/dashboard` composes:
-1. A page-level sample banner ("Demo shell — all figures are placeholders")
-2. Row/grid of MetricCard (3 placeholders: total portfolio value, open deals, contributions YTD)
-3. PortfolioSummary
-4. RecentActivity
+Main content on `/dashboard` (`src/routes/dashboard/index.tsx`) composes:
+1. A short intro line and a page-level banner ("Demo shell — no live data is connected yet")
+2. A "Key metrics" grid of 3 MetricCards (Portfolio value, Active investments, Distributions (YTD)), each showing "—" and an empty-state hint until data exists
+3. PortfolioSummary (3/5 of the width on desktop) with an empty `holdings` list and its own empty message
+4. RecentActivity (2/5 of the width on desktop) with an empty `items` list and its own empty message
 
-Sample labels: every widget must make clear its content is sample data — the
-page banner, plus a sample hint on each MetricCard and the `isSampleData` note on
-PortfolioSummary and RecentActivity. No realistic-looking "production" numbers
-or names.
+Labels: no realistic-looking "production" numbers or names. While nothing is
+connected, the page shows empty states ("—", "No portfolio holdings to show
+yet…", "No recent activity yet…") plus the demo banner. If built-in MOCK lists
+are shown instead (by omitting `holdings` / `items`), the widgets' `isSampleData`
+notes and "(sample)" labels mark them as sample data.
 
 ## Responsive behavior
 Breakpoints are Tailwind's defaults: `sm` 640px, `md` 768px, `lg` 1024px. The
@@ -131,9 +132,9 @@ whole shell is centred with a maximum width of 1080px.
 
 | Viewport | Approx width | Nav behavior | Main content |
 |----------|--------------|--------------|--------------|
-| Mobile | < 768px | Sidebar hidden; a full-width "Menu" button between Header and Main shows or hides the four links. | Single column. MetricCards stack under 640px and sit 3 across from 640px. Summary and activity stack. |
-| Tablet | 768px–1024px | Sidebar visible as a fixed 15rem (240px) column beside the content; links stack vertically. | 3 MetricCards across; PortfolioSummary and RecentActivity stack. |
-| Desktop | > 1024px | Same sidebar column, always visible. It scrolls with the page (not sticky) this sprint. | 3 MetricCards across; PortfolioSummary and RecentActivity side by side. |
+| Mobile | < 768px | Sidebar hidden; a full-width "Menu" button between Header and Main shows or hides the four links. | Single column. MetricCards stack under 640px and sit 2 across from 640px. Summary and activity stack. |
+| Tablet | 768px–1024px | Sidebar visible as a fixed 15rem (240px) column beside the content; links stack vertically. | 2 MetricCards across; PortfolioSummary and RecentActivity stack. |
+| Desktop | > 1024px | Same sidebar column, always visible. It scrolls with the page (not sticky) this sprint. | 2 MetricCards across up to 1280px, then 3; PortfolioSummary (3/5) and RecentActivity (2/5) side by side. |
 
 Notes for implementers:
 - Touch targets on mobile controls should be easy to tap; nav links keep their padded block style (`px-3 py-2.5`).

@@ -12,12 +12,14 @@ export type HoldingSnapshot = {
 
 export type PortfolioSummaryProps = {
   title?: string
-  /** Portfolio total, already formatted, e.g. "$300,000". */
-  totalLabel: string
+  /** Portfolio total, already formatted, e.g. "$300,000"; shows "—" when omitted. */
+  totalLabel?: string
   /** Holdings to list; defaults to the built-in MOCK holdings below. */
   holdings?: HoldingSnapshot[]
   /** Shows the sample-data note and "(sample)" labels; leave true for mock data. */
   isSampleData?: boolean
+  /** Shown when `holdings` is an empty list. */
+  emptyMessage?: string
 }
 
 // MOCK placeholder holdings — made-up names and amounts, not live investor data.
@@ -48,9 +50,10 @@ const DEFAULT_MOCK_HOLDINGS: HoldingSnapshot[] = [
  */
 export function PortfolioSummary({
   title = 'Portfolio summary',
-  totalLabel,
+  totalLabel = '—',
   holdings = DEFAULT_MOCK_HOLDINGS,
   isSampleData = true,
+  emptyMessage = 'No holdings to show yet.',
 }: PortfolioSummaryProps) {
   const headingId = useId()
 
@@ -81,7 +84,7 @@ export function PortfolioSummary({
         </span>
       </p>
       {holdings.length === 0 ? (
-        <p className="m-0 text-sm text-(--sea-ink-soft)">No holdings to show.</p>
+        <p className="m-0 text-sm text-(--sea-ink-soft)">{emptyMessage}</p>
       ) : (
         <>
           <div
