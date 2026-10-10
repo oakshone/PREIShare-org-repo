@@ -13,7 +13,7 @@
 | Tablet  | 768px  | Chrome device emulation (768 × 1024) |
 | Desktop | 1280px | Chrome device emulation (1280 × 1024) |
 
-Design tiers in code (`src/styles.css`): mobile = no prefix (320px+), tablet = `md:` (768px+), desktop = `lg:` (1024px+).
+Design tiers in code (`src/styles.css`): mobile = no prefix (320px+), tablet = `md:` (768px+), desktop = `lg:` (1024px+). Shell and grid layout rules: `src/styles/dashboard.css` (same breakpoints).
 
 ## How to use this sheet
 
@@ -49,13 +49,13 @@ Design tiers in code (`src/styles.css`): mobile = no prefix (320px+), tablet = `
 | T3 | Header + content spacing not cramped | Pass | 24px padding inside the main card; 16px between cards; 24px between the summary and activity sections. | — |
 | T4 | Metric cards use a sensible 2-column (or planned) layout | Pass | Planned layout is 3 across: one row, 207px each, 16px gaps. | Earlier fix, see cycle 1 |
 | T5 | PortfolioSummary and RecentActivity share space without overlap | Pass | Planned to stack at tablet: each full width (654px), 24px apart, no overlap. (They sit side by side from 1024px.) | — |
-| T6 | Touch targets / click targets large enough to use | Pass | Menu button 704 × 46px; menu links 678 × 40px each. | — |
+| T6 | Touch targets / click targets large enough to use | Pass | Menu button 704 × 46px; menu links 678 × 40px each. Cycle 4 made nav links 44px tall (shared link style; measured on desktop, not re-measured here). | — |
 
 ## Desktop (~1280px)
 
 | ID | Check | Status (Pass/Fail) | Symptom / notes | Fix notes (prompt + files) |
 |----|--------|--------------------|-----------------|----------------------------|
-| D1 | Sidebar visible and usable per architecture | Pass | 240px column on the left of main, tops aligned. Clicked Portfolio → Deals → Profile → Home: right page each time, header title updated, only the current link highlighted. Links 198 × 40px. | — |
+| D1 | Sidebar visible and usable per architecture | Pass | 240px column on the left of main, tops aligned. Clicked Portfolio → Deals → Profile → Home: right page each time, header title updated, only the current link highlighted. Links 198 × 40px (44px after cycle 4). | — |
 | D2 | MobileNav hidden or not duplicating full sidebar awkwardly | Pass | Menu button hidden at 1024px+; only the sidebar shows. | — |
 | D3 | Main region has comfortable padding/margins | Pass | 24px inside the main card; 24px gap from the sidebar; shell centred at its maximum width with even side margins. | — |
 | D4 | Metric cards align in a multi-column row as planned | Pass | 3 across in one row, 234px each, 16px gaps. | — |
@@ -77,6 +77,7 @@ Design tiers in code (`src/styles.css`): mobile = no prefix (320px+), tablet = `
 | 1 | Tablet (and desktop) | `src/styles.css`, `AppShell.tsx`, `Sidebar.tsx`, `MobileNav.tsx`, `routes/dashboard/index.tsx`, `DealsList.tsx`, `ProfileCard.tsx` | Use exactly three tiers (base / `md:` 768 / `lg:` 1024), show the sidebar only on desktop so tablets get full width with the Menu button, and remove `sm:`/`xl:` classes. | Pass: no more mid-word breaks on deal cards at 768px; metric cards 3 across at 768 and 1024 (no orphan card). |
 | 2 | Mobile | `DealsList.tsx`, `PortfolioTable.tsx` | Put the deal status badge on its own line on phones, and show portfolio holdings as stacked cards below 768px instead of a sideways-scrolling table. | Pass: deal names no longer break mid-word; every holding field visible at 320–375px. |
 | 3 | — | — | No changes made during this checklist run; all rows passed on first test. | — |
+| 4 | All three | `src/styles/dashboard.css` (new), `src/styles.css` (import), `AppShell.tsx`, `Header.tsx`, `Sidebar.tsx`, `routes/dashboard/index.tsx`, `DealsList.tsx` | Move shell, header, and card-grid layout into `src/styles/dashboard.css`, and add accessibility rules (focus ring, 44px nav links, current-page bar, reduced motion, high-contrast mode, skip link shown on focus). | Pass: re-measured at 375 / 768 / 1280px against this run. Same layout, no sideways scroll, menu and sidebar navigation still work. Intended changes only: sidebar links 198 × 44px (were 40px), Home summary/activity exactly 3:2, skip link no longer sits past the page edge. One slip caught by the re-test: the shell's side padding was dropped (16px instead of 32px from the edge) and restored. |
 
 Cycles 1–2 were found from screenshots at 320 / 768 / 1024px before this sheet was filled in. This run re-tested everything after those fixes.
 

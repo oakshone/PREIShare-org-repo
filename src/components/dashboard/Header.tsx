@@ -26,7 +26,7 @@ export function Header({
   )
 
   return (
-    <header className="island-shell flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-4">
+    <header className="island-shell dash-header">
       <div className="flex min-w-0 items-center gap-3">
         <span
           aria-hidden="true"

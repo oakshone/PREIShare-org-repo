@@ -43,7 +43,7 @@ function DashboardHomePage() {
 
       <section
         aria-label="Key metrics"
-        className="grid gap-4 md:grid-cols-3"
+        className="dash-grid-metrics"
       >
         {demoMetrics.map((metric) => (
           <MetricCard
@@ -55,14 +55,14 @@ function DashboardHomePage() {
         ))}
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-3">
+      <div className="dash-grid-split">
+        <div>
           <PortfolioSummary
             holdings={portfolioItems}
             emptyMessage="No portfolio holdings to show yet. When your account is linked, summaries will appear here."
           />
         </div>
-        <div className="lg:col-span-2">
+        <div>
           <RecentActivity
             items={activityItems}
             emptyMessage="No recent activity yet. Distributions, documents, and updates will list here."

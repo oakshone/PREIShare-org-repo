@@ -46,6 +46,7 @@ npm run generate-routes # regenerates src/routeTree.gen.ts
 - `src/components/` — Header, Footer, ThemeToggle
 - `src/lib/` — shared TypeScript helpers (e.g. `user.ts`)
 - `src/styles.css` — Tailwind entry
+- `src/styles/dashboard.css` — dashboard shell, grid, and accessibility styles (imported by `src/styles.css`)
 - `vite.config.ts` — `devtools()`, `tailwindcss()`, `tanstackStart()`, `viteReact()`
 - `tsr.config.json` — route generation config
 

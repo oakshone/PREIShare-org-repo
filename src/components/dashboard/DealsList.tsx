@@ -116,7 +116,7 @@ export function DealsList({
       {deals.length === 0 ? (
         <p className="m-0 text-sm text-(--sea-ink-soft)">{emptyMessage}</p>
       ) : (
-        <ul className="m-0 grid list-none gap-4 p-0 md:grid-cols-2">
+        <ul className="dash-grid-cards">
           {deals.map((deal) => (
             <li key={deal.id}>
               <article

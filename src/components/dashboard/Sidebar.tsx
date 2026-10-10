@@ -4,7 +4,7 @@ import { navConfig } from '../layout/navConfig'
 
 /** Shared link style for Sidebar and MobileNav; `aria-current="page"` marks the active link. */
 export const navLinkClassName =
-  'block rounded-xl px-3 py-2.5 text-sm font-semibold text-(--sea-ink-soft) no-underline transition hover:bg-(--link-bg-hover) hover:text-(--sea-ink) aria-[current=page]:bg-(--link-bg-hover) aria-[current=page]:text-(--sea-ink)'
+  'dash-nav-link rounded-xl px-3 py-2.5 text-sm font-semibold text-(--sea-ink-soft) no-underline transition hover:bg-(--link-bg-hover) hover:text-(--sea-ink) aria-[current=page]:bg-(--link-bg-hover) aria-[current=page]:text-(--sea-ink)'
 
 export type SidebarProps = {
   /** Optional extra content shown under the links. */

@@ -1,0 +1,190 @@
+/*
+ * Dashboard styles: layout for the /dashboard shell and its card grids,
+ * plus accessibility rules. Imported by src/styles.css, so it shares the
+ * colour tokens (--sea-ink, --lagoon-deep, …) and the Tailwind setup.
+ *
+ * Breakpoints match the three tiers in src/styles.css (@theme):
+ *   no query → mobile, 320px and up
+ *   48rem    → tablet, 768px and up  (same as Tailwind md:)
+ *   64rem    → desktop, 1024px and up (same as Tailwind lg:)
+ *
+ * Rules sit in the components layer, so a Tailwind utility on the same
+ * element still wins if a page needs a one-off tweak.
+ */
+
+@layer components {
+  /* ---------- Shell (AppShell) ---------- */
+
+  .dash-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem 1rem;
+  }
+
+  /* Sidebar + main: stacked on mobile/tablet, side by side on desktop */
+  .dash-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .dash-main {
+    min-width: 0; /* long content wraps instead of widening the page */
+    flex: 1 1 0%;
+    border-radius: 1rem;
+    padding: 1.25rem;
+  }
+
+  /* Desktop-only sidebar; MobileNav covers smaller screens */
+  .dash-sidebar {
+    display: none;
+    width: 15rem;
+    flex-shrink: 0;
+    border-radius: 1rem;
+    padding: 1.25rem;
+  }
+
+  .dash-mobile-nav {
+    display: block;
+  }
+
+  /* ---------- Header ---------- */
+
+  .dash-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+  }
+
+  /* ---------- Navigation links (Sidebar + MobileNav) ---------- */
+
+  .dash-nav-link {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem; /* 44px touch target */
+  }
+
+  /* Current page: a bar on the left, so it isn't shown by colour alone */
+  .dash-nav-link[aria-current="page"] {
+    box-shadow: inset 3px 0 0 var(--lagoon-deep);
+  }
+
+  /* ---------- Card grids ---------- */
+
+  /* Metric cards: 1 column on mobile, 3 across from tablet */
+  .dash-grid-metrics {
+    display: grid;
+    gap: 1rem;
+  }
+
+  /* Home: portfolio summary + recent activity; side by side (3/5 + 2/5) on desktop */
+  .dash-grid-split {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  /* Deal cards: 1 column on mobile, 2 from tablet */
+  .dash-grid-cards {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* ---------- Skip link ---------- */
+
+  .dash-skip-link {
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
+    z-index: 50;
+    border-radius: 0.75rem;
+    background: var(--surface-strong);
+    color: var(--sea-ink);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transform: translateY(-200%); /* off-screen until focused */
+  }
+
+  .dash-skip-link:focus {
+    transform: none;
+  }
+
+  /* ---------- Tablet (768px+) ---------- */
+
+  @media (width >= 48rem) {
+    .dash-main {
+      padding: 1.5rem;
+    }
+
+    .dash-grid-metrics {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .dash-grid-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* ---------- Desktop (1024px+) ---------- */
+
+  @media (width >= 64rem) {
+    .dash-layout {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    .dash-sidebar {
+      display: block;
+    }
+
+    .dash-mobile-nav {
+      display: none;
+    }
+
+    .dash-grid-split {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+  }
+}
+
+/* ---------- Accessibility ---------- */
+
+/* Clear keyboard focus ring on every link and button in the dashboard */
+.dash-shell :is(a, button, [tabindex]):focus-visible,
+.dash-skip-link:focus-visible {
+  outline: 3px solid var(--lagoon-deep);
+  outline-offset: 2px;
+}
+
+/* Respect the "reduce motion" system setting */
+@media (prefers-reduced-motion: reduce) {
+  .dash-shell *,
+  .dash-shell *::before,
+  .dash-shell *::after,
+  .dash-skip-link {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Windows high-contrast mode: keep focus and the current page visible */
+@media (forced-colors: active) {
+  .dash-shell :is(a, button, [tabindex]):focus-visible,
+  .dash-skip-link:focus-visible {
+    outline-color: Highlight;
+  }
+
+  .dash-nav-link[aria-current="page"] {
+    border-left: 3px solid Highlight;
+  }
+}

@@ -77,4 +77,4 @@
 - Responsive QA: `docs/responsive-qa-checklist.md`
 - Routes: `src/routes/dashboard/route.tsx`, `src/routes/dashboard/index.tsx` (also `portfolio.tsx`, `deals.tsx`, `profile.tsx`)
 - Components: `src/components/dashboard/` (AppShell, Header, Sidebar, MobileNav, MetricCard, PortfolioSummary, RecentActivity, PortfolioTable, DealsList, ProfileCard); nav list in `src/components/layout/navConfig.ts`
-- Breakpoints: `src/styles.css` (`@theme` block)
+- Breakpoints: `src/styles.css` (`@theme` block); dashboard layout and accessibility rules: `src/styles/dashboard.css`

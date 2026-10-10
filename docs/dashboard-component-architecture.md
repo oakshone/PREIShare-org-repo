@@ -127,7 +127,10 @@ are shown instead (by omitting `holdings` / `items`), the widgets' `isSampleData
 notes and "(sample)" labels mark them as sample data.
 
 ## Responsive behavior
-Three tiers, mobile-first, defined in `src/styles.css` (`@theme`):
+Three tiers, mobile-first. The breakpoints are defined in `src/styles.css`
+(`@theme`). The dashboard's layout and accessibility rules live in
+`src/styles/dashboard.css`, which `src/styles.css` imports, so it shares the
+same colour tokens.
 
 | Tier | Width | Tailwind prefix |
 |------|-------|-----------------|
@@ -138,6 +141,23 @@ Three tiers, mobile-first, defined in `src/styles.css` (`@theme`):
 Dashboard code uses only these three; don't add `sm:` (640px) or `xl:` (1280px).
 The whole shell is centred with a maximum width of 1080px.
 
+Layout classes in `src/styles/dashboard.css` (plain CSS, in Tailwind's
+components layer, so a utility class on the same element still wins):
+
+| Class | Used in | Does |
+|-------|---------|------|
+| `dash-shell`, `dash-layout`, `dash-main` | AppShell | Page spacing; sidebar and main side by side from 1024px |
+| `dash-sidebar`, `dash-mobile-nav` | AppShell | Sidebar shown on desktop only; Menu shown below 1024px |
+| `dash-header` | Header | Brand left, demo user right; wraps on small screens |
+| `dash-nav-link` | Sidebar, MobileNav (`navLinkClassName`) | 44px-tall links; bar on the current page's link |
+| `dash-grid-metrics` | Home | Metric cards: 1 column, 3 across from 768px |
+| `dash-grid-split` | Home | PortfolioSummary + RecentActivity: stacked, 3/5 + 2/5 from 1024px |
+| `dash-grid-cards` | DealsList | Deal cards: 1 column, 2 across from 768px |
+| `dash-skip-link` | AppShell | "Skip to content", shown when focused |
+
+Smaller layouts inside a widget (for example the `dl` grids in cards) still
+use Tailwind classes in the component.
+
 | Viewport | Approx width | Nav behavior | Main content |
 |----------|--------------|--------------|--------------|
 | Mobile | 320–767px | Sidebar hidden; a full-width "Menu" button between Header and Main shows or hides the four links. | Single column. MetricCards stack; deal cards stack with the status badge on its own line; PortfolioTable shows one card per holding; profile details stack. |
@@ -145,7 +165,8 @@ The whole shell is centred with a maximum width of 1080px.
 | Desktop | 1024px and up | Sidebar visible as a fixed 15rem (240px) column beside the content; "Menu" button hidden. It scrolls with the page (not sticky) this sprint. | Same as tablet, plus PortfolioSummary (3/5) and RecentActivity (2/5) side by side. |
 
 Notes for implementers:
-- Touch targets on mobile controls should be easy to tap; nav links keep their padded block style (`px-3 py-2.5`).
+- Touch targets on mobile controls should be easy to tap; nav links are at least 44px tall (`dash-nav-link`).
+- Accessibility rules in `src/styles/dashboard.css`: a visible keyboard focus ring on every dashboard link and button; the current page's link has a bar on its left edge, not just a colour change; animations and transitions turn off when the system asks for reduced motion; focus and current page stay visible in Windows high-contrast mode.
 - Main content must remain scrollable; header should not crowd out content. The page scrolls as a whole; don't trap content in a fixed-height box.
 - Do not rely on hover-only actions for anything required on mobile. The active link is shown by `aria-current`, not hover.
 - Keep the shell's `gap-6` spacing and the padded Main card so content never sits against the frame.

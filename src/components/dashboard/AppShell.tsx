@@ -16,30 +16,27 @@ export type AppShellProps = {
 export function AppShell({ children, title }: AppShellProps) {
   return (
     <>
-      <a
-        href="#main-content"
-        className="sr-only focus:not-sr-only focus:m-2 focus:inline-block focus:rounded-xl focus:bg-(--chip-bg) focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-(--sea-ink)"
-      >
+      <a href="#main-content" className="dash-skip-link">
         Skip to content
       </a>
-      <div className="page-wrap flex flex-col gap-6 px-4 py-8">
+      <div className="page-wrap dash-shell">
         <Header title={title} />
 
-        <div className="lg:hidden">
+        <div className="dash-mobile-nav">
           <MobileNav />
         </div>
 
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <div className="dash-layout">
           <aside
             aria-label="Investor navigation"
-            className="island-shell hidden w-60 shrink-0 rounded-2xl p-5 lg:block"
+            className="island-shell dash-sidebar"
           >
             <Sidebar />
           </aside>
 
           <main
             id="main-content"
-            className="island-shell min-w-0 flex-1 rounded-2xl p-5 md:p-6"
+            className="island-shell dash-main"
           >
             {children}
           </main>
