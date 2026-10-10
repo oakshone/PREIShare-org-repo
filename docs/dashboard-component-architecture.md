@@ -102,7 +102,7 @@ The sidebar region is hidden.
 ### RecentActivity
 - **Responsibility:** Short list of sample activity events for the investor. Presentational only: never fetches data.
 - **Parent:** Dashboard home.
-- **Props:** `items` (optional list of `{ id, timestamp, description, type? }` — `timestamp` is display text like "Mar 1, 2026", `type` is one of `distribution`, `capital_call`, `document`, `update` and shows as a small tag; defaults to built-in items marked MOCK); `title` (text, optional — default "Recent activity"); `isSampleData` (true/false, optional — default true, shows the sample-data note); `emptyMessage` (text, optional — default "No recent activity yet.", shown when `items` is an empty list).
+- **Props:** `items` (optional list of `{ id, timestamp, description, type? }` — `timestamp` is display text like "Oct 1, 2026", `type` is one of `distribution`, `capital_call`, `document`, `update` and shows as a small tag; defaults to built-in items marked MOCK); `title` (text, optional — default "Recent activity"); `isSampleData` (true/false, optional — default true, shows the sample-data note); `emptyMessage` (text, optional — default "No recent activity yet.", shown when `items` is an empty list).
 
 ### Planned page components (later steps)
 One per child route in the routing plan; each renders only inside Main.
@@ -115,16 +115,18 @@ One per child route in the routing plan; each renders only inside Main.
 
 ## Composition (dashboard home)
 Main content on `/dashboard` (`src/routes/dashboard/index.tsx`) composes:
-1. A short intro line and a page-level banner ("Demo shell — no live data is connected yet")
-2. A "Key metrics" grid of 3 MetricCards (Portfolio value, Active investments, Distributions (YTD)), each showing "—" and an empty-state hint until data exists
-3. PortfolioSummary (3/5 of the width on desktop) with an empty `holdings` list and its own empty message
-4. RecentActivity (2/5 of the width on desktop) with an empty `items` list and its own empty message
+1. A short intro line and a page-level banner ("Demo shell — sample figures only, no live data is connected yet")
+2. A "Key metrics" grid of 3 MetricCards: Portfolio value "$300,000", Active investments "2", Distributions (YTD) "$6,400", each with a "Sample · …" hint
+3. PortfolioSummary (3/5 of the width on desktop) with its built-in MOCK holdings and `totalLabel="$300,000"`
+4. RecentActivity (2/5 of the width on desktop) with its built-in MOCK activity
 
-Labels: no realistic-looking "production" numbers or names. While nothing is
-connected, the page shows empty states ("—", "No portfolio holdings to show
-yet…", "No recent activity yet…") plus the demo banner. If built-in MOCK lists
-are shown instead (by omitting `holdings` / `items`), the widgets' `isSampleData`
-notes and "(sample)" labels mark them as sample data.
+Labels: every figure reads as an investor-facing placeholder: believable
+amounts, names starting with "Sample", and a "Sample" hint or note on each
+widget. The mock data is consistent across pages: Home's metrics and summary
+use the same three holdings as the Portfolio page ($265,000 invested, $300,000
+current value, 2 active + 1 pending), and the $6,400 YTD distributions are two
+$3,200 quarterly payouts like the one in Recent activity. Each widget's
+`emptyMessage` stays in place and shows if its list is ever empty.
 
 ## Responsive behavior
 Three tiers, mobile-first. The breakpoints are defined in `src/styles.css`

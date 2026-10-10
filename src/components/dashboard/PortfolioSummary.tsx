@@ -23,22 +23,23 @@ export type PortfolioSummaryProps = {
 }
 
 // MOCK placeholder holdings — made-up names and amounts, not live investor data.
+// Same three holdings as PortfolioTable's mock, so Home and Portfolio agree.
 const DEFAULT_MOCK_HOLDINGS: HoldingSnapshot[] = [
   {
     id: 'h1',
-    name: 'Sample Multifamily Fund A',
+    name: 'Sample Riverfront Apartments',
     allocationLabel: '40%',
     valueLabel: '$120,000',
   },
   {
     id: 'h2',
-    name: 'Sample Industrial Note B',
+    name: 'Sample Gateway Logistics Center',
     allocationLabel: '35%',
     valueLabel: '$105,000',
   },
   {
     id: 'h3',
-    name: 'Sample Cash Reserve',
+    name: 'Sample Midtown Office Note',
     allocationLabel: '25%',
     valueLabel: '$75,000',
   },

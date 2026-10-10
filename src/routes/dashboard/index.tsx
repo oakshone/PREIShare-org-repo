@@ -1,26 +1,22 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { MetricCard } from '../../components/dashboard/MetricCard'
 import { PortfolioSummary } from '../../components/dashboard/PortfolioSummary'
-import type { HoldingSnapshot } from '../../components/dashboard/PortfolioSummary'
 import { RecentActivity } from '../../components/dashboard/RecentActivity'
-import type { ActivityItem } from '../../components/dashboard/RecentActivity'
 
 export const Route = createFileRoute('/dashboard/')({
   component: DashboardHomePage,
 })
 
-// Shell demo data only — replace with loaders/Supabase in a later sprint topic
+// Shell demo data only — replace with loaders/Supabase in a later sprint topic.
+// MOCK figures match the sample holdings on the Portfolio page
+// ($265,000 invested, $300,000 current value, 2 active + 1 pending).
 const demoMetrics = [
-  { label: 'Portfolio value', value: '—', hint: 'Connect data to see live totals' },
-  { label: 'Active investments', value: '—', hint: 'No investments loaded yet' },
-  { label: 'Distributions (YTD)', value: '—', hint: 'Figures appear after sync' },
+  { label: 'Portfolio value', value: '$300,000', hint: 'Sample · 3 holdings' },
+  { label: 'Active investments', value: '2', hint: 'Sample · 1 more pending' },
+  { label: 'Distributions (YTD)', value: '$6,400', hint: 'Sample · 2 quarterly payouts' },
 ]
 
 function DashboardHomePage() {
-  // Empty on purpose: shows each widget's empty state until real data exists.
-  const portfolioItems: HoldingSnapshot[] = []
-  const activityItems: ActivityItem[] = []
-
   return (
     <section
       aria-labelledby="dashboard-home-heading"
@@ -37,7 +33,7 @@ function DashboardHomePage() {
           role="note"
           className="m-0 rounded-xl border border-(--line) bg-(--chip-bg) px-3 py-2 text-xs font-semibold text-(--sea-ink-soft)"
         >
-          Demo shell — no live data is connected yet
+          Demo shell — sample figures only, no live data is connected yet
         </p>
       </div>
 
@@ -57,14 +53,15 @@ function DashboardHomePage() {
 
       <div className="dash-grid-split">
         <div>
+          {/* No holdings prop: uses the built-in MOCK holdings (same as Portfolio page) */}
           <PortfolioSummary
-            holdings={portfolioItems}
+            totalLabel="$300,000"
             emptyMessage="No portfolio holdings to show yet. When your account is linked, summaries will appear here."
           />
         </div>
         <div>
+          {/* No items prop: uses the built-in MOCK activity */}
           <RecentActivity
-            items={activityItems}
             emptyMessage="No recent activity yet. Distributions, documents, and updates will list here."
           />
         </div>

@@ -37,8 +37,8 @@ Design tiers in code (`src/styles.css`): mobile = no prefix (320px+), tablet = `
 | M6 | Main content readable without pinched text | Pass | Nothing extends past the screen; body text 14px+. Smallest text is the ~11px uppercase labels (readable). | — |
 | M7 | Metric cards stack in a single column (or intentional narrow grid) | Pass | Three cards, same left edge, one below another. | — |
 | M8 | PortfolioSummary does not overflow or clip | Pass | Content width equals its box (267px); no child sticks out. | — |
-| M9 | RecentActivity list wraps; no cut-off timestamps/labels | Pass | No overflow; the sample note and empty message wrap at word boundaries. Home currently passes an empty list, so no timestamps are shown — see Known limitations. | — |
-| M10 | Empty-state messaging (if shown) is fully visible | Pass | Metric hints, "No portfolio holdings to show yet…" and "No recent activity yet…" all fully visible, 2–4 lines each. | — |
+| M9 | RecentActivity list wraps; no cut-off timestamps/labels | Pass | No overflow; the sample note and empty message wrap at word boundaries. Re-tested after cycle 5 with three sample rows: type tag, description, and date all fit (no overflow, nothing clipped). | Cycle 5 |
+| M10 | Empty-state messaging (if shown) is fully visible | Pass | Checked when Home showed empty states: metric hints, "No portfolio holdings to show yet…" and "No recent activity yet…" all fully visible, 2–4 lines each. Since cycle 5 Home shows sample data, so these messages only appear if a list is empty. | — |
 
 ## Tablet (~768px)
 
@@ -78,6 +78,7 @@ Design tiers in code (`src/styles.css`): mobile = no prefix (320px+), tablet = `
 | 2 | Mobile | `DealsList.tsx`, `PortfolioTable.tsx` | Put the deal status badge on its own line on phones, and show portfolio holdings as stacked cards below 768px instead of a sideways-scrolling table. | Pass: deal names no longer break mid-word; every holding field visible at 320–375px. |
 | 3 | — | — | No changes made during this checklist run; all rows passed on first test. | — |
 | 4 | All three | `src/styles/dashboard.css` (new), `src/styles.css` (import), `AppShell.tsx`, `Header.tsx`, `Sidebar.tsx`, `routes/dashboard/index.tsx`, `DealsList.tsx` | Move shell, header, and card-grid layout into `src/styles/dashboard.css`, and add accessibility rules (focus ring, 44px nav links, current-page bar, reduced motion, high-contrast mode, skip link shown on focus). | Pass: re-measured at 375 / 768 / 1280px against this run. Same layout, no sideways scroll, menu and sidebar navigation still work. Intended changes only: sidebar links 198 × 44px (were 40px), Home summary/activity exactly 3:2, skip link no longer sits past the page edge. One slip caught by the re-test: the shell's side padding was dropped (16px instead of 32px from the edge) and restored. |
+| 5 | All three | `routes/dashboard/index.tsx`, `PortfolioSummary.tsx`, `RecentActivity.tsx` | Make Home demo-ready with mock content: believable sample metric values, sample holdings and activity instead of empty states, all matching the Portfolio page's three holdings. | Pass: no sideways scroll or clipping on any page at 375 / 768 / 1280px; metric values ("$300,000") fit on one line; activity rows show tag, description, and date without overflow. Clears two known limitations ("sample" notes above empty lists; timestamps untested). |
 
 Cycles 1–2 were found from screenshots at 320 / 768 / 1024px before this sheet was filled in. This run re-tested everything after those fixes.
 
@@ -86,9 +87,7 @@ Cycles 1–2 were found from screenshots at 320 / 768 / 1024px before this sheet
 List anything still imperfect that you are **not** fixing in this sprint, with a reason (e.g. “Chart library deferred to next topic”).
 
 - **Starter site header and footer still appear around the dashboard.** This also makes "Skip to content" the 6th keyboard stop instead of the first. Removing the starter chrome from dashboard pages is an open question in the routing plan (`src/routes/__root.tsx`).
-- **"Sample" wording next to empty lists.** Portfolio summary and Recent activity show "Sample data…" and "Total (sample) —" above their "nothing yet" messages. One-line follow-up: pass `isSampleData={false}` on Home.
-- **Very large metric values wrap mid-number.** For example, "$12,345,678,901" breaks after the last comma in a 234px card. Current values are "—", so it isn't visible today; revisit when real figures arrive (`MetricCard.tsx`).
-- **Recent activity timestamps not checked with real rows.** Home passes an empty list on purpose, so the populated layout (type tag, description, date) was not tested at these widths.
+- **Very large metric values wrap mid-number.** For example, "$12,345,678,901" breaks after the last comma in a 234px card. Current sample values (up to "$300,000") fit on one line; revisit when real figures arrive (`MetricCard.tsx`).
 - **Sidebar is not sticky on desktop.** It scrolls with the page, which is fine for these short pages.
 - **Not covered:** a physical phone or tablet, and screen-reader speech. These are worth a quick check before the stakeholder demo.
 

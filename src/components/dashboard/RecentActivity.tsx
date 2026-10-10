@@ -5,7 +5,7 @@ export type ActivityType = 'distribution' | 'capital_call' | 'document' | 'updat
 
 export type ActivityItem = {
   id: string
-  /** When it happened, already formatted for display, e.g. "Mar 1, 2026". */
+  /** When it happened, already formatted for display, e.g. "Oct 1, 2026". */
   timestamp: string
   /** What happened, in plain words. */
   description: string
@@ -34,21 +34,21 @@ const TYPE_LABELS: Record<ActivityType, string> = {
 const DEFAULT_MOCK_ACTIVITY: ActivityItem[] = [
   {
     id: 'a1',
-    timestamp: 'Mar 1, 2026',
-    description: 'Distribution posted for Sample Multifamily Fund A (sample)',
+    timestamp: 'Oct 1, 2026',
+    description: '$3,200 quarterly distribution posted for Sample Riverfront Apartments',
     type: 'distribution',
   },
   {
     id: 'a2',
-    timestamp: 'Feb 18, 2026',
-    description: 'Capital call notice for Sample Industrial Note B (sample)',
+    timestamp: 'Sep 22, 2026',
+    description: 'Capital call notice for Sample Midtown Office Note',
     type: 'capital_call',
   },
   {
     id: 'a3',
-    timestamp: 'Feb 5, 2026',
-    description: 'Accreditation letter uploaded to profile (sample)',
-    type: 'document',
+    timestamp: 'Sep 9, 2026',
+    description: 'Q2 investor update shared for Sample Gateway Logistics Center',
+    type: 'update',
   },
 ]
 
