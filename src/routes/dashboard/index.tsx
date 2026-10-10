@@ -43,7 +43,7 @@ function DashboardHomePage() {
 
       <section
         aria-label="Key metrics"
-        className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+        className="grid gap-4 md:grid-cols-3"
       >
         {demoMetrics.map((metric) => (
           <MetricCard

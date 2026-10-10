@@ -5,7 +5,7 @@ import { navLinkClassName } from './Sidebar'
 
 /**
  * Small-screen dashboard navigation: a menu button that shows or hides
- * the same links as Sidebar. AppShell only shows it below 768px.
+ * the same links as Sidebar. AppShell shows it on mobile and tablet (below 1024px).
  */
 export function MobileNav() {
   const [open, setOpen] = useState(false)

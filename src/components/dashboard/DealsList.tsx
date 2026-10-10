@@ -116,14 +116,14 @@ export function DealsList({
       {deals.length === 0 ? (
         <p className="m-0 text-sm text-(--sea-ink-soft)">{emptyMessage}</p>
       ) : (
-        <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="m-0 grid list-none gap-4 p-0 md:grid-cols-2">
           {deals.map((deal) => (
             <li key={deal.id}>
               <article
                 aria-label={deal.dealName}
                 className="island-shell flex h-full flex-col gap-3 rounded-2xl p-5"
               >
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex flex-col items-start gap-2 md:flex-row md:justify-between">
                   <h3 className="m-0 text-base font-bold text-(--sea-ink)">
                     {deal.dealName}
                   </h3>

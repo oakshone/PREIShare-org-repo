@@ -13,14 +13,14 @@ export type SidebarProps = {
 
 /**
  * Dashboard navigation for AppShell's sidebar region (AppShell supplies the `<aside>`).
- * Laid out as a vertical list for tablet/desktop; on small screens the links wrap into a row.
+ * Desktop only (AppShell shows it at 1024px and up); MobileNav covers smaller screens.
  * Links always come from `navConfig`, so there is one list to edit.
  */
 export function Sidebar({ children }: SidebarProps) {
   return (
     <nav aria-label="Dashboard">
       <p className="island-kicker m-0 mb-4">Investor dashboard</p>
-      <ul className="m-0 flex list-none flex-row flex-wrap gap-2 p-0 md:flex-col">
+      <ul className="m-0 flex list-none flex-col gap-2 p-0">
         {navConfig.map((item) => (
           <li key={item.to}>
             <Link

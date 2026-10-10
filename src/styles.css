@@ -5,6 +5,16 @@
 
 @theme {
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  /*
+   * Responsive tiers used by the dashboard (mobile-first):
+   *   no prefix → mobile, 320px and up
+   *   md:       → tablet, 768px and up
+   *   lg:       → desktop, 1024px and up
+   * Same values as Tailwind's defaults, written out so they're easy to find.
+   */
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
 }
 
 :root {

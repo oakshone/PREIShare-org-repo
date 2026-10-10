@@ -11,7 +11,7 @@ export type AppShellProps = {
 
 /**
  * Shared frame for all /dashboard routes: header, navigation, main slot.
- * Navigation: MobileNav below 768px, Sidebar from 768px up.
+ * Navigation: MobileNav on mobile and tablet, Sidebar on desktop (1024px and up).
  */
 export function AppShell({ children, title }: AppShellProps) {
   return (
@@ -25,21 +25,21 @@ export function AppShell({ children, title }: AppShellProps) {
       <div className="page-wrap flex flex-col gap-6 px-4 py-8">
         <Header title={title} />
 
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <MobileNav />
         </div>
 
-        <div className="flex flex-col gap-6 md:flex-row md:items-start">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
           <aside
             aria-label="Investor navigation"
-            className="island-shell hidden w-60 shrink-0 rounded-2xl p-5 md:block"
+            className="island-shell hidden w-60 shrink-0 rounded-2xl p-5 lg:block"
           >
             <Sidebar />
           </aside>
 
           <main
             id="main-content"
-            className="island-shell min-w-0 flex-1 rounded-2xl p-5 sm:p-6"
+            className="island-shell min-w-0 flex-1 rounded-2xl p-5 md:p-6"
           >
             {children}
           </main>

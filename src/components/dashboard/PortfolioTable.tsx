@@ -79,7 +79,7 @@ const DEFAULT_MOCK_HOLDINGS: PortfolioHolding[] = [
 /**
  * Holdings table for the Portfolio page.
  * Presentational only: it shows the props it's given and never fetches data.
- * Scrolls sideways on narrow screens instead of squeezing the columns.
+ * Mobile: one small card per holding. Tablet and up: a full table.
  */
 export function PortfolioTable({
   title = 'Holdings',
@@ -111,42 +111,76 @@ export function PortfolioTable({
       {holdings.length === 0 ? (
         <p className="m-0 text-sm text-(--sea-ink-soft)">{emptyMessage}</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[36rem] border-collapse text-left text-sm text-(--sea-ink)">
-            <thead>
-              <tr className="border-b border-(--line) text-xs text-(--sea-ink-soft)">
-                <th scope="col" className="py-2 pr-3 font-semibold">Property</th>
-                <th scope="col" className="py-2 pr-3 font-semibold">Type</th>
-                <th scope="col" className="py-2 pr-3 text-right font-semibold">Invested</th>
-                <th scope="col" className="py-2 pr-3 text-right font-semibold">Current value</th>
-                <th scope="col" className="py-2 font-semibold">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-(--line)">
-              {holdings.map((holding) => (
-                <tr key={holding.id}>
-                  <th scope="row" className="py-2 pr-3 font-semibold">
-                    {holding.propertyName}
-                  </th>
-                  <td className="py-2 pr-3 text-(--sea-ink-soft)">
-                    {PROPERTY_TYPE_LABELS[holding.propertyType]}
-                  </td>
-                  <td className="py-2 pr-3 text-right">
-                    {usd.format(holding.investedAmount)}
-                  </td>
-                  <td className="py-2 pr-3 text-right">
-                    {usd.format(holding.currentValue)}
-                  </td>
-                  <td className="py-2">
-                    <span className="rounded-full bg-(--chip-bg) px-2 py-0.5 text-xs font-semibold">
-                      {STATUS_LABELS[holding.status]}
-                    </span>
-                  </td>
+        <>
+          {/* Mobile: stacked cards, so every field is visible without sideways scrolling */}
+          <ul className="m-0 flex list-none flex-col gap-3 p-0 md:hidden">
+            {holdings.map((holding) => (
+              <li
+                key={holding.id}
+                className="rounded-xl border border-(--line) p-4 text-sm text-(--sea-ink)"
+              >
+                <div className="flex flex-col items-start gap-2">
+                  <p className="m-0 font-semibold">{holding.propertyName}</p>
+                  <span className="rounded-full bg-(--chip-bg) px-2 py-0.5 text-xs font-semibold">
+                    {STATUS_LABELS[holding.status]}
+                  </span>
+                </div>
+                <dl className="m-0 mt-3 grid grid-cols-2 gap-2">
+                  <div className="col-span-2">
+                    <dt className="text-xs text-(--sea-ink-soft)">Type</dt>
+                    <dd className="m-0">{PROPERTY_TYPE_LABELS[holding.propertyType]}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-(--sea-ink-soft)">Invested</dt>
+                    <dd className="m-0 font-semibold">{usd.format(holding.investedAmount)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-(--sea-ink-soft)">Current value</dt>
+                    <dd className="m-0 font-semibold">{usd.format(holding.currentValue)}</dd>
+                  </div>
+                </dl>
+              </li>
+            ))}
+          </ul>
+
+          {/* Tablet and up: full table */}
+          <div className="hidden overflow-x-auto md:block">
+            <table className="w-full min-w-[36rem] border-collapse text-left text-sm text-(--sea-ink)">
+              <thead>
+                <tr className="border-b border-(--line) text-xs text-(--sea-ink-soft)">
+                  <th scope="col" className="py-2 pr-3 font-semibold">Property</th>
+                  <th scope="col" className="py-2 pr-3 font-semibold">Type</th>
+                  <th scope="col" className="py-2 pr-3 text-right font-semibold">Invested</th>
+                  <th scope="col" className="py-2 pr-3 text-right font-semibold">Current value</th>
+                  <th scope="col" className="py-2 font-semibold">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-(--line)">
+                {holdings.map((holding) => (
+                  <tr key={holding.id}>
+                    <th scope="row" className="py-2 pr-3 font-semibold">
+                      {holding.propertyName}
+                    </th>
+                    <td className="py-2 pr-3 text-(--sea-ink-soft)">
+                      {PROPERTY_TYPE_LABELS[holding.propertyType]}
+                    </td>
+                    <td className="py-2 pr-3 text-right">
+                      {usd.format(holding.investedAmount)}
+                    </td>
+                    <td className="py-2 pr-3 text-right">
+                      {usd.format(holding.currentValue)}
+                    </td>
+                    <td className="py-2">
+                      <span className="rounded-full bg-(--chip-bg) px-2 py-0.5 text-xs font-semibold">
+                        {STATUS_LABELS[holding.status]}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </section>
   )

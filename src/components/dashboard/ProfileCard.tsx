@@ -91,7 +91,7 @@ export function ProfileCard({
         </p>
       ) : null}
 
-      <dl className="m-0 grid gap-3 text-sm sm:grid-cols-2">
+      <dl className="m-0 grid gap-3 text-sm md:grid-cols-2">
         <div>
           <dt className="text-xs text-(--sea-ink-soft)">Email</dt>
           <dd className="m-0 font-semibold text-(--sea-ink)">{profile.email}</dd>
@@ -102,7 +102,7 @@ export function ProfileCard({
             {CONTACT_LABELS[profile.preferredContact]}
           </dd>
         </div>
-        <div className="sm:col-span-2">
+        <div className="md:col-span-2">
           <dt className="text-xs text-(--sea-ink-soft)">Notes</dt>
           <dd className="m-0 text-(--sea-ink)">
             {profile.bio ?? (

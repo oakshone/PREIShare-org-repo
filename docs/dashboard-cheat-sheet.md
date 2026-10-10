@@ -45,8 +45,8 @@ src/routes/dashboard/
 src/components/dashboard/
   AppShell.tsx     → header on top, nav on the side (or Menu on phones), <main> for the page
   Header.tsx       → PREIshare brand, page title (the only h1), "Demo investor" placeholder
-  Sidebar.tsx      → nav links for tablet/desktop (768px+)
-  MobileNav.tsx    → "Menu" button + same links for phones
+  Sidebar.tsx      → nav links for desktop (1024px+)
+  MobileNav.tsx    → "Menu" button + same links for mobile and tablet
   MetricCard.tsx   → one number: label, value, optional hint
   PortfolioSummary.tsx → total + list of holdings
   RecentActivity.tsx   → list of events: timestamp, description, optional type
@@ -75,12 +75,24 @@ src/routeTree.gen.ts               → generated from the routes folder. Never e
 - A link to an address with no route file → TypeScript flags it via `navConfig`.
 - Secrets in a component or a `VITE_` variable → the browser can see them.
 
+## Screen sizes (breakpoints)
+
+Write styles for the phone first, then add prefixes for bigger screens:
+
+| Tier | Width | Prefix | Example |
+|---|---|---|---|
+| Mobile | 320px+ | none | `grid gap-4` → one column |
+| Tablet | 768px+ | `md:` | `md:grid-cols-3` → three columns from 768px |
+| Desktop | 1024px+ | `lg:` | `lg:block` → sidebar appears from 1024px |
+
+A prefix means "from this width **and up**". Only use these three in the dashboard.
+
 ## Before you say "done"
 
 ```bash
 npm run typecheck   # types are OK
 npm run build       # it builds (this is what Vercel runs)
-npm run dev         # open /dashboard and look at it, wide and narrow
+npm run dev         # open /dashboard and check it at 320, 768, and 1024px wide
 ```
 
 ## Test yourself (answer out loud, then check above)
