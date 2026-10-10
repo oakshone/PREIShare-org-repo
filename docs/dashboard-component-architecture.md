@@ -109,9 +109,9 @@ One per child route in the routing plan; each renders only inside Main.
 
 | Component | Responsibility | Parent | Must not |
 |-----------|----------------|--------|----------|
-| PortfolioTable | Mock holdings as a table or list that works on a phone | `/dashboard/portfolio` | Show live market or account data |
-| DealsList | Mock open or featured deals as rows or cards | `/dashboard/deals` | Add checkout, subscription, or investment flows |
-| ProfileCard | Mock member name, contact placeholders, preferences | `/dashboard/profile` | Add sign-in, password changes, or auth |
+| PortfolioTable (built) | Mock holdings table: property name, type, invested, current value, status. Props: `holdings?` (list of `{ id, propertyName, propertyType, investedAmount, currentValue, status }`; `propertyType` uses the shared `PropertyType` from `src/types`, `status` is `active`/`pending`/`exited`; defaults to built-in MOCK rows), `title?`, `isSampleData?`, `emptyMessage?`. Scrolls sideways on phones. | `/dashboard/portfolio` | Show live market or account data |
+| DealsList (built) | Mock open deals as cards: name, location · asset class, target raise, minimum, status. Props: `deals?` (list of `{ id, dealName, location, propertyType, targetRaise, minimumInvestment, status }`; `propertyType` uses the shared `PropertyType`, `status` is `open`/`closing_soon`/`waitlist`; defaults to built-in MOCK deals), `title?` (default "Current offerings"), `isSampleData?`, `emptyMessage?` (default "No open deals right now."). No invest or checkout actions. | `/dashboard/deals` | Add checkout, subscription, or investment flows |
+| ProfileCard (built) | Read-only mock profile card: display name, investor type tag, email, preferred contact, notes line ("No notes added yet." when empty). Props: `profile?` (`{ displayName, email, investorType, preferredContact, bio? }`; `investorType` is `individual`/`accredited`/`institutional`, `preferredContact` is `email`/`phone`; defaults to a built-in MOCK profile named "Demo investor" to match the Header), `isSampleData?`. No form, editing, or account actions. | `/dashboard/profile` | Add sign-in, password changes, or auth |
 
 ## Composition (dashboard home)
 Main content on `/dashboard` (`src/routes/dashboard/index.tsx`) composes:
@@ -153,11 +153,11 @@ Already exist (edit, don't recreate):
 - src/components/dashboard/MetricCard.tsx
 - src/components/dashboard/PortfolioSummary.tsx
 - src/components/dashboard/RecentActivity.tsx
-
-To create in later steps:
 - src/components/dashboard/PortfolioTable.tsx
 - src/components/dashboard/DealsList.tsx
 - src/components/dashboard/ProfileCard.tsx
+
+To create in later steps: none — all planned dashboard components now exist.
 
 Do not create `StatsCard.tsx` (renamed to `MetricCard.tsx`), a second `MobileNav`, or a second `AppShell`,
 `Header`, `Sidebar`, or `NavItems` under `src/components/layout/`. That would duplicate components that
