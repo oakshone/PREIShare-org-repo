@@ -3,7 +3,7 @@
 **Scope:** Sprint 3 investor dashboard shell (`/dashboard`, `/dashboard/portfolio`, `/dashboard/deals`, `/dashboard/profile`), mock data only
 **Date:** 2026-10-10
 **Prepared by:** Jackson Nieporte (checks run with Claude Code)
-**Build checked:** `main` @ `2a6c12b`, plus uncommitted Home sample-data changes (QA cycle 5)
+**Build checked:** `main` @ `628fe42` (includes the Home sample-data changes, QA cycle 5)
 **Method:**
 - `npm run build` and `npx tsc --noEmit`.
 - A production preview (`vite preview`, port 4173) checked in headless Chrome: measurements, simulated taps and keys, and screenshots read by eye.

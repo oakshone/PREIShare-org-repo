@@ -33,17 +33,17 @@ should be clearly labeled so it is not mistaken for live data.
 
 ## Success criteria (demo-ready shell)
 
-**Current progress (2026-09-30):** None of the dashboard success criteria are
-complete yet. The app still has the starter Home and About routes; the dashboard
-areas below remain planned work. Keep the boxes unchecked until implementation
-and verification provide evidence.
+**Current progress (2026-10-10):** All six success criteria are met for the
+Sprint 3 shell. Evidence IDs refer to `docs/verification-checklist.md`; the
+summary is in `docs/sprint3-handoff.md`. Data is still mock only (see Out of
+scope).
 
-- [ ] Investor can reach Home, Portfolio, Deals, and Profile from persistent navigation.
-- [ ] Each area has its own route/page shell with a clear page title.
-- [ ] Layout includes sidebar (or equivalent nav), header, and main content region.
-- [ ] On a narrow screen, content remains usable (nav collapses or stacks; no broken overlap).
-- [ ] Placeholder/mock content is labeled as mock so stakeholders know data is not live.
-- [ ] Brief, IA, and UI stay aligned: no surprise pages outside the four areas above.
+- [x] Investor can reach Home, Portfolio, Deals, and Profile from persistent navigation. *(N1, N2, A2)*
+- [x] Each area has its own route/page shell with a clear page title. *(R1, R4)*
+- [x] Layout includes sidebar (or equivalent nav), header, and main content region. *(R3, N1, N3)*
+- [x] On a narrow screen, content remains usable (nav collapses or stacks; no broken overlap). *(L1–L6)*
+- [x] Placeholder/mock content is labeled as mock so stakeholders know data is not live. *(M1–M8)*
+- [x] Brief, IA, and UI stay aligned: no surprise pages outside the four areas above. *(R2; the starter `/` and `/about` pages came with the project template and were not added this sprint)*
 
 ## Out of scope (explicit non-goals for this sprint)
 - Real sign-in / authentication and authorization

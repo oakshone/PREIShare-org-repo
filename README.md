@@ -1,44 +1,55 @@
 # PREIshare Investor Dashboard Shell
 
-This project is the starting point for PREIshare's investor dashboard shell.
-The app currently has the TanStack Start starter Home and About pages; the
-dashboard areas and their routes will be added in a later step. The planned
-dashboard uses mock data only, not live account data or sign-in.
+A responsive investor dashboard shell for PREIshare (Home, Portfolio, Deals, and Profile), built with TanStack Start, React 19, and Tailwind CSS v4, using clearly labelled mock data only. There's no live data, sign-in, or payments yet.
 
-## Getting Started
+## Prerequisites
 
-To install the project and start the development server:
+- **Node.js 22.12.0 or newer.** TanStack Start requires it (`node -v` to check).
+- **npm**, which comes with Node. The project uses `package-lock.json`, so use npm rather than pnpm or yarn.
+- No `.env` file or accounts are needed. The dashboard runs entirely on built-in sample data.
+
+## Getting started
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the local URL printed by the dev server in your browser. Leave the server
-running while you work; press `Ctrl+C` in the terminal to stop it.
+The dev server runs on port 3000. Open **http://localhost:3000/dashboard** for the investor dashboard; `http://localhost:3000/` is the starter home page. Press `Ctrl+C` in the terminal to stop the server.
 
-## Building For Production
+## Scripts
 
-To build this application for production:
+These are the only scripts in `package.json`. There are no `test`, `lint`, or `format` scripts yet.
 
-```bash
-npm run build
-```
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the dev server on port 3000 (`vite dev --port 3000`) |
+| `npm run build` | Production build (`vite build`) |
+| `npm run preview` | Serve the production build locally (`vite preview`) |
+| `npm run typecheck` | Check TypeScript types without building (`tsc --noEmit`) |
+| `npm run generate-routes` | Regenerate `src/routeTree.gen.ts` (`tsr generate`). It's also regenerated automatically by the dev server and build, so don't edit it by hand. |
 
-## Styling
+## Project docs
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+- **[Sprint 3 handoff](docs/sprint3-handoff.md):**
+  - what shipped, with the route list and component inventory
+  - how to run it, plus a 5-minute demo script
+  - known limitations and next-sprint work
+- **[Architecture decisions](docs/architecture-decisions.md):**
+  - the decisions: routing, AppShell layout, mock data boundary, and the responsive/accessibility baseline
+  - next-sprint foundations: Supabase auth, live data, pgvector search, and GitHub Actions CI
+- More: [client brief](docs/investor-dashboard-brief.md), [verification checklist](docs/verification-checklist.md), and the [repo map](docs/onboarding/repo-map.md) for new contributors. Guidance for AI coding agents is in [AGENTS.md](AGENTS.md).
 
-### Removing Tailwind CSS
+## Where things live
 
-If you prefer not to use Tailwind CSS:
+- `src/routes/dashboard/`: dashboard pages. `route.tsx` is the shared layout; the other four files are Home (`index.tsx`), `portfolio.tsx`, `deals.tsx`, and `profile.tsx`.
+- `src/components/dashboard/`: AppShell, Header, Sidebar, MobileNav, and the page widgets.
+- `src/components/layout/navConfig.ts`: the one list of dashboard links and page titles.
+- `src/styles.css` (global styles, Tailwind entry, breakpoints) and `src/styles/dashboard.css` (dashboard layout and accessibility rules).
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
+---
 
-
+The sections below are general TanStack reference notes from the starter template.
 
 ## Routing
 
@@ -181,11 +192,6 @@ function PeopleComponent() {
 ```
 
 Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
 
 
 # Learn More
