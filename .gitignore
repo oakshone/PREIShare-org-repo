@@ -3,7 +3,13 @@ node_modules
 dist
 dist-ssr
 *.local
+# Real env files (secrets). Covers .env, .env.local, .env.production, .env.development.local, etc.
 .env
+.env.*
+# ...but the names-only template is committed
+!.env.example
+# Vercel CLI project link and pulled env files
+.vercel
 .nitro
 .tanstack
 .wrangler
