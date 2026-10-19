@@ -1,6 +1,6 @@
 # Data Model and RLS Matrix: Sponsor Profiles and Property Listings
 
-- **Status:** Design for Sprint 4. The migration is `supabase/migrations/20250321000000_sponsors_properties_rls.sql`, written but **not yet applied**, because Supabase isn't provisioned. `docs/data-model/draft-tables.sql` was the earlier draft; the migration supersedes it.
+- **Status:** Design for Sprint 4. The migrations are `supabase/migrations/20250321000000_property_listings.sql` (`property_listings`) and `supabase/migrations/20250321000100_sponsor_profiles.sql` (`sponsor_profiles`), written but **not yet applied**, because Supabase isn't provisioned. `docs/data-model/draft-tables.sql` was the earlier draft; the migration supersedes it.
 - **Date:** 2026-10-19
 - **Prepared by:** Jackson Nieporte (with Claude Code)
 - **Audience:** next sprint's developers writing the migration, and reviewers checking access rules

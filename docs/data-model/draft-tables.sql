@@ -1,6 +1,7 @@
 -- =============================================================================
 -- SUPERSEDED: the real migration is
---   supabase/migrations/20250321000000_sponsors_properties_rls.sql
+--   supabase/migrations/20250321000000_property_listings.sql (property_listings)
+--   supabase/migrations/20250321000100_sponsor_profiles.sql (sponsor_profiles)
 -- Edit that file (or add a new migration), not this one. Kept only as the design-review draft.
 -- =============================================================================
 -- DRAFT ONLY: NOT A MIGRATION, NOT APPLIED ANYWHERE.

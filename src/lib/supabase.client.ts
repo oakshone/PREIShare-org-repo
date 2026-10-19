@@ -3,7 +3,7 @@
 // Reads only VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, the two client-safe variables in
 // `.env.example` (see docs/env-var-checklist.md, section 2). Both are public by design: every
 // request made with the anon key is still checked by Row Level Security against the signed-in
-// user (supabase/migrations/20250321000000_sponsors_properties_rls.sql).
+// user (supabase/migrations/20250321000000_property_listings.sql).
 //
 // NEVER read the service-role key, the database URL, or any non-VITE_ variable here.
 // Anything in this file ships in the browser bundle.

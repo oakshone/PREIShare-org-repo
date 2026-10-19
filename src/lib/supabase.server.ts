@@ -7,7 +7,7 @@
 //
 // The user's session comes from their auth cookies, so every query runs as that user and Row
 // Level Security applies (owner_id = auth.uid() in
-// supabase/migrations/20250321000000_sponsors_properties_rls.sql).
+// supabase/migrations/20250321000000_property_listings.sql).
 //
 // This client deliberately does NOT use SUPABASE_SERVICE_ROLE_KEY. That key bypasses RLS and
 // belongs only in a separate admin module for admin jobs. Never import it into browser code
