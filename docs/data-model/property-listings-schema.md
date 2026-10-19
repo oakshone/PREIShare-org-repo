@@ -12,6 +12,7 @@ No mock arrays in the browser. Secrets (service-role key) never ship to the clie
 - **Who:** sponsors (the brief's primary user) create, edit, and archive **their own** listings. Ownership is enforced by the database (RLS), not by hiding rows in React.
 - **Replaces:** the built-in MOCK arrays in `src/components/dashboard/DealsList.tsx` (and later PortfolioTable) for listing data.
 - **Status:** design only. Supabase isn't provisioned and no migration exists yet (brief section 6, observation 7).
+- **See also:** `docs/data-model-and-rls-matrix.md` (adds `sponsor_profiles`, a full RLS matrix, and a requirement → design mapping) and `docs/data-model/draft-tables.sql` (unapplied SQL draft of both tables).
 
 ## 2. Entity: `property_listings`
 
