@@ -1,4 +1,8 @@
 -- =============================================================================
+-- SUPERSEDED: the real migration is
+--   supabase/migrations/20250321000000_sponsors_properties_rls.sql
+-- Edit that file (or add a new migration), not this one. Kept only as the design-review draft.
+-- =============================================================================
 -- DRAFT ONLY: NOT A MIGRATION, NOT APPLIED ANYWHERE.
 -- Source of truth: docs/data-model-and-rls-matrix.md (tables + RLS matrix)
 --                  docs/data-model/property-listings-schema.md (template design)
