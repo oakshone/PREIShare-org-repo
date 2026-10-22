@@ -8,6 +8,22 @@ import type { FormEvent } from 'react'
 import { createServerFn } from '@tanstack/react-start'
 import { getSupabaseServerClient } from '../../lib/supabase.server'
 
+/** Turns a database error code into a message a sponsor can act on. */
+function describeInsertError(code: string | undefined): string {
+  switch (code) {
+    case '42501': // RLS: WITH CHECK (owner_id = auth.uid()) refused the row
+      return "You don't have permission to create this listing. Try signing out and back in."
+    case '23514': // a CHECK rule, e.g. price >= 0
+      return 'One of the values isn’t allowed (for example, a negative price). Check the form and try again.'
+    case '23502': // a required column was empty
+      return 'A required field is missing. Check the form and try again.'
+    case '22003': // number too large for numeric(12,2)
+      return 'The price is too large.'
+    default:
+      return 'Could not save the property. Try again.'
+  }
+}
+
 // Server mutation: insert runs with the caller's session.
 // RLS WITH CHECK enforces ownership (listings_insert_own: owner_id = auth.uid()).
 // Do NOT trust a client-supplied owner/sponsor id.
@@ -44,7 +60,10 @@ export const createProperty = createServerFn({ method: 'POST' })
 
     if (error) {
       // Surface the real failure — never pretend success when RLS or constraints reject.
-      return { ok: false as const, error: error.message }
+      // The raw database text stays in the server log; the user gets a plain message
+      // (security checklist 4.3: no raw DB internals in the UI).
+      console.error('[properties/new] Insert failed:', error)
+      return { ok: false as const, error: describeInsertError(error.code) }
     }
 
     return { ok: true as const, id: row.id as string }
