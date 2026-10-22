@@ -7,18 +7,21 @@ export type HeaderProps = {
   title?: string
   /** Optional right-side actions (keep empty for now if unused). */
   actions?: ReactNode
-  /** Display text for the placeholder member; not a signed-in user. */
+  /** Display text for the member: the signed-in user's email, or the demo placeholder. */
   userLabel?: string
+  /** Line under the member name, e.g. whether they're signed in and whether data is sample. */
+  statusLabel?: string
 }
 
 /**
  * Top chrome for the PREIshare investor dashboard.
- * Shows branding + a demo user placeholder only — not real auth state.
+ * Shows branding and the member passed in by the layout. It never reads auth state itself.
  */
 export function Header({
   title,
   actions,
   userLabel = 'Demo investor',
+  statusLabel = 'Not signed in · sample data',
 }: HeaderProps) {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
   const current = navConfig.find(
@@ -44,10 +47,10 @@ export function Header({
 
       <div className="flex items-center gap-3">
         {actions}
-        {/* Placeholder only — replace with real session UI in a later auth topic */}
+        {/* Member passed in by the dashboard layout (signed-in email, or the demo placeholder) */}
         <div
           className="flex items-center gap-2"
-          aria-label="Demo user placeholder"
+          aria-label="Member"
           role="group"
         >
           <span
@@ -59,7 +62,7 @@ export function Header({
           <div className="text-sm">
             <p className="m-0 font-semibold text-(--sea-ink)">{userLabel}</p>
             <p className="m-0 text-xs text-(--sea-ink-soft)">
-              Not signed in · sample data
+              {statusLabel}
             </p>
           </div>
         </div>

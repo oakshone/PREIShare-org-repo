@@ -7,20 +7,26 @@ export type AppShellProps = {
   children: ReactNode
   /** Forwarded to Header; by default Header uses the current page's title. */
   title?: string
+  /** Forwarded to Header's right-side actions slot (e.g. the sign-out button). */
+  actions?: ReactNode
+  /** Forwarded to Header: who is shown as the member. */
+  userLabel?: string
+  /** Forwarded to Header: the line under the member name. */
+  statusLabel?: string
 }
 
 /**
  * Shared frame for all /dashboard routes: header, navigation, main slot.
  * Navigation: MobileNav on mobile and tablet, Sidebar on desktop (1024px and up).
  */
-export function AppShell({ children, title }: AppShellProps) {
+export function AppShell({ children, title, actions, userLabel, statusLabel }: AppShellProps) {
   return (
     <>
       <a href="#main-content" className="dash-skip-link">
         Skip to content
       </a>
       <div className="page-wrap dash-shell">
-        <Header title={title} />
+        <Header title={title} actions={actions} userLabel={userLabel} statusLabel={statusLabel} />
 
         <div className="dash-mobile-nav">
           <MobileNav />
