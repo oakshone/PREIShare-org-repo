@@ -35,7 +35,7 @@ The brief's success-criteria boxes are ticked to match this table (progress note
 
 | URL | File | What it shows |
 | --- | --- | --- |
-| (layout for all below) | `src/routes/dashboard/route.tsx` | Wraps every dashboard page in `AppShell` (header + navigation + main) |
+| (layout for all below) | `src/routes/dashboard.tsx` (was `dashboard/route.tsx` in Sprint 3) | Wraps every dashboard page in `AppShell` (header + navigation + main) |
 | `/dashboard` | `src/routes/dashboard/index.tsx` | Home: 3 metric cards, portfolio summary, recent activity |
 | `/dashboard/portfolio` | `src/routes/dashboard/portfolio.tsx` | Holdings table (stacked cards on phones) |
 | `/dashboard/deals` | `src/routes/dashboard/deals.tsx` | Open deal cards |

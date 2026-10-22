@@ -11,7 +11,7 @@ five ideas; look up everything else here when you need it.
 
 | Job | Owner |
 |---|---|
-| The frame around every dashboard page | `route.tsx` (draws `AppShell`) |
+| The frame around every dashboard page | `dashboard.tsx` (draws `AppShell`) |
 | The list of nav links and page titles | `navConfig.ts` |
 | Which page you're on | the URL |
 | What data a page shows | the page file (components only display props) |
@@ -22,8 +22,9 @@ When something looks wrong, ask **"who owns this?"**, and that's the file to ope
 ## The five ideas
 
 1. **Files in `src/routes/` create the pages.**
-   A folder becomes part of the address. In that folder, `route.tsx` is the
-   **frame** and `index.tsx` is the **page**. `<Outlet />` in the frame is the
+   A folder becomes part of the address. `dashboard.tsx` (next to the
+   `dashboard/` folder) is the **frame** and `dashboard/index.tsx` is the **page**.
+   (`dashboard/route.tsx` would mean the same frame, so never have both.) `<Outlet />` in the frame is the
    spot where the page appears.
    *Picture frame on the wall: the frame stays, the picture changes.*
    - **The router** is like a restaurant host. You give it an address (the URL),
@@ -63,8 +64,9 @@ When something looks wrong, ask **"who owns this?"**, and that's the file to ope
 ## Map of the files
 
 ```text
+src/routes/dashboard.tsx → frame for every /dashboard page: guard + <AppShell><Outlet /></AppShell>
+
 src/routes/dashboard/
-  route.tsx        → frame for every /dashboard page: <AppShell><Outlet /></AppShell>
   index.tsx        → /dashboard (Home): MetricCards, PortfolioSummary, RecentActivity
   portfolio.tsx    → /dashboard/portfolio: PortfolioTable
   deals.tsx        → /dashboard/deals: DealsList

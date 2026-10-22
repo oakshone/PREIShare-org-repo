@@ -26,7 +26,7 @@ and the dashboard shell rules in `AGENTS.md`.
 | Main | Page content for the active route | Route outlet + page widgets |
 
 AppShell is the frame that places Header, Sidebar, and Main together. The
-dashboard layout route (`src/routes/dashboard/route.tsx`) renders AppShell once, and
+dashboard layout route (`src/routes/dashboard.tsx`) renders AppShell once, and
 each page renders inside Main.
 
 ### Diagram in words
@@ -63,7 +63,7 @@ The sidebar region is hidden.
 
 ### AppShell
 - **Responsibility:** Outer dashboard frame; places the header on top, a sidebar region (`<aside>`) and the main area below, plus a "Skip to content" link.
-- **Parent:** Dashboard layout route (`src/routes/dashboard/route.tsx`).
+- **Parent:** Dashboard layout route (`src/routes/dashboard.tsx`).
 - **Children:** Header, MobileNav (below 1024px), `<aside>` with Sidebar (1024px and up), main content slot (`<main id="main-content">`).
 - **Props (beginner):** `children` (the page content to show in Main); `title` (text, optional — passed to Header to override the page title). Navigation isn't a prop: AppShell always renders MobileNav below 1024px and Sidebar (inside its `<aside>`) from 1024px up.
 

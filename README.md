@@ -42,7 +42,8 @@ These are the only scripts in `package.json`. There are no `test`, `lint`, or `f
 
 ## Where things live
 
-- `src/routes/dashboard/`: dashboard pages. `route.tsx` is the shared layout; the other four files are Home (`index.tsx`), `portfolio.tsx`, `deals.tsx`, and `profile.tsx`.
+- `src/routes/dashboard.tsx`: the shared dashboard layout (sign-in guard + `AppShell`).
+- `src/routes/dashboard/`: dashboard pages: Home (`index.tsx`), `portfolio.tsx`, `deals.tsx`, and `profile.tsx`.
 - `src/components/dashboard/`: AppShell, Header, Sidebar, MobileNav, and the page widgets.
 - `src/components/layout/navConfig.ts`: the one list of dashboard links and page titles.
 - `src/styles.css` (global styles, Tailwind entry, breakpoints) and `src/styles/dashboard.css` (dashboard layout and accessibility rules).
