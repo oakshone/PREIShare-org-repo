@@ -5,7 +5,7 @@
 - **Prepared by:** Jackson Nieporte (with Claude Code)
 - **Audience:** next sprint's developers writing the migration, and reviewers checking access rules
 - **Inputs:**
-  - Requirements: `docs/sponsor-auth-requirements.md`. The brief currently lives at `docs/requirements/sponsor-auth-and-listings-brief.md`, and all quotes below come from it.
+  - Requirements: `docs/requirements/sponsor-auth-and-listings-brief.md`. All quotes below come from it.
   - `docs/data-model/property-listings-schema.md`: the template-based table design this builds on
   - `docs/env-var-checklist.md`: which keys are client-safe or server-only
 

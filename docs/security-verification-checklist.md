@@ -3,7 +3,7 @@
 **Date:** 2026-10-22  
 **Verifier:** Jackson Nieporte   
 **Build / branch:** `main` at `5bcce1a` ("create flow under RLS"), plus the uncommitted 4.3 fix in `src/routes/dashboard/properties.new.tsx`  
-**Related docs:** docs/sponsor-auth-requirements.md (currently at `docs/requirements/sponsor-auth-and-listings-brief.md`), docs/env-var-checklist.md, docs/data-model-and-rls-matrix.md
+**Related docs:** docs/requirements/sponsor-auth-and-listings-brief.md, docs/env-var-checklist.md, docs/data-model-and-rls-matrix.md
 
 Status values: `pass` | `fail` | `not-run`
 

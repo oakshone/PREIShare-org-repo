@@ -1,6 +1,6 @@
 # Environment Variable Checklist (Supabase)
 
-- **Requirements:** `docs/sponsor-auth-requirements.md`. The brief currently lives at `docs/requirements/sponsor-auth-and-listings-brief.md`; section 8 is the server-only boundary.
+- **Requirements:** `docs/requirements/sponsor-auth-and-listings-brief.md`; section 8 is the server-only boundary.
 - **Template file:** `.env.example` (repo root, committed)
 - **Related:**
   - `docs/setup/supabase-env-checklist.md`: full setup, Vercel, and code steps
