@@ -10,5 +10,6 @@ export const navConfig = [
   { label: 'Home', to: '/dashboard', title: 'Home overview' },
   { label: 'Portfolio', to: '/dashboard/portfolio', title: 'Portfolio' },
   { label: 'Deals', to: '/dashboard/deals', title: 'Open deals' },
+  { label: 'Properties', to: '/dashboard/properties', title: 'My properties' },
   { label: 'Profile', to: '/dashboard/profile', title: 'Profile' },
 ] as const satisfies readonly NavItem[]
