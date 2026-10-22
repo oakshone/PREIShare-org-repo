@@ -1,6 +1,6 @@
 // /dashboard/properties: the signed-in sponsor's own property listings (live data).
 // The parent layout (src/routes/dashboard.tsx) already redirects signed-out visitors to /login.
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { getSupabaseServerClient } from '../../lib/supabase.server'
 
@@ -50,7 +50,7 @@ const loadSponsorProperties = createServerFn({ method: 'GET' }).handler(
   },
 )
 
-export const Route = createFileRoute('/dashboard/properties')({
+export const Route = createFileRoute('/dashboard/properties/')({
   loader: () => loadSponsorProperties(),
   component: PropertiesPage,
 })
@@ -63,17 +63,25 @@ function PropertiesPage() {
       aria-labelledby="dashboard-properties-heading"
       className="flex flex-col gap-4"
     >
-      <div className="flex flex-col gap-1">
-        <h2
-          id="dashboard-properties-heading"
-          className="display-title m-0 text-xl font-bold text-(--sea-ink)"
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <h2
+            id="dashboard-properties-heading"
+            className="display-title m-0 text-xl font-bold text-(--sea-ink)"
+          >
+            Your properties
+          </h2>
+          <p className="m-0 text-sm text-(--sea-ink-soft)">
+            Listings you are allowed to manage. Visibility is enforced by the
+            database (RLS), not only by this page.
+          </p>
+        </div>
+        <Link
+          to="/dashboard/properties/new"
+          className="shrink-0 rounded-xl bg-(--sea-ink) px-4 py-2 text-sm font-semibold text-white no-underline"
         >
-          Your properties
-        </h2>
-        <p className="m-0 text-sm text-(--sea-ink-soft)">
-          Listings you are allowed to manage. Visibility is enforced by the
-          database (RLS), not only by this page.
-        </p>
+          Add property
+        </Link>
       </div>
 
       {error ? (
