@@ -9,7 +9,7 @@ Status values: `pass` | `fail` | `not-run`
 
 Why so many `not-run`: no Supabase project is provisioned yet and the migrations are not applied, so nothing that needs a real sign-in or real rows can be tested. Everything else was checked against a local production build (`npm run build` + `vite preview`) and by reading the code.
 
-File names differ from the template: the browser client is `src/lib/supabase.browser.ts` (the build blocks `*.client.*` files from server-rendered pages), and the list page is `src/routes/dashboard/properties.index.tsx` (so `properties.new.tsx` isn't nested inside it).
+File names differ from the template: the browser and server clients are `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts` (moved from `supabase.browser.ts` / `supabase.server.ts` after this checklist was first run; the bundle checks were re-run after the move and still pass), and the list page is `src/routes/dashboard/properties.index.tsx` (so `properties.new.tsx` isn't nested inside it).
 
 ---
 
@@ -17,8 +17,8 @@ File names differ from the template: the browser client is `src/lib/supabase.bro
 
 | # | Check | How you verified | Status | Notes |
 |---|--------|------------------|--------|-------|
-| 1.1 | Browser-safe client (`src/lib/supabase.browser.ts`) uses only public URL + anon key | Opened file: reads only `import.meta.env.VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`; no service-role import or `process.env`. Searched the built browser bundle for `service_role`, `SERVICE_ROLE`, `process.env`, `createServerClient`, `getCookies`: no matches | pass | Strict env typing (`src/env.d.ts`) makes any other `import.meta.env` name a type error |
-| 1.2 | Service-role / secret key used only in server module (`src/lib/supabase.server.ts`) or never used in this topic | Searched `src/` for `SUPABASE_SERVICE_ROLE_KEY`: only the type list in `src/env.d.ts` and a "deliberately does NOT use" comment in `supabase.server.ts` | pass | Never used in this topic. The server client uses the anon key + the user's cookies |
+| 1.1 | Browser-safe client (`src/lib/supabase/client.ts`) uses only public URL + anon key | Opened file: reads only `import.meta.env.VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`; no service-role import or `process.env`. Searched the built browser bundle for `service_role`, `SERVICE_ROLE`, `process.env`, `createServerClient`, `getCookies`: no matches | pass | Strict env typing (`src/env.d.ts`) makes any other `import.meta.env` name a type error |
+| 1.2 | Service-role / secret key used only in server module (`src/lib/supabase/server.ts`) or never used in this topic | Searched `src/` for `SUPABASE_SERVICE_ROLE_KEY`: only the type list in `src/env.d.ts` and a "deliberately does NOT use" comment in `src/lib/supabase/server.ts` | pass | Never used in this topic. The server client uses the anon key + the user's cookies |
 | 1.3 | No raw secrets committed in source or checklist | `git grep` of tracked files for JWT-like keys (`eyJ…`), `sb_secret_` / `sb_publishable_`, real `*.supabase.co` URLs, and `postgres://user:pass@`: no matches. `git ls-files` lists only `.env.example`; `.env`, `.env.local`, `.env.production` are gitignored | pass | Never paste real key values here |
 | 1.4 | `.env.example` documents required vars without real values | `grep -nE '^[A-Z_]+=.+' .env.example`: no output (all empty). Names match docs/env-var-checklist.md: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and `DATABASE_URL` (commented out) | pass | Each is labelled PUBLIC or SERVER-ONLY |
 
@@ -101,6 +101,6 @@ File names differ from the template: the browser client is `src/lib/supabase.bro
 **Ready to show stakeholders?** no
 
 **Summary (3–5 sentences):**  
-Secret hygiene was verified: secrets stay out of git, and file review of `src/lib/supabase.browser.ts` vs `src/lib/supabase.server.ts`, plus a search of the built browser bundle, confirms only the public URL and anon key reach the client. Logged-out access to every dashboard and property page redirects to `/login`. List isolation and create-as-owner are supported by code and RLS policy review, and one gap (raw database errors in the create form) was found and fixed. Real sign-in, logout, list isolation, create, and the cross-sponsor UI test are all not-run, because no Supabase project exists yet. It becomes "yes" once those run and pass on a development project and R1/R2 are decided.
+Secret hygiene was verified: secrets stay out of git, and file review of `src/lib/supabase/client.ts` vs `src/lib/supabase/server.ts`, plus a search of the built browser bundle, confirms only the public URL and anon key reach the client. Logged-out access to every dashboard and property page redirects to `/login`. List isolation and create-as-owner are supported by code and RLS policy review, and one gap (raw database errors in the create form) was found and fixed. Real sign-in, logout, list isolation, create, and the cross-sponsor UI test are all not-run, because no Supabase project exists yet. It becomes "yes" once those run and pass on a development project and R1/R2 are decided.
 
 **Sign-off:** name, date

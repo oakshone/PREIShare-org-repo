@@ -91,8 +91,9 @@ src/routeTree.gen.ts               → generated from the routes folder. Never e
 src/styles.css                     → global styles + breakpoints
 src/styles/dashboard.css           → dashboard layout (dash- classes) + accessibility rules
 
-src/lib/supabase.browser.ts → browser client: sign-in / sign-out only (public VITE_ values)
-src/lib/supabase.server.ts  → server client: reads the user's cookie from the request
+src/lib/supabase/client.ts  → browser client: sign-in / sign-out only (public VITE_ values)
+src/lib/supabase/server.ts  → server client: reads the user's cookie from the request
+src/lib/supabase/types.ts   → what the tables look like, so TypeScript catches column typos
 src/lib/auth.functions.ts   → getCurrentUser server function (the guard calls this)
 ```
 
@@ -116,7 +117,7 @@ src/lib/auth.functions.ts   → getCurrentUser server function (the guard calls 
 - A link to an address with no route file → TypeScript flags it via `navConfig`.
 - Secrets in a component or a `VITE_` variable → the browser can see them.
 - Both `dashboard.tsx` and `dashboard/route.tsx` → `/dashboard` defined twice.
-- A guard or loader importing `supabase.server.ts` directly → blocked; call a server function.
+- A guard or loader calling `getSupabaseServerClient()` directly → throws in the browser; call a server function.
 - Service-role key used to "fix" a query → returns every sponsor's rows.
 
 ## Screen sizes (breakpoints)
@@ -183,7 +184,7 @@ they find the session*, not in power. Neither uses the service-role key.
 
 | | Browser helper | Server helper |
 |---|---|---|
-| File | `supabase.browser.ts` | `supabase.server.ts` |
+| File | `supabase/client.ts` | `supabase/server.ts` |
 | Used by | `login.tsx`, Sign out button | `getCurrentUser` (the guard) |
 | Finds the session in | the browser's cookie storage | the cookie sent with the request (`getCookies()`) |
 | Why there | the password is typed in the browser | the server builds the page before any browser code runs |
@@ -202,9 +203,8 @@ Supabase Auth "is this real?" with `getUser()` → let in, or redirect to `/logi
 session; `getSession()` just believes the cookie. Guards use `getUser()`.
 
 **Why the guard calls a server function:** `beforeLoad` also runs in the browser
-on link clicks, and the build blocks `*.server.*` files from the browser.
-(It also blocks `*.client.*` from the server, which is why the browser helper
-is named `.browser.ts`.)
+on link clicks, and the server helper is wrapped in `createServerOnlyFn`: its
+code is removed from the browser bundle and it throws if called there.
 
 ### What "bypass RLS" means
 

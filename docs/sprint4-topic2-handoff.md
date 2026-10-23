@@ -44,7 +44,7 @@ What a sponsor gets, once Supabase is set up:
 | D3 | **Reads have no owner filter in code.** The list query relies on RLS alone | Proves RLS is doing the filtering; no false sense of security from a React filter | None in practice; an extra server-side filter would also be acceptable, never a browser-only one |
 | D4 | **Writes take the owner from the verified session on the server** (`owner_id: user.id` from `getUser()`), and the `WITH CHECK` policy confirms it | The browser never chooses who owns a row | — |
 | D5 | **Sign-in happens in the browser; the access check happens on the server.** The `/dashboard` layout's `beforeLoad` calls the `getCurrentUser` server function, which uses `auth.getUser()` (verified) rather than `getSession()` (trusts the cookie) | The password is typed in the browser; the decision to show a page must be made where the page is built | One extra call to Supabase Auth per page load |
-| D6 | **Two Supabase helpers, no shared one:** `supabase.browser.ts` (public URL + anon key, sign-in/out only) and `supabase.server.ts` (anon key + the user's cookies). Both use the **anon** key | A shared module could pull server code into the browser bundle. The build blocks `*.server.*` files from the browser and `*.client.*` files from the server, hence the `.browser.ts` name | Differs from `.cursorrules` ("use `lib/supabase.ts`"); `AGENTS.md` records the override |
+| D6 | **Two Supabase helpers, no shared one:** `src/lib/supabase/client.ts` (public URL + anon key, sign-in/out only) and `src/lib/supabase/server.ts` (anon key + the user's cookies), typed by `src/lib/supabase/types.ts`. Both use the **anon** key | A shared module could pull server code into the browser bundle. `createServerOnlyFn` strips the server helper from the browser bundle (verified by a probe build); `createClientOnlyFn` keeps the browser helper off the server | Differs from `.cursorrules` ("use `lib/supabase.ts`"); `AGENTS.md` records the override |
 | D7 | **Database work only in server functions** (`createServerFn`), called from loaders or form handlers | Loaders also run in the browser on link clicks; server functions always run on the server | — |
 | D8 | **The service-role key is not used** this topic | It bypasses RLS; nothing in this topic needs admin power | Admin jobs (creating sponsor profiles, publishing) still need a separate server-only module later |
 | D9 | **Database errors are shown as plain messages;** raw text goes to the server log | Raw Postgres messages exposed table and policy names (checklist 4.3) | Users see less detail; developers must check the logs |
@@ -69,8 +69,9 @@ What a sponsor gets, once Supabase is set up:
 
 | File | Runs | What it does |
 |---|---|---|
-| `src/lib/supabase.server.ts` | server only | `getSupabaseServerClient()`: anon key + the request's cookies, so RLS sees the user |
-| `src/lib/supabase.browser.ts` | browser only | `getSupabaseBrowserClient()`: public `VITE_` values, for sign-in and sign-out |
+| `src/lib/supabase/server.ts` | server only | `getSupabaseServerClient()`: anon key + the request's cookies, so RLS sees the user |
+| `src/lib/supabase/client.ts` | browser only | `getSupabaseBrowserClient()`: public `VITE_` values, for sign-in and sign-out |
+| `src/lib/supabase/types.ts` | types | `Database` types for both tables, hand-written from the migrations |
 | `src/lib/auth.functions.ts` | server function | `getCurrentUser()`: verified user or `null` (fails closed) |
 | `src/lib/auth-validation.ts` | both | Sign-in field checks, error wording, `safeRedirectPath` |
 | `src/env.d.ts` | types | Lists allowed env names; a typo is a type error |

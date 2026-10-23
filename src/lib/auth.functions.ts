@@ -8,7 +8,7 @@
 // Uses getSupabaseServerClient() (anon key + the user's session cookies), never the
 // service-role key.
 import { createServerFn } from '@tanstack/react-start'
-import { getSupabaseServerClient } from './supabase.server'
+import { getSupabaseServerClient } from './supabase/server'
 
 export type CurrentUser = { id: string; email: string | null }
 

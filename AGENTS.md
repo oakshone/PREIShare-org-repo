@@ -52,8 +52,9 @@ The Supabase CLI is **not** installed or configured (no `supabase/config.toml`).
 - `src/router.tsx` — router factory
 - `src/components/` — starter Header, Footer, ThemeToggle; `dashboard/` (AppShell, Header, Sidebar, MobileNav, SignOutButton, page widgets); `layout/navConfig.ts`
 - `src/lib/` — shared helpers:
-  - `supabase.server.ts` — server client acting as the signed-in user (server-only)
-  - `supabase.browser.ts` — browser client, public `VITE_` values only (sign-in / sign-out)
+  - `supabase/server.ts` — `getSupabaseServerClient()`: server client acting as the signed-in user (server-only via `createServerOnlyFn`)
+  - `supabase/client.ts` — `getSupabaseBrowserClient()`: browser client, public `VITE_` values only (sign-in / sign-out; `createClientOnlyFn`)
+  - `supabase/types.ts` — hand-written `Database` types from the migrations; update in the same change as any migration
   - `auth.functions.ts` — `getCurrentUser` server function used by the dashboard guard
   - `auth-validation.ts` — shared sign-in validation, error wording, safe redirect paths
   - `user.ts` — old placeholder (`getUser()` returns `null`); superseded by `getCurrentUser`
@@ -67,7 +68,7 @@ The Supabase CLI is **not** installed or configured (no `supabase/config.toml`).
 ## Dashboard shell rules
 
 Apply to `/dashboard` routes, `src/components/layout/`, and `src/components/dashboard/`. Where they differ from the Cursor rules, these win:
-- `.cursorrules` says "Use the Supabase client from `lib/supabase.ts`". There is deliberately **no** shared `src/lib/supabase.ts`. Use `src/lib/supabase.server.ts` (server) or `src/lib/supabase.browser.ts` (browser sign-in / sign-out only), so server code can't leak into the browser bundle.
+- `.cursorrules` says "Use the Supabase client from `lib/supabase.ts`". There is deliberately **no** shared `src/lib/supabase.ts`. Use `src/lib/supabase/server.ts` (server) or `src/lib/supabase/client.ts` (browser sign-in / sign-out only), so server code can't leak into the browser bundle.
 - `.cursorrules` says "Write tests for new features", but no test runner is configured yet. Verify with `npm run typecheck`, `npm run build`, and the checks in the relevant docs.
 
 - **Source of truth:** `docs/dashboard-ia.md` (URLs, pages) and `docs/component-plan.md` (component responsibilities). Ask before adding pages or changing scope.
@@ -83,7 +84,7 @@ Apply to `/dashboard` routes, `src/components/layout/`, and `src/components/dash
 - **Normal requests run as the signed-in user** (anon key + session), so RLS applies. The **service-role key bypasses RLS**: server-only admin code in its own `*.server.ts` module, never in browser code, shared React components, loaders, or a `VITE_` variable.
 - **Session checks use `auth.getUser()`**, not `auth.getSession()`, so the session is verified.
 - **The guard lives on the layout route** (`src/routes/dashboard.tsx` `beforeLoad` → `getCurrentUser` server function). `beforeLoad` and loaders also run in the browser, so they call server functions; they never import `*.server.ts` directly.
-- **File markers:** TanStack Start's import protection blocks `*.server.*` files from the browser build **and** `*.client.*` files from the server build. A module imported by server-rendered pages but only *called* in the browser uses another name (e.g. `supabase.browser.ts`) plus `createClientOnlyFn`.
+- **Server-only / browser-only code:** TanStack Start's import protection only blocks files *named* `*.server.*` (from the browser) and `*.client.*` (from the server). `src/lib/supabase/server.ts` and `client.ts` don't match those names, so they're protected by wrappers instead: `createServerOnlyFn` (body stripped from the browser bundle, throws if called there) and `createClientOnlyFn` (throws during server rendering). Keep those wrappers; never name a helper `*.client.*` if server-rendered pages import it.
 - **Migrations:** schema SQL lives only in `supabase/migrations/`. Never edit a migration that may have been applied; add a new one with a later timestamp. Each migration needs a unique timestamp. Every new table with sponsor data needs `ENABLE ROW LEVEL SECURITY` and owner-scoped policies (no `USING (true)`).
 - **Design docs:** `docs/data-model/property-listings-schema.md`, `docs/data-model-and-rls-matrix.md`, `docs/data-model/rls-policy-review.md` (incl. open risks R1–R9), `docs/requirements/sponsor-auth-and-listings-brief.md`.
 
@@ -108,7 +109,7 @@ See [.cursor/rules/preishare.mdc](.cursor/rules/preishare.mdc) for the full edit
 
 Names are listed in `.env.example` (placeholders only, committed) and explained in `docs/env-var-checklist.md`. Real values go only in a local `.env` and in Vercel; every `.env.*` file except `.env.example` is gitignored.
 
-- **Server-only:** `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (secret), `DATABASE_URL` (secret). Read with `process.env` inside handlers / `createServerFn`, never at module scope, never with a `VITE_` prefix. In `supabase.server.ts`, read through `readServerEnv()` so typos fail the type-check.
+- **Server-only:** `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (secret), `DATABASE_URL` (secret). Read with `process.env` inside handlers / `createServerFn`, never at module scope, never with a `VITE_` prefix. In `src/lib/supabase/server.ts`, read through `readServerEnv()` so typos fail the type-check.
 - **Client-safe:** only `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`, via `import.meta.env`. Strict env typing (`src/env.d.ts`) makes any other `import.meta.env` name a type error.
 - **Adding a variable:** add it to `.env.example` (empty), the checklist table, and `src/env.d.ts`.
 - **Never** paste real URLs or keys into committed files, docs, or chat.

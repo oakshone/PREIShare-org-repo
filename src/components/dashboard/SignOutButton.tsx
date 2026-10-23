@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
-import { getSupabaseBrowserClient } from '../../lib/supabase.browser'
+import { getSupabaseBrowserClient } from '../../lib/supabase/client'
 
 /**
  * Signs out with the browser client (template), which clears the session cookies, then returns

@@ -116,7 +116,7 @@ Notes:
 **How this maps to TanStack Start in this repo:**
 - **"Server action"** = a `createServerFn` handler. **"Server loader"** = a route `loader` that *calls* a server function. Loaders also run in the browser on link clicks, so the query and keys live in the server function, never in the loader body.
 - **Protected routes:** the `/sponsor` layout route's `beforeLoad` calls a server function that reads the session. No session sends the user to `/sign-in`.
-- **Server Supabase client:** created in a server-only file (e.g. `src/lib/supabase.server.ts`), reading `process.env` inside the handler (env checklist, section 6).
+- **Server Supabase client:** created in a server-only file (`src/lib/supabase/server.ts`), reading `process.env` inside the handler (env checklist, section 6).
 - **Server-side validation:** re-check every field and ignore any `owner_id`, `status` change to `published`, or timestamps sent by the browser.
 
 ### Environment boundary reminder

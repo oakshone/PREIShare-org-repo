@@ -2,7 +2,7 @@
 // The parent layout (src/routes/dashboard.tsx) already redirects signed-out visitors to /login.
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
-import { getSupabaseServerClient } from '../../lib/supabase.server'
+import { getSupabaseServerClient } from '../../lib/supabase/server'
 
 export type PropertyListItem = {
   id: string

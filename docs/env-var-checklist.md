@@ -36,7 +36,7 @@ Quick check: `grep -nE '^[A-Z_]+=.+' .env.example` should print nothing.
 - [ ] **The service-role key is server-only.** It is read only inside a server-only admin module (e.g. `src/lib/supabase-admin.server.ts`, where the `.server.ts` suffix blocks browser imports), and only for admin jobs, never normal sponsor requests.
 - [ ] **The service-role key must not be imported into browser code or shared React components.** No component, hook, route `component`, route loader, or shared module used by both server and browser (e.g. a common `src/lib/supabase.ts`) may import the admin module or reference `SUPABASE_SERVICE_ROLE_KEY`. Anything a component imports can end up in the browser bundle.
 
-**Note on the client-safe pair:** browser sign-in is now the decision (login template, 2026-10-22): `src/routes/login.tsx` and the dashboard's Sign out button use `src/lib/supabase.browser.ts`. Both variables are **active** in `.env.example` (values still empty). They're public-safe *because* RLS is enabled on every table in `supabase/migrations/` and checks every request made with the anon key.
+**Note on the client-safe pair:** browser sign-in is now the decision (login template, 2026-10-22): `src/routes/login.tsx` and the dashboard's Sign out button use `src/lib/supabase/client.ts`. Both variables are **active** in `.env.example` (values still empty). They're public-safe *because* RLS is enabled on every table in `supabase/migrations/` and checks every request made with the anon key.
 
 ## 3. Gitignore coverage
 

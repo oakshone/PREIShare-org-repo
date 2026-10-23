@@ -1,8 +1,9 @@
 // Browser Supabase client (CLIENT-SAFE values only).
 //
-// Named `.browser.ts`, not `.client.ts`: TanStack Start blocks `*.client.*` files from the server
-// build, but the login page and Sign out button that import this also render on the server.
-// createClientOnlyFn below still makes the function throw if it's ever called on the server.
+// Browser-only because of createClientOnlyFn below: it throws if called during server rendering.
+// The file is named `client.ts`, not `*.client.ts`, on purpose: TanStack Start blocks
+// `*.client.*` files from the server build, but the login page and Sign out button that import
+// this also render on the server.
 //
 // Reads only VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, the two client-safe variables in
 // `.env.example` (see docs/env-var-checklist.md, section 2). Both are public by design: every
@@ -13,11 +14,12 @@
 // Anything in this file ships in the browser bundle.
 import { createBrowserClient } from '@supabase/ssr'
 import { createClientOnlyFn } from '@tanstack/react-start'
+import type { Database } from './types'
 
 /**
- * Returns the browser Supabase client (one shared instance per page).
+ * Creates the browser Supabase client (one shared instance per page).
  * Use it for sign-in / sign-out only; listing reads and writes go through server functions
- * that use `getSupabaseServerClient()` from `supabase.server.ts`.
+ * that use `getSupabaseServerClient()` from `./server`.
  * Throws if called during server rendering.
  */
 export const getSupabaseBrowserClient = createClientOnlyFn(() => {
@@ -31,5 +33,5 @@ export const getSupabaseBrowserClient = createClientOnlyFn(() => {
     )
   }
 
-  return createBrowserClient(url, anonKey)
+  return createBrowserClient<Database>(url, anonKey)
 })

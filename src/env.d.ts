@@ -20,7 +20,7 @@ interface ImportMeta {
 
 // SERVER-ONLY: read with `process.env` inside server handlers only. Node's `process.env`
 // accepts any name, so server code reads these through a helper typed with `keyof ServerEnv`
-// (see `readServerEnv` in src/lib/supabase.server.ts) to catch typos.
+// (see `readServerEnv` in src/lib/supabase/server.ts) to catch typos.
 interface ServerEnv {
   readonly SUPABASE_URL?: string
   readonly SUPABASE_ANON_KEY?: string

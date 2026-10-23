@@ -94,7 +94,7 @@ USING (owner_id = auth.uid())
 
 ### The one thing that ignores all of this
 
-The **service-role key**. Supabase skips RLS entirely for it. It must only be used in server-side admin code, never in the browser or shared React components (`docs/env-var-checklist.md`). The app's normal server client (`src/lib/supabase.server.ts`) signs requests as the user, so these policies always apply to it.
+The **service-role key**. Supabase skips RLS entirely for it. It must only be used in server-side admin code, never in the browser or shared React components (`docs/env-var-checklist.md`). The app's normal server client (`src/lib/supabase/server.ts`) signs requests as the user, so these policies always apply to it.
 
 ## 3. Other things the migration sets up
 

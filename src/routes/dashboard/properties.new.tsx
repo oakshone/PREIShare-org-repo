@@ -6,7 +6,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { createServerFn } from '@tanstack/react-start'
-import { getSupabaseServerClient } from '../../lib/supabase.server'
+import { getSupabaseServerClient } from '../../lib/supabase/server'
 
 /** Turns a database error code into a message a sponsor can act on. */
 function describeInsertError(code: string | undefined): string {

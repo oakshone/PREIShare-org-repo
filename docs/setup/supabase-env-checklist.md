@@ -77,7 +77,7 @@ The brief recommends **server-only access** (open question 1): all Supabase read
   })
   ```
   Module-level `process.env` reads can leak into the client bundle, and they can be `undefined` on edge runtimes.
-- [ ] **Put Supabase client setup in a server-only file,** for example `src/lib/supabase.server.ts`. The `.server.ts` suffix makes TanStack Start refuse to import it from browser code. Alternatively, wrap helpers in `createServerOnlyFn`.
+- [ ] **Put Supabase client setup in a server-only file,** `src/lib/supabase/server.ts`, wrapped in `createServerOnlyFn` so its code is stripped from the browser bundle. (A `.server.ts` file-name suffix is the other way to get this protection.)
 - [ ] **Never read `process.env` in a route loader.** Loaders run in the browser too, so call a server function from the loader.
 - [ ] **Never send a key back to the browser** from a server function, not even "just the anon key".
 - [ ] **Use the service-role key only in clearly named admin code.** User-facing requests use the signed-in user's session, so RLS applies.

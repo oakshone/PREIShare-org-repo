@@ -6,7 +6,7 @@ import { useId, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
 import { getCurrentUser } from '../lib/auth.functions'
-import { getSupabaseBrowserClient } from '../lib/supabase.browser'
+import { getSupabaseBrowserClient } from '../lib/supabase/client'
 import { describeSignInError, safeRedirectPath, validateSignIn } from '../lib/auth-validation'
 import type { SignInFieldErrors } from '../lib/auth-validation'
 
