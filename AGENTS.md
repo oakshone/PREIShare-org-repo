@@ -48,7 +48,7 @@ The Supabase CLI is **not** installed or configured (no `supabase/config.toml`).
 
 ## Layout (preserve unless there is a clear reason to change)
 
-- `src/routes/` — file routes: `__root.tsx`, `index.tsx`, `about.tsx`, `login.tsx`, `dashboard.tsx` (the `/dashboard` layout + guard), and `dashboard/` (child pages `index.tsx`, `portfolio.tsx`, `deals.tsx`, `profile.tsx`)
+- `src/routes/` — file routes: `__root.tsx`, `index.tsx`, `about.tsx`, `auth/` (`login.tsx`, `signup.tsx`), and `dashboard/` (`route.tsx` = the `/dashboard` layout + guard; child pages `index.tsx`, `portfolio.tsx`, `deals.tsx`, `profile.tsx`, `properties.index.tsx`, `properties.new.tsx`)
 - `src/router.tsx` — router factory
 - `src/components/` — starter Header, Footer, ThemeToggle; `dashboard/` (AppShell, Header, Sidebar, MobileNav, SignOutButton, page widgets); `layout/navConfig.ts`
 - `src/lib/` — shared helpers:
@@ -73,7 +73,7 @@ Apply to `/dashboard` routes, `src/components/layout/`, and `src/components/dash
 
 - **Source of truth:** `docs/dashboard-ia.md` (URLs, pages) and `docs/component-plan.md` (component responsibilities). Ask before adding pages or changing scope.
 - **Sample data, real sign-in:** page content (metrics, holdings, deals, profile) is still sample data, labelled "Sample". Access is real: `/dashboard` requires a Supabase session. Don't wire pages to database rows until a task asks for it, and never add payments.
-- **Shared frame:** `src/routes/dashboard.tsx` guards every dashboard page and wraps its `<Outlet />` in `AppShell`. Pages render only their own content (`<section>` and `h2`) and never build their own sidebar, header, `<main>`, or `h1`.
+- **Shared frame:** `src/routes/dashboard/route.tsx` guards every dashboard page and wraps its `<Outlet />` in `AppShell`. Pages render only their own content (`<section>` and `h2`) and never build their own sidebar, header, `<main>`, or `h1`.
 - **Landmarks:** an `<aside>` containing a labelled `<nav>`, one `<header>`, and one `<main id="main-content">`.
 - **Spacing:** keep the shell's `gap-6` and the padded content card so page content doesn't sit against the frame.
 - **One job per component:** `AppShell`, `Sidebar` and `Header` hold no page widgets (stats cards, tables, lists); those belong to page components. Nav links come from the single `navConfig` in `src/components/layout/navConfig.ts`.
@@ -83,7 +83,7 @@ Apply to `/dashboard` routes, `src/components/layout/`, and `src/components/dash
 - **Identity is enforced by Postgres, not the UI.** Every policy compares the row's owner with `auth.uid()` (`owner_id = auth.uid()`). Never "secure" data by filtering it in React.
 - **Normal requests run as the signed-in user** (anon key + session), so RLS applies. The **service-role key bypasses RLS**: server-only admin code in its own `*.server.ts` module, never in browser code, shared React components, loaders, or a `VITE_` variable.
 - **Session checks use `auth.getUser()`**, not `auth.getSession()`, so the session is verified.
-- **The guard lives on the layout route** (`src/routes/dashboard.tsx` `beforeLoad` → `getCurrentUser` server function). `beforeLoad` and loaders also run in the browser, so they call server functions; they never import `*.server.ts` directly.
+- **The guard lives on the layout route** (`src/routes/dashboard/route.tsx` `beforeLoad` → `getCurrentUser` server function). `beforeLoad` and loaders also run in the browser, so they call server functions; they never import `*.server.ts` directly.
 - **Server-only / browser-only code:** TanStack Start's import protection only blocks files *named* `*.server.*` (from the browser) and `*.client.*` (from the server). `src/lib/supabase/server.ts` and `client.ts` don't match those names, so they're protected by wrappers instead: `createServerOnlyFn` (body stripped from the browser bundle, throws if called there) and `createClientOnlyFn` (throws during server rendering). Keep those wrappers; never name a helper `*.client.*` if server-rendered pages import it.
 - **Migrations:** schema SQL lives only in `supabase/migrations/`. Never edit a migration that may have been applied; add a new one with a later timestamp. Each migration needs a unique timestamp. Every new table with sponsor data needs `ENABLE ROW LEVEL SECURITY` and owner-scoped policies (no `USING (true)`).
 - **Design docs:** `docs/data-model/property-listings-schema.md`, `docs/data-model-and-rls-matrix.md`, `docs/data-model/rls-policy-review.md` (incl. open risks R1–R9), `docs/requirements/sponsor-auth-and-listings-brief.md`.
@@ -119,5 +119,5 @@ Names are listed in `.env.example` (placeholders only, committed) and explained 
 - `intent install` keeps a short skill-loading block at the top of this file; durable project notes live below it.
 - Nested `my-tanstack-app/` from the original create command was flattened into this repo root on purpose.
 - No host-specific deployment adapter; TanStack Start deploys to Vercel via Vite + Nitro. Vercel needs Node ≥ 22.12.
-- `src/routes/dashboard/route.tsx` must not exist: the `/dashboard` layout is `src/routes/dashboard.tsx` (file name required by Sprint 4). TanStack treats both names as the same route, so having both would define `/dashboard` twice.
+- `src/routes/dashboard.tsx` must not exist: the `/dashboard` layout is `src/routes/dashboard/route.tsx` (file name required by the current sprint). TanStack treats both names as the same route, so having both would define `/dashboard` twice.
 - A blocked UPDATE/DELETE under RLS returns success with 0 rows, not an error. Treat 0 rows as "not found" (404), never as "saved".

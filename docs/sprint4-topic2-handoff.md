@@ -48,7 +48,7 @@ What a sponsor gets, once Supabase is set up:
 | D7 | **Database work only in server functions** (`createServerFn`), called from loaders or form handlers | Loaders also run in the browser on link clicks; server functions always run on the server | — |
 | D8 | **The service-role key is not used** this topic | It bypasses RLS; nothing in this topic needs admin power | Admin jobs (creating sponsor profiles, publishing) still need a separate server-only module later |
 | D9 | **Database errors are shown as plain messages;** raw text goes to the server log | Raw Postgres messages exposed table and policy names (checklist 4.3) | Users see less detail; developers must check the logs |
-| D10 | **Route files:** the `/dashboard` layout is `src/routes/dashboard.tsx`; the list is `properties.index.tsx` and the form is `properties.new.tsx` | Sprint 4 requires `dashboard.tsx`. The `index` name stops the form from nesting inside the list page (which has no `<Outlet />`) | `dashboard/route.tsx` must never be re-added (it would define `/dashboard` twice) |
+| D10 | **Route files:** the `/dashboard` layout is `src/routes/dashboard/route.tsx`; the list is `properties.index.tsx` and the form is `properties.new.tsx` | The current sprint requires `route.tsx` (the layout was briefly `dashboard.tsx`). The `index` name stops the form from nesting inside the list page (which has no `<Outlet />`) | `src/routes/dashboard.tsx` must never be re-added (it would define `/dashboard` twice) |
 | D11 | **Schema changes only as migrations** in `supabase/migrations/`, each with a unique timestamp; never edit one that may have been applied | Repeatable, reviewable database changes | Supabase CLI not set up yet; first apply is via the SQL editor plus `migration repair` |
 
 ---
@@ -60,7 +60,7 @@ What a sponsor gets, once Supabase is set up:
 | File | URL | What it does |
 |---|---|---|
 | `src/routes/login.tsx` | `/login` | Sign-in form; browser Supabase client; safe `?redirect=` handling |
-| `src/routes/dashboard.tsx` | `/dashboard` (layout) | Server-side guard (`getCurrentUser`) + `AppShell` with the Sign out button |
+| `src/routes/dashboard/route.tsx` | `/dashboard` (layout) | Server-side guard (`getCurrentUser`) + `AppShell` with the Sign out button |
 | `src/routes/dashboard/properties.index.tsx` | `/dashboard/properties` | Lists the sponsor's listings via a server function; empty and error states; "Add property" link |
 | `src/routes/dashboard/properties.new.tsx` | `/dashboard/properties/new` | Create form + `createProperty` server function (session check, insert, plain error messages) |
 | `src/routes/dashboard/index.tsx`, `portfolio.tsx`, `deals.tsx`, `profile.tsx` | `/dashboard/...` | Sprint 3 pages, still sample data, now behind the guard |

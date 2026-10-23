@@ -1,5 +1,5 @@
 // /dashboard/properties: the signed-in sponsor's own property listings (live data).
-// The parent layout (src/routes/dashboard.tsx) already redirects signed-out visitors to /auth/login.
+// The parent layout (src/routes/dashboard/route.tsx) already redirects signed-out visitors to /auth/login.
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { getSupabaseServerClient } from '../../lib/supabase/server'

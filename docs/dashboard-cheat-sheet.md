@@ -11,7 +11,7 @@ five ideas; look up everything else here when you need it.
 
 | Job | Owner |
 |---|---|
-| The frame around every dashboard page | `dashboard.tsx` (draws `AppShell`) |
+| The frame around every dashboard page | `dashboard/route.tsx` (draws `AppShell`) |
 | The list of nav links and page titles | `navConfig.ts` |
 | Which page you're on | the URL |
 | What data a page shows | the page file (components only display props) |
@@ -22,9 +22,9 @@ When something looks wrong, ask **"who owns this?"**, and that's the file to ope
 ## The five ideas
 
 1. **Files in `src/routes/` create the pages.**
-   A folder becomes part of the address. `dashboard.tsx` (next to the
+   A folder becomes part of the address. `route.tsx` (inside the
    `dashboard/` folder) is the **frame** and `dashboard/index.tsx` is the **page**.
-   (`dashboard/route.tsx` would mean the same frame, so never have both.) `<Outlet />` in the frame is the
+   (`dashboard.tsx` next to the folder would mean the same frame, so never have both.) `<Outlet />` in the frame is the
    spot where the page appears.
    *Picture frame on the wall: the frame stays, the picture changes.*
    - **The router** is like a restaurant host. You give it an address (the URL),
@@ -66,8 +66,8 @@ When something looks wrong, ask **"who owns this?"**, and that's the file to ope
 ```text
 src/routes/auth/login.tsx  → /auth/login: sign-in form (browser Supabase client)
 src/routes/auth/signup.tsx → /auth/signup: sign-up form (browser Supabase client)
-src/routes/dashboard.tsx → frame for every /dashboard page: guard + <AppShell><Outlet /></AppShell>
-                           (same route as dashboard/route.tsx: never have both)
+src/routes/dashboard/route.tsx → frame for every /dashboard page: guard + <AppShell><Outlet /></AppShell>
+                                 (same route as dashboard.tsx: never have both)
 
 src/routes/dashboard/
   index.tsx        → /dashboard (Home): MetricCards, PortfolioSummary, RecentActivity
@@ -113,7 +113,7 @@ supabase/migrations/        → the tables + RLS rules, run in filename order
 | Change only the Home page | `src/routes/dashboard/index.tsx` |
 | Show a new kind of number or list | a widget in `src/components/dashboard/`, data passed in as props |
 | Load or save real data | a `createServerFn` that uses `getSupabaseServerClient()`, called from the page's loader or form |
-| A new signed-in-only page | `src/routes/dashboard/`: the guard in `dashboard.tsx` covers it automatically |
+| A new signed-in-only page | `src/routes/dashboard/`: the guard in `dashboard/route.tsx` covers it automatically |
 | "Who is signed in?" | `getCurrentUser()` (server function) → `getSessionUser()` |
 | Change a table | a **new** migration file + update `supabase/types.ts` (never edit an applied migration) |
 

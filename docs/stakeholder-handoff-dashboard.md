@@ -26,7 +26,7 @@
 
 | Success criterion (from requirements brief) | Status | Evidence |
 | --- | --- | --- |
-| An investor can reach Home, Portfolio, Deals, and Profile from persistent navigation | Met | `src/routes/dashboard.tsx` wraps every page in `AppShell`; Sidebar (desktop) and MobileNav (under 1024px) share one link list. `docs/responsive-qa-checklist.md`: D1 (every sidebar link opens the right page), M5 (menu opens, closes, and navigates), X1 (keyboard). |
+| An investor can reach Home, Portfolio, Deals, and Profile from persistent navigation | Met | `src/routes/dashboard/route.tsx` wraps every page in `AppShell`; Sidebar (desktop) and MobileNav (under 1024px) share one link list. `docs/responsive-qa-checklist.md`: D1 (every sidebar link opens the right page), M5 (menu opens, closes, and navigates), X1 (keyboard). |
 | Header, navigation, and main content are visible on desktop, with metrics and activity on Home | Met | `src/routes/dashboard/index.tsx` (MetricCard ×3, PortfolioSummary, RecentActivity). QA checklist D1–D5 at 1280px: header across the top, sidebar left, main right; metrics 3 across; summary and activity side by side (3/5 + 2/5). |
 | On a narrow (mobile) width, navigation remains usable with no broken overlap | Met | QA checklist M1–M5 at 375px (no sideways scroll, sidebar hidden, Menu button 311 × 46px, menu opens and closes) and T1–T2 at 768px. |
 | Placeholder content is clearly labeled so stakeholders know data is not live | Met | Home banner "Demo shell — sample figures only, no live data is connected yet"; header "Not signed in · sample data"; a "Sample" hint or note on every metric card and widget; every sample name starts with "Sample". |
@@ -35,7 +35,7 @@
 
 ## 3. Decisions made (so the next topic does not re-litigate them)
 
-- **Routing:** Dashboard lives under a TanStack Start file-based route tree: the `src/routes/dashboard.tsx` layout plus the `src/routes/dashboard/index.tsx` home, with `portfolio.tsx`, `deals.tsx`, and `profile.tsx` as sibling pages. The layout was the folder-style `dashboard/route.tsx` in Sprint 3 and moved to `dashboard.tsx` in Sprint 4; having both would define the same route twice.
+- **Routing:** Dashboard lives under a TanStack Start file-based route tree: the `src/routes/dashboard/route.tsx` layout plus the `src/routes/dashboard/index.tsx` home, with `portfolio.tsx`, `deals.tsx`, and `profile.tsx` as sibling pages. The layout was `dashboard/route.tsx` in Sprint 3, briefly `dashboard.tsx` in Sprint 4, and is `dashboard/route.tsx` again; having both would define the same route twice.
 - **Shell regions:** AppShell composes Header, Sidebar/MobileNav, and the main content outlet per `docs/dashboard-component-architecture.md`. Pages render only their own content and never their own header or navigation.
 - **Current page comes from the URL:** the highlighted link and the header title both read the address, so they can't disagree with the page shown.
 - **One navigation list:** Home, Portfolio, Deals, and Profile are defined once (`src/components/layout/navConfig.ts`) and shared by Sidebar and MobileNav.
@@ -73,6 +73,6 @@
 - Routing plan: `docs/dashboard-routing-plan.md`
 - Component architecture: `docs/dashboard-component-architecture.md`
 - Responsive QA: `docs/responsive-qa-checklist.md`
-- Routes: `src/routes/dashboard.tsx`, `src/routes/dashboard/index.tsx` (also `portfolio.tsx`, `deals.tsx`, `profile.tsx`)
+- Routes: `src/routes/dashboard/route.tsx`, `src/routes/dashboard/index.tsx` (also `portfolio.tsx`, `deals.tsx`, `profile.tsx`)
 - Components: `src/components/dashboard/` (AppShell, Header, Sidebar, MobileNav, MetricCard, PortfolioSummary, RecentActivity, PortfolioTable, DealsList, ProfileCard); nav list in `src/components/layout/navConfig.ts`
 - Breakpoints: `src/styles.css` (`@theme` block); dashboard layout and accessibility rules: `src/styles/dashboard.css`
