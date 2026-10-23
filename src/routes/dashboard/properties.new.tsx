@@ -1,6 +1,6 @@
 // src/routes/dashboard/properties.new.tsx
 // /dashboard/properties/new: form for a sponsor to create a property listing.
-// The parent layout (src/routes/dashboard.tsx) already redirects signed-out visitors to /login.
+// The parent layout (src/routes/dashboard.tsx) already redirects signed-out visitors to /auth/login.
 
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'

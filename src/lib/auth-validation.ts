@@ -1,5 +1,6 @@
-// Sign-in validation shared by the login form (instant feedback) and the signIn server
-// function (the real check). Plain functions only: no Supabase, no env, safe in the browser.
+// Sign-in and sign-up validation and error wording, shared by src/routes/auth/login.tsx and
+// src/routes/auth/signup.tsx. Plain functions only: no Supabase, no env, safe in the browser.
+// Supabase Auth makes the real checks.
 
 export type SignInInput = { email: string; password: string }
 export type SignInFieldErrors = Partial<Record<keyof SignInInput, string>>
@@ -26,6 +27,22 @@ export function describeSignInError(error: { code?: string; status?: number }): 
   }
   if (error.status === 429) return 'Too many sign-in attempts. Wait a minute, then try again.'
   return "We couldn't sign you in. Try again in a moment."
+}
+
+/**
+ * Turns a Supabase sign-up error into a plain message for the form. Never shows raw Supabase
+ * text, and doesn't confirm whether an email already has an account.
+ */
+export function describeSignUpError(error: { code?: string; status?: number }): string {
+  if (error.code === 'weak_password') {
+    return 'That password is too weak. Use a longer password with a mix of letters and numbers.'
+  }
+  if (error.code === 'signup_disabled') return 'Sign-up is closed. Contact PREIshare for an invite.'
+  if (error.code === 'user_already_exists' || error.code === 'email_exists') {
+    return "We couldn't create an account with that email. If you already have one, sign in instead."
+  }
+  if (error.status === 429) return 'Too many attempts. Wait a minute, then try again.'
+  return "We couldn't create your account. Try again in a moment."
 }
 
 /**

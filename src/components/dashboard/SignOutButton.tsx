@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
-import { getSupabaseBrowserClient } from '../../lib/supabase/client'
+import { signOut } from '../../lib/auth.functions'
 
 /**
- * Signs out with the browser client (template), which clears the session cookies, then returns
- * to /login. Lives in the Header's actions slot. Anon key only; never the service-role key.
+ * Signs out through the signOut server function (signOutSession in src/lib/auth/session.ts),
+ * which revokes the session and clears the session cookies on the server, then returns to
+ * /auth/login. Lives in the Header's actions slot. No Supabase client in the browser here;
+ * never the service-role key.
  */
 export function SignOutButton() {
   const router = useRouter()
@@ -15,13 +17,13 @@ export function SignOutButton() {
     setPending(true)
     setFailed(false)
     try {
-      const { error } = await getSupabaseBrowserClient().auth.signOut()
-      if (error) {
+      const result = await signOut()
+      if (!result.ok) {
         setFailed(true)
         return
       }
       await router.invalidate()
-      await router.navigate({ to: '/login' })
+      await router.navigate({ to: '/auth/login' })
     } catch {
       setFailed(true)
     } finally {

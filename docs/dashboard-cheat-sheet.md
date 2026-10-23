@@ -64,7 +64,8 @@ When something looks wrong, ask **"who owns this?"**, and that's the file to ope
 ## Map of the files
 
 ```text
-src/routes/login.tsx     → /login: sign-in form (browser Supabase client)
+src/routes/auth/login.tsx  → /auth/login: sign-in form (browser Supabase client)
+src/routes/auth/signup.tsx → /auth/signup: sign-up form (browser Supabase client)
 src/routes/dashboard.tsx → frame for every /dashboard page: guard + <AppShell><Outlet /></AppShell>
                            (same route as dashboard/route.tsx: never have both)
 
@@ -73,6 +74,9 @@ src/routes/dashboard/
   portfolio.tsx    → /dashboard/portfolio: PortfolioTable
   deals.tsx        → /dashboard/deals: DealsList
   profile.tsx      → /dashboard/profile: ProfileCard
+  properties.index.tsx → /dashboard/properties: your listings (server function, RLS filters)
+  properties.new.tsx   → /dashboard/properties/new: create form (server function insert)
+  ("index" = the page at exactly that address, so .new isn't nested inside the list)
 
 src/components/dashboard/
   AppShell.tsx     → header on top, nav on the side (or Menu on phones), <main> for the page
@@ -86,15 +90,17 @@ src/components/dashboard/
   DealsList.tsx        → deal cards with status badges, no invest buttons
   ProfileCard.tsx      → read-only member details
 
-src/components/layout/navConfig.ts → the ONE list of nav links (Home, Portfolio, Deals, Profile)
+src/components/layout/navConfig.ts → the ONE list of nav links (Home, Portfolio, Deals, Profile, Properties)
 src/routeTree.gen.ts               → generated from the routes folder. Never edit by hand.
 src/styles.css                     → global styles + breakpoints
 src/styles/dashboard.css           → dashboard layout (dash- classes) + accessibility rules
 
-src/lib/supabase/client.ts  → browser client: sign-in / sign-out only (public VITE_ values)
+src/lib/supabase/client.ts  → browser client: sign-in / sign-up only (public VITE_ values)
 src/lib/supabase/server.ts  → server client: reads the user's cookie from the request
 src/lib/supabase/types.ts   → what the tables look like, so TypeScript catches column typos
-src/lib/auth.functions.ts   → getCurrentUser server function (the guard calls this)
+src/lib/auth/session.ts     → getSessionUser, signOutSession: server-only session helpers
+src/lib/auth.functions.ts   → getCurrentUser + signOut server functions (call the helpers above)
+supabase/migrations/        → the tables + RLS rules, run in filename order
 ```
 
 ## Where does it go?
@@ -106,7 +112,10 @@ src/lib/auth.functions.ts   → getCurrentUser server function (the guard calls 
 | Change something on every dashboard page | `AppShell.tsx` |
 | Change only the Home page | `src/routes/dashboard/index.tsx` |
 | Show a new kind of number or list | a widget in `src/components/dashboard/`, data passed in as props |
-| Load real data (later) | `createServerFn`, called from the loader of the page that uses it |
+| Load or save real data | a `createServerFn` that uses `getSupabaseServerClient()`, called from the page's loader or form |
+| A new signed-in-only page | `src/routes/dashboard/`: the guard in `dashboard.tsx` covers it automatically |
+| "Who is signed in?" | `getCurrentUser()` (server function) → `getSessionUser()` |
+| Change a table | a **new** migration file + update `supabase/types.ts` (never edit an applied migration) |
 
 ## Common mistakes to catch (yours or an agent's)
 
@@ -119,6 +128,11 @@ src/lib/auth.functions.ts   → getCurrentUser server function (the guard calls 
 - Both `dashboard.tsx` and `dashboard/route.tsx` → `/dashboard` defined twice.
 - A guard or loader calling `getSupabaseServerClient()` directly → throws in the browser; call a server function.
 - Service-role key used to "fix" a query → returns every sponsor's rows.
+- `owner_id` taken from the browser → set it on the server from `getUser()`.
+- Showing `error.message` from the database → leaks table and policy names; show a plain message.
+- Real values in `.env.example` → it's committed. Real values only in `.env` and Vercel.
+- Changed a `VITE_` value in Vercel but didn't redeploy → the old value is still baked in.
+- `properties.tsx` + `properties.new.tsx` → the form nests inside the list and never shows; use `properties.index.tsx`.
 
 ## Screen sizes (breakpoints)
 
@@ -132,7 +146,7 @@ Write styles for the phone first, then add prefixes for bigger screens:
 
 A prefix means "from this width **and up**". Only use these three in the dashboard.
 
-## Where code runs: loaders, server functions, RLS (next sprint)
+## Where code runs: loaders, server functions, RLS
 
 Always ask **"where does this code run?"**
 
@@ -148,7 +162,7 @@ Always ask **"where does this code run?"**
   like a normal function call, but it's really a request. This is where queries,
   secrets, and permission checks go.
 - **RLS:** works like a `WHERE` clause the database adds to every query
-  (`WHERE sponsor_id = auth.uid()`), so it can't be forgotten.
+  (`WHERE owner_id = auth.uid()`), so it can't be forgotten.
 
 ```tsx
 const getDeals = createServerFn({ method: 'GET' }).handler(async () => {
@@ -163,7 +177,7 @@ export const Route = createFileRoute('/dashboard/deals')({
 **In one line:** loaders decide *when* data loads, server functions decide
 *where* it's safe to load from, and RLS decides *which rows* anyone gets.
 
-## Keeping data private (next sprint)
+## Keeping data private
 
 - **Hiding isn't withholding.** If the browser receives data and React just
   doesn't show it, anyone can still read it in DevTools.
@@ -179,23 +193,35 @@ Full list: `docs/requirements/sponsor-auth-and-listings-brief.md`, section 8.
 
 ## Sign-in and the guard (Sprint 4)
 
+**If you remember only four things:**
+1. **The browser is public.** Anything sent there, anyone can read.
+2. **Sign in happens in the browser; the check happens on the server.**
+3. **The database decides which rows you get** (RLS = automatic `WHERE owner_id = you`).
+4. **The service-role key turns that off,** so it never leaves the server (we don't use it at all).
+
 **Two helpers, same anon key.** They differ in *where they run* and *where
 they find the session*, not in power. Neither uses the service-role key.
 
 | | Browser helper | Server helper |
 |---|---|---|
 | File | `supabase/client.ts` | `supabase/server.ts` |
-| Used by | `login.tsx`, Sign out button | `getCurrentUser` (the guard) |
+| Used by | `/auth/login`, `/auth/signup` | the guard, Sign out, the properties pages (all via server functions) |
 | Finds the session in | the browser's cookie storage | the cookie sent with the request (`getCookies()`) |
 | Why there | the password is typed in the browser | the server builds the page before any browser code runs |
 
 **The flow:** sign in (browser) → Supabase gives back a session cookie →
 every later request carries that cookie → the server reads it and asks
-Supabase Auth "is this real?" with `getUser()` → let in, or redirect to `/login`.
+Supabase Auth "is this real?" with `getUser()` → let in, or redirect to `/auth/login`.
+
+**Sign-up:** Supabase sends a confirmation email by default, so there's no session
+until the link is clicked → the page says "check your email, then sign in".
+
+**Sign-out:** the button calls the `signOut` server function → `signOutSession()` →
+Supabase revokes the session and the server clears the cookies → `/auth/login`.
 
 **If the guard used the browser helper instead:**
 1. Refreshing `/dashboard` crashes (`createClientOnlyFn` throws on the server).
-2. Without that wrapper, the server sees no cookie → signed-in users get kicked to `/login`.
+2. Without that wrapper, the server sees no cookie → signed-in users get kicked to `/auth/login`.
 3. A browser-only check is cosmetic: it runs after the page was already sent, and users can edit it.
 4. Later, data queries run as `anon` → RLS matches nothing → empty dashboard.
 
@@ -229,6 +255,47 @@ RLS still holds. The service-role key is the one thing that switches RLS off.
 **In one line:** sign-in happens where the password is (browser); the bouncer
 stands where the page is built (server); Postgres guards the rows.
 
+### Saving a listing: `WITH CHECK`
+
+**Where the owner comes from:** the browser sends only title, address, city,
+price, description. The server sets `owner_id: user.id` from `getUser()`. Then
+Postgres checks `WITH CHECK (owner_id = auth.uid())`: two sources that must match.
+
+| Clause | Checks | When it says no |
+|---|---|---|
+| `USING` | which **existing** rows you can see or touch (SELECT, UPDATE, DELETE) | silently: "0 rows" (treat as *not found*) |
+| `WITH CHECK` | the **new** row being written (INSERT, UPDATE) | **an error**, and nothing is saved |
+
+**Why the rule lives in the database:** the anon key is public, so anyone signed
+in can call Supabase's API directly and skip your app. Your server code is the
+bouncer; `WITH CHECK` is the vault lock that works even through a side door.
+
+**Running on the server doesn't bypass RLS.** The database only looks at
+*which key* and *whose token*. Anon key + user's token → RLS applies (browser
+or server). Service-role key or a direct `DATABASE_URL` → RLS skipped.
+
+### What Supabase runs for you
+
+No auth server, session store, or database to run yourself: Supabase stores
+passwords, issues and refreshes signed tokens, sends emails, rate-limits sign-in,
+hosts Postgres, and applies RLS on every request. Vercel runs your server
+functions. **You still own:** the RLS policies, keeping keys secret, the guard,
+and the Supabase project settings.
+
+### Setting up `.env`
+
+```bash
+cp .env.example .env          # .env is gitignored; .env.example stays empty
+SUPABASE_URL=https://<ref>.supabase.co      # server
+SUPABASE_ANON_KEY=sb_publishable_…          # server
+VITE_SUPABASE_URL=https://<ref>.supabase.co # browser (same value)
+VITE_SUPABASE_ANON_KEY=sb_publishable_…     # browser (same value)
+SUPABASE_SERVICE_ROLE_KEY=                  # leave EMPTY: the app doesn't use it
+```
+- No spaces around `=`, no quotes. Restart `npm run dev` after editing.
+- Same four values in Vercel → **redeploy** (`VITE_` values are baked in at build time).
+- Never paste real values into chat, docs, or `.env.example`.
+
 ## Before you say "done"
 
 ```bash
@@ -256,3 +323,10 @@ npm run dev         # open /dashboard and check it at 320, 768, and 1024px wide
 15. Service-role key runs `select * from property_listings`. Whose rows come back?
 16. With the anon key, where does the user's identity actually come from?
 17. `getUser()` or `getSession()` in a guard, and why?
+18. When you create a listing, where does `owner_id` come from? What double-checks it?
+19. B sends an insert with A's `owner_id`. Is it saved? Error or "0 rows"?
+20. B tries to update A's listing by id. Error or "0 rows"? Why is that dangerous for the UI?
+21. Your server already sets the owner. Why have `WITH CHECK` in the database at all?
+22. A server function uses the anon-key server client. Does it skip RLS? What would?
+23. Which `.env` line stays empty, and why?
+24. You changed `VITE_SUPABASE_URL` in Vercel. Why does the live site still use the old one?

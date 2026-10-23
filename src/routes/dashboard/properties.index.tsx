@@ -1,5 +1,5 @@
 // /dashboard/properties: the signed-in sponsor's own property listings (live data).
-// The parent layout (src/routes/dashboard.tsx) already redirects signed-out visitors to /login.
+// The parent layout (src/routes/dashboard.tsx) already redirects signed-out visitors to /auth/login.
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { getSupabaseServerClient } from '../../lib/supabase/server'
@@ -33,7 +33,7 @@ const loadSponsorProperties = createServerFn({ method: 'GET' }).handler(
     } = await supabase.auth.getUser()
 
     if (userError || !user) {
-      throw redirect({ to: '/login', search: { redirect: '/dashboard/properties' } })
+      throw redirect({ to: '/auth/login', search: { redirect: '/dashboard/properties' } })
     }
 
     const { data, error } = await supabase

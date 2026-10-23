@@ -4,13 +4,13 @@
 // Never uses the service-role key.
 import { useId, useState } from 'react'
 import type { FormEvent } from 'react'
-import { createFileRoute, redirect, useRouter } from '@tanstack/react-router'
-import { getCurrentUser } from '../lib/auth.functions'
-import { getSupabaseBrowserClient } from '../lib/supabase/client'
-import { describeSignInError, safeRedirectPath, validateSignIn } from '../lib/auth-validation'
-import type { SignInFieldErrors } from '../lib/auth-validation'
+import { createFileRoute, Link, redirect, useRouter } from '@tanstack/react-router'
+import { getCurrentUser } from '../../lib/auth.functions'
+import { getSupabaseBrowserClient } from '../../lib/supabase/client'
+import { describeSignInError, safeRedirectPath, validateSignIn } from '../../lib/auth-validation'
+import type { SignInFieldErrors } from '../../lib/auth-validation'
 
-export const Route = createFileRoute('/login')({
+export const Route = createFileRoute('/auth/login')({
   // ?redirect=/dashboard/deals sends the user back where they started, but only to paths in this app.
   validateSearch: (search: Record<string, unknown>): { redirect?: string } => ({
     redirect: safeRedirectPath(search.redirect),
@@ -147,6 +147,13 @@ function LoginPage() {
             {submitting ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
+
+        <p className="m-0 mt-5 text-sm text-(--sea-ink-soft)">
+          No account yet?{' '}
+          <Link to="/auth/signup" className="font-semibold text-(--sea-ink)">
+            Sign up
+          </Link>
+        </p>
       </section>
     </main>
   )

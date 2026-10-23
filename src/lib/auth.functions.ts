@@ -1,34 +1,29 @@
-// Auth server function: "who is signed in?", used by the /dashboard guard.
+// Auth server functions: "who is signed in?" (the /dashboard guard and the /auth pages) and
+// "sign out" (SignOutButton).
 //
-// The handler runs only on the server; browser code calls it as an RPC, so the Supabase server
-// client never ships to the browser. Sign-in and sign-out happen in the browser with the anon
-// key (src/routes/login.tsx, SignOutButton), and Supabase stores the session in cookies that
-// this function reads.
-//
-// Uses getSupabaseServerClient() (anon key + the user's session cookies), never the
-// service-role key.
+// The handlers run only on the server; browser code calls them as RPCs. The logic lives in
+// src/lib/auth/session.ts, which uses only the server Supabase client (anon key + the user's
+// session cookies), never the service-role key.
+// Sign-up and sign-in happen in the browser (src/routes/auth/signup.tsx, src/routes/auth/login.tsx),
+// and Supabase stores the session in cookies that these functions read and clear.
 import { createServerFn } from '@tanstack/react-start'
-import { getSupabaseServerClient } from './supabase/server'
+import { getSessionUser, signOutSession } from './auth/session'
+import type { SessionUser, SignOutResult } from './auth/session'
 
-export type CurrentUser = { id: string; email: string | null }
+export type CurrentUser = SessionUser
 
 /**
- * The signed-in user, or null. Uses auth.getUser(), which asks Supabase Auth to verify the
- * session, instead of auth.getSession(), which would trust the cookie's contents as-is.
- * Returns null (signed out) if Supabase isn't configured yet, so protected pages fail closed
- * and redirect to /login.
+ * The signed-in user, or null (verified with auth.getUser(); fails closed if Supabase isn't
+ * configured, so protected pages redirect to /auth/login).
  */
 export const getCurrentUser = createServerFn({ method: 'GET' }).handler(
-  async (): Promise<CurrentUser | null> => {
-    let supabase
-    try {
-      supabase = getSupabaseServerClient()
-    } catch (error) {
-      console.error('[auth] Supabase server client not configured:', error)
-      return null
-    }
-    const { data, error } = await supabase.auth.getUser()
-    if (error || !data.user) return null
-    return { id: data.user.id, email: data.user.email ?? null }
-  },
+  async (): Promise<CurrentUser | null> => getSessionUser(),
+)
+
+/**
+ * Signs the current user out on the server: revokes the session and clears the auth cookies
+ * on this response. POST, because it changes state.
+ */
+export const signOut = createServerFn({ method: 'POST' }).handler(
+  async (): Promise<SignOutResult> => signOutSession(),
 )
