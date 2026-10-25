@@ -15,6 +15,8 @@ observed it and when:
   `/dashboard/properties` pages, which were replaced by `/dashboard/listings` on 2026-10-25.
 - *Agent, 2026-10-25*: commands run by Claude Code against the repo, a production build, or the
   Supabase API with the public key only.
+- *Verifier, 2026-10-25 (reported as checked)*: Jackson re-ran the remaining live steps on the new
+  `/dashboard/listings` pages and reported them all checked.
 
 ---
 
@@ -40,9 +42,9 @@ observed it and when:
 
 | # | Check | Result | Evidence |
 |---|--------|--------|----------|
-| 3.1 | Create listing via UI (title, address/fields per schema) succeeds | NOT RUN | The new form (`/dashboard/listings/new`) hasn't been tried live. *Verifier, 2026-10-23:* creating a listing on the earlier `/dashboard/properties/new` page succeeded and returned to the list as `draft` |
-| 3.2 | New row visible on `src/routes/dashboard/listings/index.tsx` | NOT RUN | New page not tried live. Earlier list page showed User A's new listing (*Verifier, 2026-10-23*) |
-| 3.3 | Data matches Postgres (Supabase Table Editor), not mock arrays in the client | NOT RUN | Table Editor not compared. *Agent, 2026-10-25:* code review: the listings pages and components contain no hard-coded listing arrays; the list comes only from the `listMyListings` loader |
+| 3.1 | Create listing via UI (title, address/fields per schema) succeeds | PASS | *Verifier, 2026-10-25 (reported as checked):* created a listing as User A at `/dashboard/listings/new` and was returned to the list. Earlier: same on `/dashboard/properties/new` (*Verifier, 2026-10-23*) |
+| 3.2 | New row visible on `src/routes/dashboard/listings/index.tsx` | PASS | *Verifier, 2026-10-25 (reported as checked):* the new listing appeared on `/dashboard/listings` |
+| 3.3 | Data matches Postgres (Supabase Table Editor), not mock arrays in the client | PASS | *Verifier, 2026-10-25 (reported as checked):* the listing matches the row in the Supabase Table Editor. *Agent, 2026-10-25:* code review: the listings pages and components contain no hard-coded listing arrays; the list comes only from the `listMyListings` loader |
 | 3.4 | Server path used: create/read go through `src/server/listings.ts` (or documented server functions) | PASS | *Agent, 2026-10-25:* `listings/index.tsx` loader = `listMyListings()`, `listings/new.tsx` calls `createListing` via `useServerFn`; neither page nor the two components import a Supabase client. The built browser files contain no `property_listings` query or server code. Network tab / server log not inspected |
 
 ## 4. Row Level Security (User B)
@@ -50,9 +52,9 @@ observed it and when:
 | # | Check | Result | Evidence |
 |---|--------|--------|----------|
 | 4.1 | Second account User B can sign up / log in | PASS | *Verifier, 2026-10-23:* signed up and signed in as a second account. User B email: ____ (fill in) |
-| 4.2 | User B **cannot** see User A's listings in the UI | PASS (earlier page) | *Verifier, 2026-10-23:* User B's list on `/dashboard/properties` was empty; A's listing not shown. Not yet repeated on `/dashboard/listings` |
+| 4.2 | User B **cannot** see User A's listings in the UI | PASS | *Verifier, 2026-10-25 (reported as checked):* User A's listing not shown on User B's `/dashboard/listings`. Earlier: same on `/dashboard/properties` (*Verifier, 2026-10-23*) |
 | 4.3 | Direct read as User B (UI empty list and/or Table Editor filtered by auth) shows no foreign rows | PASS | User B's UI list empty (4.2). *Agent, 2026-10-25:* direct API read with no sign-in returned 0 rows. A direct API read *signed in as User B* was not tried |
-| 4.4 | User B can create their own listing and only see their own | NOT RUN | Not tested |
+| 4.4 | User B can create their own listing and only see their own | PASS | *Verifier, 2026-10-25 (reported as checked):* User B created a listing and saw only that one |
 
 ## 5. Secret-hygiene audit
 
@@ -76,13 +78,13 @@ observed it and when:
 
 ## 7. Sign-off
 
-- [ ] Client story covered: sponsors can log in; listings load from Postgres under RLS; secrets kept out of the client bundle
-- [ ] All critical rows above are PASS (or FAIL accepted with written follow-up)
+- [x] Client story covered: sponsors can log in; listings load from Postgres under RLS; secrets kept out of the client bundle
+- [x] All critical rows above are PASS (or FAIL accepted with written follow-up)
 - [x] No real secrets written into this markdown file
 
-**Overall:** NOT COMPLETE. No row failed, but 3.1–3.3 and 4.4 haven't been run on the new `/dashboard/listings` pages, and 4.2 was last run on the earlier page.  
+**Overall:** PASS (2026-10-25). Every check row is PASS; the only NOT RUN item is the "Saving…" network-failure re-test in section 6. Open risks below are accepted follow-ups.  
 **Notes for handoff (Step 12):**
-- To finish: with `npm run dev`, as User A create a listing at `/dashboard/listings/new` (3.1), see it on `/dashboard/listings` (3.2) and in the Table Editor (3.3); as User B, check A's listing is absent (4.2) and create one of B's own (4.4).
+- Live listing checks (3.1–3.3, 4.2, 4.4) were re-run on the new `/dashboard/listings` pages on 2026-10-25.
 - Open risks: R1 (sponsors can set `status` to `published`; left open by decision), R2 (public sign-up lets any account create listings), R3 (hard delete).
 - Not inspected: Vercel environment variables; the browser Network tab; the live `pg_policies` list.
 - Fill in the User A / User B emails (2.1, 4.1) — emails only, never passwords.
