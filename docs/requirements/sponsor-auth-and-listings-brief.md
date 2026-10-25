@@ -142,6 +142,20 @@ import time, or a `VITE_` variable.
 
 ## 9. Open questions
 
+**Decisions made so far (updated 2026-10-25):**
+
+| # | Question | Decision | Where it shows |
+| --- | --- | --- | --- |
+| 1 | Browser client or server-only? | **Browser client for sign-in and sign-up only** (2026-10-22); all other reads and writes go through server functions | `src/lib/supabase/client.ts`, `src/server/listings.ts` |
+| 4 | Sign-in method; open or invite-only? | **Email + password. Sign-up is open** (`/auth/signup`), with Supabase's email confirmation | `src/routes/auth/` |
+| 5 | Who publishes? | **Not enforced yet:** sponsors can set `status` to `published` themselves (risk R1, left open by decision) | `src/lib/listings/schema.ts` |
+| 2, 3, 6, 7 | Visitor browsing, listing→deal mapping, public contacts, `ownershipPercent` | **Still open** (no investor read path yet, risk R4) | — |
+
+Open sign-up plus R1 means any new account can create and publish its own listings (RLS still keeps every sponsor's listings separate). See risks R1/R2 in `docs/data-model/rls-policy-review.md`.
+
+The original questions, as written for the proposal:
+
+
 1. **Browser Supabase client or server-only access?** *Recommended:* server-only (all reads and writes through server functions), so no Supabase key ships to the browser at all.
 2. **Can signed-out visitors browse published listings,** or only signed-in investors? (`domain.md` lists a "Visitor" who views published listings; the Sprint 3 brief has no public pages.)
 3. **How does a listing map to a "deal" on the Deals page?** Target raise and minimum investment aren't in `InvestorListing`. Should they be added, or should Deals show asking price? What happens to the Open / Closing soon / Waitlist badges?

@@ -11,7 +11,7 @@ No mock arrays in the browser. Secrets (service-role key) never ship to the clie
 
 - **Who:** sponsors (the brief's primary user) create, edit, and archive **their own** listings. Ownership is enforced by the database (RLS), not by hiding rows in React.
 - **Replaces:** the built-in MOCK arrays in `src/components/dashboard/DealsList.tsx` (and later PortfolioTable) for listing data.
-- **Status:** implemented as `supabase/migrations/20250321000000_property_listings.sql`, written but **not yet applied** (Supabase isn't provisioned). Policy-by-policy review and apply steps: `docs/data-model/rls-policy-review.md`.
+- **Status (2026-10-25):** implemented as `supabase/migrations/20250321000000_property_listings.sql` and **applied** to the Supabase development project (2026-10-23, SQL Editor, no errors). Verified in `docs/verification/sprint4-auth-listings-checklist.md` (sections 1 and 4: PASS). Policy-by-policy review and apply steps: `docs/data-model/rls-policy-review.md`.
 - **See also:** `docs/data-model-and-rls-matrix.md` (adds `sponsor_profiles`, a full RLS matrix, and a requirement → design mapping) and `docs/data-model/draft-tables.sql` (earlier SQL draft, superseded by the migrations).
 
 ## 2. Entity: `property_listings`
@@ -65,7 +65,8 @@ No mock arrays in the browser. Secrets (service-role key) never ship to the clie
 - Every listing row **must** have `owner_id` set to the Supabase Auth user id of the sponsor who created it.
 - `owner_id` references `auth.users(id)` with **`ON DELETE RESTRICT`**. **Decision:** an account that still owns listings can't be deleted until an admin archives or removes them. CASCADE would silently delete published listings that investors may be looking at, and soft-delete is still an open question (section 7). Revisit this if soft-delete is adopted.
 - Application code never lets a client supply a different `owner_id` than the signed-in user on insert.
-  - The column defaults to `auth.uid()`, so the server's insert simply omits it.
+  - The server sets it explicitly from the verified session: `owner_id: user.id`, where `user` comes from `getSessionUser()` (`src/server/listings.ts`, `createListing`). It is never read from the request body, and the input schema has no owner field.
+  - The column also defaults to `auth.uid()`, so an insert that omits it is still owned by the caller.
   - The `listings_insert_own` policy's `WITH CHECK (owner_id = auth.uid())` rejects any other value, even if app code has a bug.
   - `listings_update_own`'s `WITH CHECK` stops a sponsor from moving a listing to another account.
 
@@ -123,9 +124,7 @@ Notes:
 - `VITE_` / public: Supabase URL + anon (public) key only.
 - Server-only: service-role key (and any DB URLs). See docs/setup/supabase-env-checklist.md.
 
-**Note:** the first row (sign in from the browser) needs `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`. In `.env.example` and the env checklist these are **commented out**, pending the brief's open question 1 (browser client or server-only). Adopting this template decides it as "browser client for auth". When that's confirmed:
-- uncomment the two `VITE_` lines in `.env.example`
-- update the checklist's "server-only access" sentence
+**Note:** browser sign-in was decided on 2026-10-22 (brief open question 1). `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are **active** in `.env.example` and **used** by `src/lib/supabase/client.ts` for sign-in and sign-up only; `docs/setup/supabase-env-checklist.md` was updated to match (2026-10-25). Everything else goes through server functions with the `SUPABASE_` pair.
 
 RLS must be enabled on `property_listings` before any browser client exists. The service-role key stays server-only either way.
 
