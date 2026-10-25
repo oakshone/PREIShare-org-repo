@@ -48,14 +48,18 @@ The Supabase CLI is **not** installed or configured (no `supabase/config.toml`).
 
 ## Layout (preserve unless there is a clear reason to change)
 
-- `src/routes/` — file routes: `__root.tsx`, `index.tsx`, `about.tsx`, `auth/` (`login.tsx`, `signup.tsx`), and `dashboard/` (`route.tsx` = the `/dashboard` layout + guard; child pages `index.tsx`, `portfolio.tsx`, `deals.tsx`, `profile.tsx`, `properties.index.tsx`, `properties.new.tsx`)
+- `src/routes/` — file routes: `__root.tsx`, `index.tsx`, `about.tsx`, `auth/` (`login.tsx`, `signup.tsx`), and `dashboard/` (`route.tsx` = the `/dashboard` layout + guard; child pages `index.tsx`, `portfolio.tsx`, `deals.tsx`, `profile.tsx`, and `listings/` (`index.tsx` = `/dashboard/listings`, `new.tsx` = `/dashboard/listings/new`))
 - `src/router.tsx` — router factory
 - `src/components/` — starter Header, Footer, ThemeToggle; `dashboard/` (AppShell, Header, Sidebar, MobileNav, SignOutButton, page widgets); `layout/navConfig.ts`
 - `src/lib/` — shared helpers:
   - `supabase/server.ts` — `getSupabaseServerClient()`: server client acting as the signed-in user (server-only via `createServerOnlyFn`)
   - `supabase/client.ts` — `getSupabaseBrowserClient()`: browser client, public `VITE_` values only (sign-in / sign-out; `createClientOnlyFn`)
   - `supabase/types.ts` — hand-written `Database` types from the migrations; update in the same change as any migration
-  - `auth.functions.ts` — `getCurrentUser` server function used by the dashboard guard
+  - `auth.functions.ts` — `getCurrentUser` / `signOut` server functions (guard, Sign out)
+  - `auth/session.ts` — `getSessionUser`, `signOutSession`: server-only session helpers
+  - `listings/schema.ts` — zod schemas for listing input (shared by forms and server)
+- `src/server/listings.ts` — `listMyListings`, `createListing`, `updateListing` server functions (session check, server client, zod, owner from session)
+- `src/components/listings/` — `ListingCard`, `ListingForm` (presentational; no Supabase, no env)
   - `auth-validation.ts` — shared sign-in validation, error wording, safe redirect paths
   - `user.ts` — old placeholder (`getUser()` returns `null`); superseded by `getCurrentUser`
 - `src/env.d.ts` — typed env names (strict `import.meta.env`, `ServerEnv`)

@@ -74,9 +74,15 @@ src/routes/dashboard/
   portfolio.tsx    → /dashboard/portfolio: PortfolioTable
   deals.tsx        → /dashboard/deals: DealsList
   profile.tsx      → /dashboard/profile: ProfileCard
-  properties.index.tsx → /dashboard/properties: your listings (server function, RLS filters)
-  properties.new.tsx   → /dashboard/properties/new: create form (server function insert)
-  ("index" = the page at exactly that address, so .new isn't nested inside the list)
+  listings/index.tsx → /dashboard/listings: your listings (listMyListings, RLS filters)
+  listings/new.tsx   → /dashboard/listings/new: create form (createListing, then back to the list)
+
+src/components/listings/
+  ListingCard.tsx  → one listing: title, city, status (props only)
+  ListingForm.tsx  → create fields from schema.ts (props only, no Supabase)
+
+src/server/listings.ts      → listMyListings / createListing / updateListing server functions
+src/lib/listings/schema.ts  → zod rules for listing input (browser + server)
 
 src/components/dashboard/
   AppShell.tsx     → header on top, nav on the side (or Menu on phones), <main> for the page
@@ -205,7 +211,7 @@ they find the session*, not in power. Neither uses the service-role key.
 | | Browser helper | Server helper |
 |---|---|---|
 | File | `supabase/client.ts` | `supabase/server.ts` |
-| Used by | `/auth/login`, `/auth/signup` | the guard, Sign out, the properties pages (all via server functions) |
+| Used by | `/auth/login`, `/auth/signup` | the guard, Sign out, the listings pages (all via server functions) |
 | Finds the session in | the browser's cookie storage | the cookie sent with the request (`getCookies()`) |
 | Why there | the password is typed in the browser | the server builds the page before any browser code runs |
 

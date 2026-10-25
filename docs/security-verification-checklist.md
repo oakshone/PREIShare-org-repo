@@ -11,6 +11,8 @@ Status values: `pass` | `fail` | `not-run`
 
 Why so many `not-run` (original run, 2026-10-22): no Supabase project was provisioned and the migrations were not applied, so nothing that needs a real sign-in or real rows could be tested. Everything else was checked against a local production build (`npm run build` + `vite preview`) and by reading the code.
 
+**Update 2026-10-25:** the property pages were replaced by `src/routes/dashboard/listings/index.tsx` and `listings/new.tsx` (URLs `/dashboard/listings…`), which use `src/server/listings.ts`. Rows 3.x and 4.x below were run against the old `properties.*` pages; re-run them on the new pages.
+
 File names differ from the template: the browser and server clients are `src/lib/supabase/client.ts` and `src/lib/supabase/server.ts` (moved from `supabase.browser.ts` / `supabase.server.ts` after this checklist was first run; the bundle checks were re-run after the move and still pass), and the list page is `src/routes/dashboard/properties.index.tsx` (so `properties.new.tsx` isn't nested inside it).
 
 ---
