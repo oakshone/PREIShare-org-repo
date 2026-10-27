@@ -280,6 +280,35 @@ bouncer; `WITH CHECK` is the vault lock that works even through a side door.
 *which key* and *whose token*. Anon key + user's token → RLS applies (browser
 or server). Service-role key or a direct `DATABASE_URL` → RLS skipped.
 
+**No cookie = 0 rows (not everyone's).** No cookie → the request is role `anon`
+and `auth.uid()` is NULL. No policy is `TO anon`, and `owner_id = NULL` is never
+true. RLS **denies by default**; Express-style "one powerful DB user" allows by default.
+
+**RLS limits rows, not columns.** On their *own* listings, a sponsor calling
+Supabase directly can change any column the policy doesn't mention: `status`
+(even to `published`, risk R1), `created_at`, even `id`. Only `owner_id` is
+guarded (`WITH CHECK`), and the trigger resets `updated_at`. To lock columns:
+a stricter `WITH CHECK`, column `GRANT`s, or a trigger, in a **new** migration.
+
+### Validating input with zod
+
+**One schema, two places:** `src/lib/listings/schema.ts` gives instant messages
+in the form *and* is re-checked in `src/server/listings.ts` (the browser can be skipped).
+
+| Call | What it does | Use it when |
+|---|---|---|
+| `schema.safeParse(x)` | returns `{ success, data }` or `{ success: false, error }` | you want **field messages** for a form |
+| `schema.parse(x)` | throws on bad input | a crash is fine (not for forms) |
+| `z.flattenError(err).fieldErrors` | `{ title: ['Title is required'] }` | showing messages under fields |
+
+**Two traps we hit (both fixed):**
+1. **`.partial()` on a schema with defaults refills them.** Updating only the title
+   reset `status` to `draft`. Build the update schema from fields *without* defaults.
+2. **`z.coerce.number('')` is `0`.** A blank price saved as $0. Treat blank as missing first.
+
+Also: zod drops unknown keys, so an `owner_id` sent by the browser just disappears.
+In this TanStack version the server-function method is **`.validator`** (`inputValidator` is deprecated).
+
 ### What Supabase runs for you
 
 No auth server, session store, or database to run yourself: Supabase stores
@@ -301,6 +330,39 @@ SUPABASE_SERVICE_ROLE_KEY=                  # leave EMPTY: the app doesn't use i
 - No spaces around `=`, no quotes. Restart `npm run dev` after editing.
 - Same four values in Vercel → **redeploy** (`VITE_` values are baked in at build time).
 - Never paste real values into chat, docs, or `.env.example`.
+
+### Secret-hygiene audit (record counts, never values)
+
+| Check | Command / idea | Pass means |
+|---|---|---|
+| `.env` not tracked | `git ls-files \| grep -i env`, `git check-ignore .env` | only `.env.example` tracked; `.env` ignored |
+| Never committed | `git log --all --oneline -- .env` | no commits |
+| Placeholders only | `grep -E '^[A-Z_]+=.+' .env.example` | no output |
+| Names vs values | search for `service_role`, `SUPABASE_SERVICE_ROLE` | names only, no `NAME=value` |
+| Browser bundle | `npm run build`, search `.output/public` for `sb_secret_[A-Za-z0-9_-]{10,}`, `DATABASE_URL`, `postgres://…:…@` | nothing (publishable key + URL **are** expected) |
+
+- **Evidence = commands + counts** ("0 lines", "16 name-only mentions"), never the key itself.
+- **False alarm we hit:** the bare text `sb_secret_` is inside the Supabase library (it checks
+  key prefixes). Search for the prefix *plus* key characters.
+
+## Quick answers (the tricky quiz ones)
+
+| Question | Honest answer | Why the others are wrong |
+|---|---|---|
+| What type models "many listings"? | **`Listing[]`** (an array of the listing type) | `string` is the HTML output, `boolean` is "visible?", errors are a separate state |
+| What should a negative (invalid) fixture do? | **Fail the type check** (`// @ts-expect-error` above it) | `as any` hides the bug; deploying bad data or keeping it only in a quiz checks nothing |
+| A variable the bundler exposes (`VITE_`): its value must be… | **safe for anyone to read** (e.g. the publishable key, safe because RLS is on) | the name is the switch: you can't "hide" a `VITE_` value |
+| Create succeeded: which REST pair? | **`POST /properties` → `201 Created`** (+ `Location` header) | `PUT` = client picks the id; `GET` never creates. Supabase does this under the hood; our server function returns 200 with `{ ok: true }` |
+| UI only links "your" listings: skip RLS? | **No.** Links control what's *offered*, RLS controls what can be *requested* | the public key lets anyone call Supabase directly |
+| An automated quality control is… | **a check that fails the change** when install / typecheck breaks | screenshots, "looks fine", or branch names stop nothing. PREIShare has no CI yet; Vercel only runs the build |
+
+## Warnings you might see
+
+- **`A notFoundError was encountered on the route with ID "__root__"…`**: not a bug. The
+  browser asked for an address with no route file (often an old link like `/login` or
+  `/dashboard/properties`), and there's no custom not-found page yet, so TanStack shows `<p>Not Found</p>`.
+- **`'inputValidator' is deprecated` / `'FormEvent' is deprecated`**: editor hints from newer
+  library types. Code still works; use `.validator` in new server functions.
 
 ## Before you say "done"
 
@@ -336,3 +398,9 @@ npm run dev         # open /dashboard and check it at 320, 768, and 1024px wide
 22. A server function uses the anon-key server client. Does it skip RLS? What would?
 23. Which `.env` line stays empty, and why?
 24. You changed `VITE_SUPABASE_URL` in Vercel. Why does the live site still use the old one?
+25. A request arrives with no cookie. What's `auth.uid()`, and why does it get 0 rows instead of all of them?
+26. On their *own* listing, which columns can a sponsor still change by calling Supabase directly? Which one can't they?
+27. `safeParse` or `parse` for a form, and why?
+28. Name the two zod traps we hit, and how each was fixed.
+29. In a secret audit, what do you write down as evidence, and what do you never write down?
+30. A negative fixture compiles without errors. Is that good or bad? What should be above it?
