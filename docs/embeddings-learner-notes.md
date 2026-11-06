@@ -17,9 +17,9 @@ The idea is the same: similar meaning → similar number patterns.
 
 ## PREIshare examples from our requirements
 - Buyer query I care about: “quiet cabin near water with good rental upside”
-- Listing A (should feel close to the query): _[your example]_
-- Listing B (should feel far): _[your example]_
-- Why A is closer in meaning than B (in my words): _[...]_
+- Cabin (should feel close to the query): very outdoorsy
+- Loft (should feel far): very outdoorsy
+- Why Cabin is closer in meaning than Loft (in my words): It's score card reads roughly very outdoorsy not city.
 
 ## Generation vs storage (do not mix these up)
 | Stage | What happens | Where |
@@ -38,7 +38,6 @@ property embeddings (storage + comparison). Ranking details are Step 3.
 - Believing a higher or lower single number in the list is a human-readable score by itself
 
 ## What I can explain to a teammate in 60 seconds
-_[Write 4–6 sentences in your own voice. No jargon unless you define it.]_
 - The database saving the numbers is the storage. The model turning text into numbers is the generation.
 - Embedding is the vibe score card its not about the users its about the piece of text.
 - The embedding is the list of numbers that captures what that text means.
@@ -47,4 +46,5 @@ _[Write 4–6 sentences in your own voice. No jargon unless you define it.]_
 
 ## Open questions before similarity ranking (Step 3)
 - How do we turn “closeness” into an ordered list of properties?
+- 
 - What happens if two different embedding models are mixed in one table?
