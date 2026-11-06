@@ -261,6 +261,34 @@ RLS still holds. The service-role key is the one thing that switches RLS off.
 **In one line:** sign-in happens where the password is (browser); the bouncer
 stands where the page is built (server); Postgres guards the rows.
 
+### The service-role key: what it's for if we never use it
+
+Supabase gives every project one automatically. You can't avoid having it; you
+choose to keep it locked away.
+
+**Apartment building:** publishable key + sign-in = a **tenant's key** (opens
+only your apartment; RLS is the lock on each door). Service-role key = the
+**landlord's master key** (opens every door). Tenants never get it.
+
+**It's for your app's server code, not for you as a person.** Example: an
+"Approve listing" button for admins (next sprint, risk R1). The admin doesn't
+own the listing, so RLS would block them; server code in a `.server.ts` file
+uses the service-role key to make the change. Because that code skips RLS,
+**it must check for itself that the person is really an admin.**
+
+| Who | How they get past RLS |
+|---|---|
+| **You** fixing data by hand | Supabase dashboard (Table Editor / SQL Editor, your owner login) |
+| **Your app** doing an admin job | Service-role key, server only (`.server.ts`) |
+| **A sponsor** | Never. RLS always applies |
+
+**Why it's empty in Sprint 4:** every action is a sponsor touching their own
+listings, which sign-in + RLS already covers. A key that doesn't exist can't
+leak.
+
+**In one line:** it's the admin key **for your server code**; you use the
+dashboard instead.
+
 ### Saving a listing: `WITH CHECK`
 
 **Where the owner comes from:** the browser sends only title, address, city,
@@ -292,6 +320,17 @@ a stricter `WITH CHECK`, column `GRANT`s, or a trigger, in a **new** migration.
 
 ### Validating input with zod
 
+**What zod is:** a **rule-checker for data** (a package added in Sprint 4). You
+write the rules once ("a listing needs a title, price is a number, state is 2
+letters"); zod checks incoming data against them.
+- Follows the rules → passes through, cleaned up.
+- Breaks a rule → zod says which one ("State must be 2 letters"), and the bad
+  data never reaches the database.
+
+> Like a bouncer with a checklist: "Got a title? Real price? OK, you're in."
+
+`.validator` on a server function is where the incoming data is handed to zod.
+
 **One schema, two places:** `src/lib/listings/schema.ts` gives instant messages
 in the form *and* is re-checked in `src/server/listings.ts` (the browser can be skipped).
 
@@ -316,6 +355,26 @@ passwords, issues and refreshes signed tokens, sends emails, rate-limits sign-in
 hosts Postgres, and applies RLS on every request. Vercel runs your server
 functions. **You still own:** the RLS policies, keeping keys secret, the guard,
 and the Supabase project settings.
+
+**The three pieces ("backend-as-a-service" = Supabase runs the machinery):**
+
+| Piece | What it does for you | In your app |
+|---|---|---|
+| **Auth** | **Authentication** ("who are you?"): sign-up, sign-in, password hashing, email confirmation, issues the session token | `/auth/signup`, `/auth/login`; `getUser()` checks the session |
+| **Postgres** | Stores the data; **RLS** enforces who sees which rows | `property_listings`, owner-only policies |
+| **Client library** | The code your app uses to **talk to** Auth and Postgres; also keeps the session in cookies | `client.ts` (browser, sign-in only), `server.ts` (server, data) |
+
+**Authentication vs authorization:** Supabase Auth = **who you are** (ID at the
+door). **What you're allowed to do** (which rooms) = RLS + the guard + your own
+rules. Auth hands Postgres your id (`auth.uid()`); RLS uses it.
+
+**Your app owns the rules:** which pages need sign-in (guard), data shape (zod),
+who owns a new listing (server sets `owner_id`), writing the RLS policies,
+which key goes where, never committing `.env`, business rules like "only
+admins publish" (R1).
+
+**In one line:** Supabase gives you the **tools** (login, database, lock); your
+app decides the **rules** (who, what, where).
 
 ### Setting up `.env`
 
@@ -355,6 +414,42 @@ SUPABASE_SERVICE_ROLE_KEY=                  # leave EMPTY: the app doesn't use i
 | Create succeeded: which REST pair? | **`POST /properties` → `201 Created`** (+ `Location` header) | `PUT` = client picks the id; `GET` never creates. Supabase does this under the hood; our server function returns 200 with `{ ok: true }` |
 | UI only links "your" listings: skip RLS? | **No.** Links control what's *offered*, RLS controls what can be *requested* | the public key lets anyone call Supabase directly |
 | An automated quality control is… | **a check that fails the change** when install / typecheck breaks | screenshots, "looks fine", or branch names stop nothing. PREIShare has no CI yet; Vercel only runs the build |
+
+## Sprint 4 in one line per topic (memorise these)
+
+| Topic | One line |
+|---|---|
+| **Where code runs** | Browser = dining room (public: components, forms, sign-in call). Server = kitchen (private: server functions, session check, all listing queries). Database = locked pantry that checks every order itself (tables + RLS). |
+| **Loaders** | Loaders can run in the browser (on link clicks), so they only *call* server functions and never hold keys. Chain: loader → server function → database. |
+| **`createServerFn`** | Turns a function into a remote call: its body runs only on the server; calling it from the browser just sends a request and waits for the answer. TanStack writes the request code for you. |
+| **Server-only / client-only wrappers** | `createServerOnlyFn` = kitchen only (code removed from the browser bundle, throws there). `createClientOnlyFn` = dining room only (throws on the server). File names like `server.ts` protect nothing; only `x.server.ts` names are blocked automatically. |
+| **Sign-in vs the check** | Sign in where the password is typed (browser). Check on the server, because the server builds the page first and browser code can be changed by anyone. |
+| **The session** | Lives in a **cookie**, sent automatically with every request. The server reads it **and verifies it** with `getUser()`; `getSession()` only reads and believes it. |
+| **The guard** | `beforeLoad` in `dashboard/route.tsx`, the parent layout, so every page in `dashboard/` (including new ones) inherits it. |
+| **Sign-up** | Account created, no session yet → confirmation email → "Check your email, then sign in". Signing in before confirming → "Confirm your email address first". |
+| **Two clients** | Same publishable key in both. `client.ts` (browser, `VITE_` values) finds the user in the browser; `server.ts` (server, `SUPABASE_` values) finds them in the request's cookie. The secret key is used by **neither**. |
+| **`owner_id`** | The owner's account id, pointing to `auth.users`. Set by **the server** from the session; the database default and `WITH CHECK` are backups. Never from the browser, or anyone could use someone else's id. |
+| **Migrations** | Dated SQL files in `supabase/migrations/` that change the database's *structure*. Never edit one that has run; add a new one. Update `types.ts` (and `schema.ts` / the form) in the same change. |
+| **`ON DELETE RESTRICT`** | Stops deleting an *account* that still owns listings (so listings aren't silently lost). It does **not** stop deleting listings. |
+| **RLS** | A filing cabinet that checks your ID on **every** request, wherever it comes from (page, console, script). |
+| **Whose ID** | The id inside the signed cookie becomes `auth.uid()`. No cookie → no ID → `auth.uid()` is NULL → default deny → **nothing** comes back. |
+| **`USING` vs `WITH CHECK`** | `USING` = which existing rows you can touch → someone else's is skipped silently ("0 rows"). `WITH CHECK` = the new row you're writing → not yours = **error**, nothing saved. |
+| **What bypasses RLS** | Only the **service-role key** (or a direct `DATABASE_URL` connection). Server code with the publishable key + the user's cookie is still under RLS. |
+
+## Mix-ups to avoid (from the quiz)
+
+| ❌ Easy to think | ✅ Actually |
+|---|---|
+| "The server client uses the secret key" | Both clients use the **same publishable key**. The secret key is empty and unused; if the server used it, RLS would be off and every sponsor would see everyone's listings. |
+| "Running on the server bypasses RLS" | No. Only the **service-role key** does. |
+| "The UI only links my listings, so RLS can be skipped" | No. Links only control what's *offered*; anyone can call Supabase directly with the public key. |
+| "`createServerFn` creates a server" | It turns a function into a **remote call** to the server you already have. |
+| "A loader runs on the server (or in the database)" | It runs on the server on first load **and in the browser** on link clicks. It never talks to the database itself. |
+| "`getUser()` checks the database" | It asks **Supabase Auth** to verify the session. `getSession()` just reads the cookie. |
+| "Using the browser client on the server breaks because cookies aren't stored" | The cookie is stored fine. The browser client just **can't read it on the server** (or throws), so the guard can't see you're signed in. |
+| "A migration is a data migration" | Here it means a SQL file that changes the database's **structure** (tables, columns, rules). |
+| "`ON DELETE RESTRICT` stops deleting listings" | It stops deleting the **account** while it still owns listings. |
+| "RLS sees the user's name" | It sees the user's **id** (`auth.uid()`), from the signed token in the cookie. |
 
 ## Warnings you might see
 
