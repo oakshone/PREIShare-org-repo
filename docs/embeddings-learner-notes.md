@@ -1,0 +1,50 @@
+# Embeddings learner notes (PREIshare)
+
+## Plain-language definition
+An embedding is a list of numbers that stands for the *meaning* of a piece of text
+(for us: a property description or a buyer’s search phrase). It is not a keyword
+index and not a human-readable summary.
+
+## Tiny intuition (not real model output)
+Imagine a toy 3-number embedding just to picture “near” vs “far”:
+
+- "lakefront cabin, quiet, strong Airbnb history" → [0.9, 0.8, 0.1]
+- "waterfront cottage, peaceful, good short-term rental" → [0.88, 0.82, 0.12]  (nearby)
+- "downtown loft near nightlife and offices" → [0.1, 0.2, 0.95]  (far from the cabin)
+
+Real embeddings are much longer lists (often hundreds or thousands of numbers).
+The idea is the same: similar meaning → similar number patterns.
+
+## PREIshare examples from our requirements
+- Buyer query I care about: “quiet cabin near water with good rental upside”
+- Listing A (should feel close to the query): _[your example]_
+- Listing B (should feel far): _[your example]_
+- Why A is closer in meaning than B (in my words): _[...]_
+
+## Generation vs storage (do not mix these up)
+| Stage | What happens | Where |
+| --- | --- | --- |
+| Generation | Text goes into an embedding model/API; a number-list comes back | App/code side (later: TypeScript module), **server only**: the embedding API key is a secret, never `VITE_` |
+| Storage | That number-list is saved with the property row | Database (later: Supabase PostgreSQL + pgvector) |
+
+Search will later: embed the buyer’s query (generation) → compare to stored
+property embeddings (storage + comparison). Ranking details are Step 3.
+
+## Misconceptions to watch for when reviewing agent code later
+- Thinking embeddings store the original sentence as text inside the vector
+- Assuming two listings must share the same words to be “close”
+- Forgetting every embedding from the same model must use the same list length (dimensions)
+- Mixing up “create embedding” with “INSERT into database”
+- Believing a higher or lower single number in the list is a human-readable score by itself
+
+## What I can explain to a teammate in 60 seconds
+_[Write 4–6 sentences in your own voice. No jargon unless you define it.]_
+- The database saving the numbers is the storage. The model turning text into numbers is the generation.
+- Embedding is the vibe score card its not about the users its about the piece of text.
+- The embedding is the list of numbers that captures what that text means.
+- Generation is the model turning the text into a number list.
+- Storage is the database saving the number list.
+
+## Open questions before similarity ranking (Step 3)
+- How do we turn “closeness” into an ordered list of properties?
+- What happens if two different embedding models are mixed in one table?
