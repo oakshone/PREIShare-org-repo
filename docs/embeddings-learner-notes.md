@@ -16,7 +16,7 @@ The idea is the same: similar meaning → similar number patterns.
 ## PREIshare examples from our requirements
 - Buyer query I care about: “quiet cabin near water with good rental upside”
 - Cabin (should feel close to the query): very outdoorsy
-- Loft (should feel far): very outdoorsy
+- Loft (should feel far): very city, busy, not by the water
 - Why Cabin is closer in meaning than Loft (in my words): It's score card reads roughly very outdoorsy not city.
 
 ## Generation vs storage (do not mix these up)
