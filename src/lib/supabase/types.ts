@@ -3,6 +3,7 @@
 // Hand-written from the migrations, because the Supabase CLI isn't set up yet:
 //   supabase/migrations/20250321000000_property_listings.sql
 //   supabase/migrations/20250321000100_sponsor_profiles.sql
+//   supabase/migrations/20261107000000_properties_pgvector.sql
 // When the CLI is adopted, replace this file with `supabase gen types typescript`.
 // If a migration changes a column, update this file in the same change.
 //
@@ -66,6 +67,40 @@ export type Database = {
         }
         Relationships: []
       }
+      properties: {
+        Row: {
+          id: string
+          title: string
+          description: string
+          city: string | null
+          price: number | null
+          /**
+           * pgvector vector(1536). Supabase sends it as text, e.g. "[0.1,0.2,...]".
+           * null until the seed/backfill step embeds the row.
+           */
+          embedding: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description: string
+          city?: string | null
+          price?: number | null
+          embedding?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string
+          city?: string | null
+          price?: number | null
+          embedding?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
       sponsor_profiles: {
         Row: {
           /** Same value as the sponsor's auth account id. */
@@ -103,3 +138,4 @@ export type Database = {
 export type PropertyListing = Database['public']['Tables']['property_listings']['Row']
 export type PropertyListingInsert = Database['public']['Tables']['property_listings']['Insert']
 export type SponsorProfile = Database['public']['Tables']['sponsor_profiles']['Row']
+export type Property = Database['public']['Tables']['properties']['Row']

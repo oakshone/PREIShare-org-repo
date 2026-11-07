@@ -9,7 +9,7 @@ SQL migration step—no application search UI work here.
 - Data model doc: `docs/embedding-data-model.md`
 - Table (from model): `properties`
 - Embedding column (from model): `embedding`
-- Embedding dimension (from model): `DIMENSION_TODO` (the model isn't chosen yet; replace with the real number everywhere in one pass, as the data model says)
+- Embedding dimension (from model): `1536` (chosen 2026-11-07; the embedding model picked later must output 1536 numbers)
 - Distance / ranking style for demo: cosine-style similarity, standardized on
   pgvector's **cosine distance operator `<=>`** (smaller = closer; sort
   ascending; show similarity as `1 - distance` if a score is displayed)
@@ -27,7 +27,7 @@ SQL migration step—no application search UI work here.
 | Order | Step | Why this order |
 |------:|------|----------------|
 | 1 | Enable extension `vector` (pgvector) | Vector column types and operators do not exist until the extension is on. |
-| 2 | Create `properties` table (or alter if it already exists) including `embedding vector(DIMENSION_TODO)` and other model columns | Table/column creation depends on the extension. |
+| 2 | Create `properties` table (or alter if it already exists) including `embedding vector(1536)` and other model columns | Table/column creation depends on the extension. |
 | 3 | (Optional for tiny demos) Add a vector index | Indexes are not required to store vectors; add only after the column exists. For very small sample data, sequential scan is OK. **This plan: skipped (no index).** |
 | 4 | Run verification SQL | Confirms the schema before any seed or app code. |
 
@@ -35,7 +35,7 @@ SQL migration step—no application search UI work here.
 **Do not** invent a second dimension or a second embedding column name.
 
 **Project notes (from `AGENTS.md`):**
-- Each step is a **new** migration file in `supabase/migrations/` with a later timestamp than the existing ones; never edit an applied migration.
+- Steps 1–2 are one **new** migration file, in this order: `supabase/migrations/20261107000000_properties_pgvector.sql`. Never edit it once applied; later changes get a new file with a later timestamp.
 - The project has no Supabase CLI, so migrations are applied by pasting them into the Supabase **SQL Editor**, in filename order.
 - `properties` gets `ENABLE ROW LEVEL SECURITY` in the same migration that creates it.
 - `src/lib/supabase/types.ts` is updated in the same change as the table migration.

@@ -404,6 +404,72 @@ SUPABASE_SERVICE_ROLE_KEY=                  # leave EMPTY: the app doesn't use i
 - **False alarm we hit:** the bare text `sb_secret_` is inside the Supabase library (it checks
   key prefixes). Search for the prefix *plus* key characters.
 
+## Semantic search (embeddings + pgvector)
+
+**The idea:** keyword search matches **spelling**; semantic search matches **meaning**.
+"quiet cabin near water with good rental upside" should find "lakefront retreat with steady
+bookings" even though they share no words.
+
+### The words, in one line each
+
+| Word | Plain meaning |
+|---|---|
+| **Embedding** | A list of numbers that captures what a piece of text **means** (the "vibe score card") |
+| **Vector** | Just the name for that list of numbers |
+| **Embedding model** | The AI service that turns text into the list. It **learned** where meanings go by reading huge amounts of text |
+| **Generation** | Making the list: text → model/API → numbers. **Server only** (secret API key) |
+| **Storage** | Saving the list in the database, next to the property |
+| **pgvector** | Postgres add-on: a `vector` column type + ways to measure closeness. It **stores and compares**, it doesn't make embeddings |
+| **Cosine distance `<=>`** | Our closeness measure. **Smaller = closer** in meaning. Similarity score = `1 − distance` (higher = better) |
+| **Top-K** | Keep the K best (closest) matches, sorted best first |
+| **Dimension** | How many numbers are in each list. Ours: **1536**, the same for every row and every query |
+| **Keyword-only distractor** | A listing that **shares words** but **means something else** (the loft that says "cabin-style kitchen") |
+
+### How a search runs
+
+1. **Listings (once):** text → **generate** → **store** in `properties.embedding`.
+2. **Buyer searches:** query → **generate** (same model) → **compare** with the stored ones. The query is **not stored**.
+3. Score each listing (`<=>`), sort **smallest distance first**, keep the **top K**.
+4. Watch for **low scores**: top-K always fills its slots, even with bad matches (that's what the farmland control query tests).
+
+### Why a cabin and a cottage end up close
+
+Nobody hand-scores the numbers. The **embedding model learned** from huge amounts of text that
+"cabin" and "cottage" are used in the same situations (lake, quiet, getaway, rental), so it gives
+them nearby lists. Our toy labels ("water", "quiet", "city") were pretend; real numbers aren't labelled.
+
+### Accept or reject agent code
+
+| Agent hands you… | Verdict | Why |
+|---|---|---|
+| Order by closeness of stored `embedding` to the query embedding (`<=>`, ascending, top-K) | ✅ Accept (after checks) | That *is* vector search |
+| "Rank these together, both say *cabin*" | ❌ Reject | Shared word = keyword matching, not meaning |
+| Filter `description ILIKE '%sunny%'`, sort newest first | ❌ Reject | Keyword filter + date order; no embeddings, no score |
+| Sort by miles to the train station | ❌ Reject | Map distance ≠ meaning distance (and map search is out of scope) |
+
+**Checks before accepting:** same model + 1536 for listings and query · compares the stored
+`embedding` column, not description text · sorts the right way (`<=>` smallest first) · has a
+top-K limit · returns id, title and score · skips rows with no embedding yet · a meaning match
+beats a keyword-only distractor.
+
+### Mix-ups to avoid
+
+| ❌ Don't say | ✅ Say |
+|---|---|
+| "The embedding is the making of the numbers" | The embedding **is** the list; **generation** makes it |
+| "They're close because they share keywords" | They're close because they **mean** the same thing |
+| "The buyer's search gets saved" | Listings are stored; the search is only **compared** |
+| "0.92 means 92% relevant" | Scores aren't percentages; compare them with each other |
+| "pgvector understands meaning" | The **model** does; pgvector stores and measures |
+| "Any model's vectors can mix" | One model, one size (1536) for everything |
+
+### Where it lives
+
+`docs/semantic-search-requirements.md` (what we're building) · `docs/embeddings-learner-notes.md`
+and `docs/vector-search-learner-notes.md` (your notes) · `docs/embedding-data-model.md` (the
+table design) · `docs/pgvector-setup-plan.md` (the migration plan) ·
+`supabase/migrations/20261107000000_properties_pgvector.sql` (the migration).
+
 ## Quick answers (the tricky quiz ones)
 
 | Question | Honest answer | Why the others are wrong |

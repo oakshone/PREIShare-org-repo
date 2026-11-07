@@ -48,12 +48,12 @@ Rules:
 ## Embedding column
 | Field | Type (logical) | Required | Notes |
 |-------|----------------|----------|-------|
-| embedding | vector(DIMENSION_TODO) | yes after backfill | Fixed dimension; same size for every row and every query |
+| embedding | vector(1536) | yes after backfill | Fixed dimension; same size for every row and every query |
 
 ### Dimension placeholder
-- Use **DIMENSION_TODO** (example stand-in often seen in docs: 1536) until the embedding model is chosen in a later step.
+- **Chosen: 1536** (2026-11-07, from the course migration template). The embedding model picked later must output 1536 numbers (for example OpenAI `text-embedding-3-small`).
 - **Critical:** query vectors and stored vectors must use the **same model and same dimension**. Mismatched sizes break insert or search.
-- When the real model is chosen, replace DIMENSION_TODO everywhere (this doc, migration, TypeScript types) in one pass.
+- Replaced everywhere in one pass: this doc, `docs/pgvector-setup-plan.md`, `supabase/migrations/20261107000000_properties_pgvector.sql`, `src/lib/supabase/types.ts`. Any future change must do the same.
 
 ### Nullability and backfill
 - New rows may allow `embedding` null only as a temporary state during insert-then-embed.
