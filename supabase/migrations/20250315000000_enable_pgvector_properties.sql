@@ -1,11 +1,13 @@
--- supabase/migrations/20261107000000_properties_pgvector.sql
+-- supabase/migrations/20250315000000_enable_pgvector_properties.sql
 --
 -- Implements docs/pgvector-setup-plan.md (migration goals 1–3) using the schema
 -- contract in docs/embedding-data-model.md.
--- Runs after the Sprint 4 migrations and does not touch property_listings or
--- sponsor_profiles.
+-- Independent of the Sprint 4 migrations: it does not touch property_listings or
+-- sponsor_profiles, so its place in filename order doesn't matter (its timestamp
+-- sorts before them; it was applied after them on the dev project, 2026-11-07).
 --
--- Status: NOT YET APPLIED. Paste into the Supabase SQL Editor to apply (no CLI).
+-- Status: APPLIED to the dev project in the Supabase SQL Editor (no CLI), 2026-11-07;
+-- verified: pgvector 0.8.3, embedding is vector(1536), NULL embedding allowed, <=> works, RLS on.
 -- Contains no keys, URLs, or passwords.
 --
 -- Embedding size: 1536. The embedding model used later in app code MUST produce

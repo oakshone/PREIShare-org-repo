@@ -468,7 +468,7 @@ beats a keyword-only distractor.
 `docs/semantic-search-requirements.md` (what we're building) · `docs/embeddings-learner-notes.md`
 and `docs/vector-search-learner-notes.md` (your notes) · `docs/embedding-data-model.md` (the
 table design) · `docs/pgvector-setup-plan.md` (the migration plan) ·
-`supabase/migrations/20261107000000_properties_pgvector.sql` (the migration).
+`supabase/migrations/20250315000000_enable_pgvector_properties.sql` (the migration).
 
 ## Quick answers (the tricky quiz ones)
 

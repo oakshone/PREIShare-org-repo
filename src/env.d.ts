@@ -26,4 +26,6 @@ interface ServerEnv {
   readonly SUPABASE_ANON_KEY?: string
   readonly SUPABASE_SERVICE_ROLE_KEY?: string
   readonly DATABASE_URL?: string
+  /** Secret. Embedding provider key, used only by src/lib/embeddings/generate.ts. */
+  readonly OPENAI_API_KEY?: string
 }

@@ -28,6 +28,7 @@ Quick check: `grep -nE '^[A-Z_]+=.+' .env.example` should print nothing.
 | `SUPABASE_ANON_KEY` | **Server-only** | `SUPABASE_ANON_KEY=` | Public-safe by design, but kept server-side so the server can act as the signed-in user with RLS applied, without the browser holding any key. |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Server-only** | `SUPABASE_SERVICE_ROLE_KEY=` | Secret: it bypasses every RLS rule, so anyone who reads it can read or change every sponsor's rows. |
 | `DATABASE_URL` | **Server-only** | `# DATABASE_URL=` (commented) | Secret: it contains the database password and connects to Postgres directly, also skipping RLS. |
+| `OPENAI_API_KEY` | **Server-only** | `OPENAI_API_KEY=` | Secret: it bills our OpenAI account. Used only by `src/lib/embeddings/generate.ts` to turn property text into embeddings, on the server. |
 | `VITE_SUPABASE_URL` | **Client-safe** | `VITE_SUPABASE_URL=` | Just the project's public address; safe to expose, needed for browser sign-in (see note). |
 | `VITE_SUPABASE_ANON_KEY` | **Client-safe** | `VITE_SUPABASE_ANON_KEY=` | Designed to be public: every request made with it is still checked by RLS against the signed-in user (only once RLS is on for every table). |
 

@@ -35,7 +35,7 @@ SQL migration step—no application search UI work here.
 **Do not** invent a second dimension or a second embedding column name.
 
 **Project notes (from `AGENTS.md`):**
-- Steps 1–2 are one **new** migration file, in this order: `supabase/migrations/20261107000000_properties_pgvector.sql`. Never edit it once applied; later changes get a new file with a later timestamp.
+- Steps 1–2 are one **new** migration file, in this order: `supabase/migrations/20250315000000_enable_pgvector_properties.sql`. Never edit it once applied; later changes get a new file with a later timestamp.
 - The project has no Supabase CLI, so migrations are applied by pasting them into the Supabase **SQL Editor**, in filename order.
 - `properties` gets `ENABLE ROW LEVEL SECURITY` in the same migration that creates it.
 - `src/lib/supabase/types.ts` is updated in the same change as the table migration.

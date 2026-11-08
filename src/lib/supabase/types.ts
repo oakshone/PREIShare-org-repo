@@ -3,7 +3,7 @@
 // Hand-written from the migrations, because the Supabase CLI isn't set up yet:
 //   supabase/migrations/20250321000000_property_listings.sql
 //   supabase/migrations/20250321000100_sponsor_profiles.sql
-//   supabase/migrations/20261107000000_properties_pgvector.sql
+//   supabase/migrations/20250315000000_enable_pgvector_properties.sql
 // When the CLI is adopted, replace this file with `supabase gen types typescript`.
 // If a migration changes a column, update this file in the same change.
 //
