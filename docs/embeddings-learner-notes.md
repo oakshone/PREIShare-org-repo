@@ -46,3 +46,9 @@ property embeddings (storage + comparison). Ranking details are Step 3.
 ## Open questions before similarity ranking (Step 3)
 - How do we turn “closeness” into an ordered list of properties?
 - What happens if two different embedding models are mixed in one table?
+
+## Facts that the agent must abide by not miss
+- The embedding dimension count from your model
+- Which property text fields get embedded (for example title + description)
+- API keys must come from environment variables, not from source code.
+

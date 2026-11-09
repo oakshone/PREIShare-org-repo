@@ -11,8 +11,8 @@
 // Reads OPENAI_API_KEY (server-only secret, see .env.example and docs/env-var-checklist.md)
 // with `process.env` inside the function, per call, never at module scope.
 import { createServerOnlyFn } from '@tanstack/react-start'
-import { EMBEDDING_DIMENSION } from './types'
-import type { EmbeddingResult, PropertyEmbeddingInput } from './types'
+import { EMBEDDING_DIMENSION } from './types.ts'
+import type { EmbeddingResult, PropertyEmbeddingInput } from './types.ts'
 
 const EMBEDDING_MODEL = 'text-embedding-3-small'
 const EMBEDDINGS_URL = 'https://api.openai.com/v1/embeddings'

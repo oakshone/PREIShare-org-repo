@@ -1,0 +1,62 @@
+[
+  {
+    "title": "Lakefront cabin",
+    "description": "Secluded retreat on the water with a private dock and steady summer bookings.",
+    "city": "Lake George",
+    "price": 425000
+  },
+  {
+    "title": "Riverside cottage",
+    "description": "Peaceful two-bedroom cottage on a slow river bend, booked most weekends as a short-term rental.",
+    "city": "Boone",
+    "price": 310000
+  },
+  {
+    "title": "Woodland retreat with dock",
+    "description": "Rustic log home in the pines with its own dock and a strong vacation-rental history.",
+    "city": "Coeur d'Alene",
+    "price": 489000
+  },
+  {
+    "title": "Family home on a cul-de-sac",
+    "description": "Four-bedroom house with a fenced yard on a quiet street, a short walk to a top-rated elementary school.",
+    "city": "Naperville",
+    "price": 615000
+  },
+  {
+    "title": "Suburban starter home",
+    "description": "Three-bedroom home in a friendly neighborhood with parks, playgrounds and an award-winning school district.",
+    "city": "Plano",
+    "price": 398000
+  },
+  {
+    "title": "Downtown condo",
+    "description": "Modern one-bedroom condo in the heart of downtown, steps from restaurants, cafés and nightlife.",
+    "city": "Austin",
+    "price": 352000
+  },
+  {
+    "title": "Bright urban unit",
+    "description": "Bright urban unit, steps from cafés and a short walk to the station.",
+    "city": "Portland",
+    "price": 289000
+  },
+  {
+    "title": "Downtown loft with cabin-style kitchen",
+    "description": "Industrial loft near nightlife and offices with a cabin-style kitchen and good rental income.",
+    "city": "Chicago",
+    "price": 540000
+  },
+  {
+    "title": "Sunny hilltop cabin",
+    "description": "Sunny cabin on a remote hilltop with condo-style finishes, miles from the nearest town.",
+    "city": "Ely",
+    "price": 275000
+  },
+  {
+    "title": "Industrial warehouse",
+    "description": "Warehouse with high ceilings, a loading dock and highway access, leased to a logistics tenant.",
+    "city": "Dallas",
+    "price": 1250000
+  }
+]
