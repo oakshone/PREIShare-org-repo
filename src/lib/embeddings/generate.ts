@@ -37,74 +37,85 @@ export function buildPropertyEmbeddingText(input: PropertyEmbeddingInput): strin
  * problems: check `result.ok`, then `result.reason` on failure. Throws if called in the browser.
  */
 export const generatePropertyEmbedding = createServerOnlyFn(
-  async (input: PropertyEmbeddingInput): Promise<EmbeddingResult> => {
-    const text = buildPropertyEmbeddingText(input)
-    if (!text) {
-      return { ok: false, reason: 'empty_text' }
-    }
-
-    const apiKey = readServerEnv('OPENAI_API_KEY')
-    if (!apiKey) {
-      return { ok: false, reason: 'missing_api_key' }
-    }
-
-    let response: Response
-    try {
-      response = await fetch(EMBEDDINGS_URL, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: EMBEDDING_MODEL,
-          input: text,
-          dimensions: EMBEDDING_DIMENSION,
-        }),
-        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      })
-    } catch (error) {
-      // Network failure or timeout. The message never contains the key.
-      return {
-        ok: false,
-        reason: 'provider_error',
-        message: error instanceof Error ? error.message : 'Request to embedding provider failed',
-      }
-    }
-
-    const body: unknown = await response.json().catch(() => null)
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        reason: 'provider_error',
-        status: response.status,
-        message: readProviderErrorMessage(body) ?? `Embedding provider returned ${response.status}`,
-      }
-    }
-
-    const vector = readEmbedding(body)
-    if (!vector) {
-      return {
-        ok: false,
-        reason: 'provider_error',
-        status: response.status,
-        message: 'Embedding provider response had no usable embedding',
-      }
-    }
-
-    if (vector.length !== EMBEDDING_DIMENSION) {
-      return {
-        ok: false,
-        reason: 'wrong_dimension',
-        expected: EMBEDDING_DIMENSION,
-        received: vector.length,
-      }
-    }
-
-    return { ok: true, vector, model: readModel(body) ?? EMBEDDING_MODEL }
-  },
+  (input: PropertyEmbeddingInput): Promise<EmbeddingResult> =>
+    embedText(buildPropertyEmbeddingText(input)),
 )
+
+/**
+ * Turns a buyer's search text into an embedding with the SAME model as the listings, so the two
+ * can be compared. The text is embedded as typed (trimmed) and never stored.
+ */
+export const generateQueryEmbedding = createServerOnlyFn(
+  (query: string): Promise<EmbeddingResult> => embedText(query.trim()),
+)
+
+/** The one provider call shared by listings and queries. */
+async function embedText(text: string): Promise<EmbeddingResult> {
+  if (!text) {
+    return { ok: false, reason: 'empty_text' }
+  }
+
+  const apiKey = readServerEnv('OPENAI_API_KEY')
+  if (!apiKey) {
+    return { ok: false, reason: 'missing_api_key' }
+  }
+
+  let response: Response
+  try {
+    response = await fetch(EMBEDDINGS_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: EMBEDDING_MODEL,
+        input: text,
+        dimensions: EMBEDDING_DIMENSION,
+      }),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    })
+  } catch (error) {
+    // Network failure or timeout. The message never contains the key.
+    return {
+      ok: false,
+      reason: 'provider_error',
+      message: error instanceof Error ? error.message : 'Request to embedding provider failed',
+    }
+  }
+
+  const body: unknown = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    return {
+      ok: false,
+      reason: 'provider_error',
+      status: response.status,
+      message: readProviderErrorMessage(body) ?? `Embedding provider returned ${response.status}`,
+    }
+  }
+
+  const vector = readEmbedding(body)
+  if (!vector) {
+    return {
+      ok: false,
+      reason: 'provider_error',
+      status: response.status,
+      message: 'Embedding provider response had no usable embedding',
+    }
+  }
+
+  if (vector.length !== EMBEDDING_DIMENSION) {
+    return {
+      ok: false,
+      reason: 'wrong_dimension',
+      expected: EMBEDDING_DIMENSION,
+      received: vector.length,
+    }
+  }
+
+  return { ok: true, vector, model: readModel(body) ?? EMBEDDING_MODEL }
+}
 
 // The provider's JSON is untyped, so these read it defensively instead of trusting its shape.
 // Expected success shape: { data: [{ embedding: number[] }], model: string }

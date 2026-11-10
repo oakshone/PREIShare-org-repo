@@ -4,6 +4,7 @@
 //   supabase/migrations/20250321000000_property_listings.sql
 //   supabase/migrations/20250321000100_sponsor_profiles.sql
 //   supabase/migrations/20250315000000_enable_pgvector_properties.sql
+//   supabase/migrations/20250315000001_match_properties_function.sql
 // When the CLI is adopted, replace this file with `supabase gen types typescript`.
 // If a migration changes a column, update this file in the same change.
 //
@@ -129,7 +130,26 @@ export type Database = {
       }
     }
     Views: { [_ in never]: never }
-    Functions: { [_ in never]: never }
+    Functions: {
+      /** Top-K properties closest in meaning to a query embedding, best first. */
+      match_properties: {
+        Args: {
+          /** vector(1536) sent as text, e.g. JSON.stringify(vector). */
+          query_embedding: string
+          /** Top-K. Default 5, kept between 1 and 50. */
+          match_count?: number
+        }
+        Returns: {
+          id: string
+          title: string
+          description: string
+          city: string | null
+          price: number | null
+          /** 1 - cosine distance. Higher = closer in meaning. Not a percentage. */
+          similarity: number
+        }[]
+      }
+    }
     Enums: { [_ in never]: never }
     CompositeTypes: { [_ in never]: never }
   }
@@ -139,3 +159,4 @@ export type PropertyListing = Database['public']['Tables']['property_listings'][
 export type PropertyListingInsert = Database['public']['Tables']['property_listings']['Insert']
 export type SponsorProfile = Database['public']['Tables']['sponsor_profiles']['Row']
 export type Property = Database['public']['Tables']['properties']['Row']
+export type PropertyMatch = Database['public']['Functions']['match_properties']['Returns'][number]

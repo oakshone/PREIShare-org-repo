@@ -470,6 +470,54 @@ and `docs/vector-search-learner-notes.md` (your notes) · `docs/embedding-data-m
 table design) · `docs/pgvector-setup-plan.md` (the migration plan) ·
 `supabase/migrations/20250315000000_enable_pgvector_properties.sql` (the migration).
 
+### What we built, step by step (so far)
+
+| # | Step | What happened | Where |
+|---|---|---|---|
+| 1 | **Migration** | Turned on pgvector and created `properties` (`id`, `title`, `description`, `city`, `price`, `embedding vector(1536)`, `created_at`). RLS on, **no policies** yet, so the app can't read or write it. No index (tiny demo) | `supabase/migrations/20250315000000_enable_pgvector_properties.sql`, pasted into the SQL Editor |
+| 2 | **Verify the migration** | 5 checks: pgvector 0.8.3 on · column is `vector(1536)` · empty embedding allowed · `<=>` works · RLS on | SQL Editor (checks are in `docs/pgvector-setup-plan.md`) |
+| 3 | **Types** | The *shape* of embedding inputs, results and the 4 failure reasons. Types only, no API calls | `src/lib/embeddings/types.ts` |
+| 4 | **Generate** | The one function that calls OpenAI (`text-embedding-3-small`) and returns 1536 numbers, or a failure reason. **Server only** | `src/lib/embeddings/generate.ts` |
+| 5 | **Self-check** | Free, offline check that the migration's size = `types.ts`'s size (1536) | `node src/lib/embeddings/self-check.ts` |
+| 6 | **Sample data** | 10 made-up listings: water getaways, family homes, city units, 2 keyword-only distractors, 1 warehouse. No farmland (control query) | `data/sample-properties.json` |
+| 7 | **Seed** | Load JSON → loop → generate embedding → insert row → log. Result: **10 inserted, 0 failed** | `node --env-file=.env scripts/seed-property-embeddings.ts` |
+| 8 | **Verify the data** | 10 rows, 0 missing, all 1536 · Lakefront cabin's closest matches were the other water getaways; distractors ranked lower | SQL Editor |
+
+**Still to come:** a search function (`match_properties`: query embedding in → top K + scores out),
+a server function that embeds the buyer's typed search, then the search page.
+
+### Files, in one line each
+
+| File | Job |
+|---|---|
+| `types.ts` | The **rules**: what an input, a success and a failure look like. `EMBEDDING_DIMENSION = 1536` lives here |
+| `generate.ts` | The **worker**: builds `"{title}\n\n{description}"`, calls OpenAI, checks the result has 1536 numbers |
+| `dimension.ts` | One helper, `assertEmbeddingDimension`: stops if a vector isn't 1536 long |
+| `self-check.ts` | Dev-only test of the size rules. No key, no internet, costs nothing |
+| `sample-properties.json` | The demo listings. Keys match the table columns exactly |
+| `seed-property-embeddings.ts` | Dev-only admin script that fills the table. Safe to re-run (skips titles already there) |
+
+### Keys used in this part
+
+| Key | Why | Where it lives |
+|---|---|---|
+| `OPENAI_API_KEY` | Lets `generate.ts` call OpenAI. Tied to **your card**: paid account at platform.openai.com | `.env` only. Never `VITE_`, chat, docs or git |
+| `SUPABASE_SERVICE_ROLE_KEY` | The seed must **insert**, and RLS (no policies) blocks the normal key. This is the "admin job" the key exists for | `.env` only. Used by the seed script on your machine; nothing in the app imports it |
+| `SUPABASE_URL` | Which Supabase project to talk to | `.env` (already there) |
+
+- `.env.example` = **names only** (committed). `.env` = **real values** (gitignored). I never edit `.env`; you add lines there yourself.
+- New variable → add its name to `.env.example`, `src/env.d.ts` and `docs/env-var-checklist.md`.
+
+### Things that tripped us up (and why)
+
+- **"Success. No rows returned"** after a migration is normal: it created things, it didn't fetch data.
+- **SQL Editor queries are scratch copies.** Deleting them changes nothing. The **repo file** is the real record; keep and commit it.
+- **The provider wasn't required to be OpenAI.** The templates only said "e.g. `OPENAI_API_KEY`". The real rule is the model must output **1536 numbers**. (Gemini's free tier could too.)
+- **Why `node --env-file=.env`:** a plain Node script doesn't load `.env` by itself (Vite does that for the app). The flag hands it the keys.
+- **Why imports end in `.ts`** in `generate.ts`, `dimension.ts` and the scripts: plain Node can run TypeScript files, but only finds them with the full name.
+- **Run scripts from the repo folder** (`PREIShare-org-repo`), because paths like `.env` and `scripts/` are relative to where you are.
+- **The migration was renamed** to `20250315000000_…`. Its SQL didn't change; comments and docs were updated to the new name. Its timestamp sorts before Sprint 4's, which is fine because it doesn't depend on them.
+
 ## Quick answers (the tricky quiz ones)
 
 | Question | Honest answer | Why the others are wrong |
