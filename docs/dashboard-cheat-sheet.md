@@ -470,7 +470,7 @@ and `docs/vector-search-learner-notes.md` (your notes) · `docs/embedding-data-m
 table design) · `docs/pgvector-setup-plan.md` (the migration plan) ·
 `supabase/migrations/20250315000000_enable_pgvector_properties.sql` (the migration).
 
-### What we built, step by step (so far)
+### What we built, step by step
 
 | # | Step | What happened | Where |
 |---|---|---|---|
@@ -482,9 +482,12 @@ table design) · `docs/pgvector-setup-plan.md` (the migration plan) ·
 | 6 | **Sample data** | 10 made-up listings: water getaways, family homes, city units, 2 keyword-only distractors, 1 warehouse. No farmland (control query) | `data/sample-properties.json` |
 | 7 | **Seed** | Load JSON → loop → generate embedding → insert row → log. Result: **10 inserted, 0 failed** | `node --env-file=.env scripts/seed-property-embeddings.ts` |
 | 8 | **Verify the data** | 10 rows, 0 missing, all 1536 · Lakefront cabin's closest matches were the other water getaways; distractors ranked lower | SQL Editor |
-
-**Still to come:** a search function (`match_properties`: query embedding in → top K + scores out),
-a server function that embeds the buyer's typed search, then the search page.
+| 9 | **Search function** | `match_properties(query_embedding, match_count)`: compares with `<=>`, best first, top-K (default 5, kept 1–50), returns fields + `similarity` (= 1 − distance). `SECURITY INVOKER` so RLS applies; only signed-in users may call it | `supabase/migrations/20250315000001_match_properties_function.sql` |
+| 10 | **Read policy** | Signed-in users can **read** `properties`; logged-out get nothing; nobody can write through the app. `USING (true)` is OK only because it's **sample** data | `supabase/migrations/20250315000002_properties_read_policy.sql` |
+| 11 | **Search helper** | `searchProperties(query, limit)`: check text → check signed in → embed the query (`generateQueryEmbedding`) → call `match_properties` as the user | `src/lib/property-search.ts` |
+| 12 | **API route** | `GET /api/properties/search?q=…&limit=…` → JSON. Checks input and sign-in itself | `src/routes/api/properties/search.ts` |
+| 13 | **Search page** | Form → fetch the API → loading / error / empty / results. Shows title, snippet, city, server score | `src/routes/search.tsx` (`/search`) |
+| 14 | **Verify end to end** | Signed in: "quiet cabin near water…" → Lakefront cabin first ✅ · Signed out (private window): red "You must be signed in" + Sign in link ✅ | Your browser |
 
 ### Files, in one line each
 
@@ -496,6 +499,52 @@ a server function that embeds the buyer's typed search, then the search page.
 | `self-check.ts` | Dev-only test of the size rules. No key, no internet, costs nothing |
 | `sample-properties.json` | The demo listings. Keys match the table columns exactly |
 | `seed-property-embeddings.ts` | Dev-only admin script that fills the table. Safe to re-run (skips titles already there) |
+| `match_properties` (migration) | The **database part of search**: closest K rows to a query embedding, with scores |
+| `property-search.ts` | The **search worker**: buyer's words in → ranked matches out. Server only |
+| `api/properties/search.ts` | The **front door** over HTTP: checks the request, calls the worker, answers with a status code |
+| `search.tsx` | The **page**: shows what the API returns, in the API's order |
+
+### How one search travels
+
+1. Buyer types "quiet cabin near water" on `/search` and clicks **Search**.
+2. The page fetches `GET /api/properties/search?q=quiet cabin near water` (the browser sends the sign-in cookie).
+3. The API route checks: is there a `q`? is `limit` OK? is someone signed in? (400 / 401 if not)
+4. `searchProperties` → `generateQueryEmbedding` → **OpenAI** turns the words into 1536 numbers.
+5. → `match_properties` in **Postgres** compares them with every stored embedding (`<=>`), as the signed-in user (RLS).
+6. Top K come back, best first, each with `similarity` → JSON → the page lists them **in that order**.
+
+### Status codes the API answers with
+
+| Code | Means | Example |
+|---|---|---|
+| **200** | It worked | Results, best first |
+| **400** | **Your** request is wrong | No `q`, blank `q`, over 500 characters, `limit` not 1–50 |
+| **401** | Not signed in | Private window search |
+| **405** | Wrong method | POST instead of GET |
+| **500** | **The server** failed | OpenAI or the database is down. Details go to the server log only |
+
+> 4xx = the caller's problem. 5xx = the server's problem.
+
+### Security choices in this part (and why)
+
+| Choice | Why |
+|---|---|
+| `SECURITY INVOKER` on `match_properties` | Runs as the **caller**, so RLS still decides what they see. `SECURITY DEFINER` would run as the owner and **skip RLS** |
+| `SET search_path = ''` + `OPERATOR(extensions.<=>)` | Every name written in full, so nobody can sneak in a look-alike. Same as `set_updated_at()` |
+| `REVOKE … FROM PUBLIC, anon` then `GRANT … TO authenticated` | Postgres/Supabase let everyone run or read new things by default; we take that away, then give back only what's needed |
+| The API route checks sign-in **itself** | The `/dashboard` guard doesn't cover `/api/…` or `/search`. Without the check, strangers could search and spend your OpenAI credit |
+| Input checked **before** OpenAI is called | Bad requests cost nothing |
+| No re-ranking or score maths on the page | The server decides the order and the score. The page only shows them (rounded to 3 decimals) |
+
+### What the scores look like (live test)
+
+"quiet cabin near water with good rental upside": Lakefront cabin **0.669**, Woodland retreat 0.606,
+loft distractor 0.568, hilltop-cabin distractor 0.562, Riverside cottage 0.477 … Bright urban unit 0.223.
+Control "large farmland acreage for crops": best was only **0.317**.
+
+- The best possible real match is around 0.6–0.7, **not 1.0**. Only a listing compared with itself scores 1.000.
+- So **never show scores as percentages** to stakeholders. Plain labels (strong / possible / weak) would need more test searches first.
+- **Known limitation (criterion 7, partly failed):** shared words still pull distractors up. The cottage (right meaning, different words) ranked **below** two distractors. A data/model effect, not a code bug.
 
 ### Keys used in this part
 
@@ -509,6 +558,10 @@ a server function that embeds the buyer's typed search, then the search page.
 - New variable → add its name to `.env.example`, `src/env.d.ts` and `docs/env-var-checklist.md`.
 
 ### Things that tripped us up (and why)
+
+- **A POST to the API returned an HTML page with 200.** With no POST handler, it fell through to the website. Fixed by answering other methods with **405**.
+- **Testing "signed out"** = a **private / incognito window**. It starts with no sign-in cookie, while your normal window stays signed in.
+- **Search returning 0 results** for a signed-in user would mean the **read policy** is missing: `SECURITY INVOKER` + RLS with no policy = nothing visible.
 
 - **"Success. No rows returned"** after a migration is normal: it created things, it didn't fetch data.
 - **SQL Editor queries are scratch copies.** Deleting them changes nothing. The **repo file** is the real record; keep and commit it.
