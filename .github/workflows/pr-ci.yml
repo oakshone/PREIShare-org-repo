@@ -1,0 +1,33 @@
+# PREIshare PR CI (scaffold).
+# Source of truth: docs/ci/pipeline-design.md (stages) and docs/ci/project-ci-inventory.md (commands).
+# Scaffold only: checkout, Node, clean install. Typecheck, build and the other stages come next.
+# No secrets and no env vars: nothing here touches Supabase, OpenAI or any deploy.
+name: PR CI
+
+on:
+  pull_request:
+    branches: [main]
+
+# Read-only: this workflow only reads the code.
+permissions:
+  contents: read
+
+jobs:
+  pr-checks:
+    name: PR checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Node 22 (>= 22.12), matching Vercel and TanStack Start (inventory: no .nvmrc or engines field).
+      # npm cache keyed on package-lock.json; build output is never cached.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Clean install from the lockfile (npm, package-lock.json is the only lockfile).
+      - name: Install dependencies
+        run: npm ci
