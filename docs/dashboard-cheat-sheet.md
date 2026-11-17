@@ -579,6 +579,60 @@ Control "large farmland acreage for crops": best was only **0.317**.
 - **Run scripts from the repo folder** (`PREIShare-org-repo`), because paths like `.env` and `scripts/` are relative to where you are.
 - **The migration was renamed** to `20250315000000_…`. Its SQL didn't change; comments and docs were updated to the new name. Its timestamp sorts before Sprint 4's, which is fine because it doesn't depend on them.
 
+## CI: what gets checked for PREIshare (Sprint 6)
+
+**The big picture:** nothing reaches `main` unchecked. It's one safety net with three parts:
+- **CI (GitHub Actions)** proves what a robot can prove, every time, automatically.
+- **Manual checks** cover what needs real keys or a live database (for now).
+- **Human review** decides what needs judgement.
+
+> **Green = "it builds." Human review = "it's right."**
+
+### What CI checks for PREIshare (and why)
+
+| Check | The question it answers | Why we care (from our own sprints) |
+|---|---|---|
+| `npm ci` | Does it **install** cleanly from the lockfile? | "Works on my machine" isn't proof; a clean cloud machine is |
+| `npm run typecheck` | Did a **type error** sneak in? | `npm run build` (`vite build`) does **not** type-check, so a green build can hide one |
+| `npm run build` | Does it still **build**? | Until now, Vercel was the first to find out, at deploy time |
+| Route tree up to date | Was the regenerated `routeTree.gen.ts` committed? | A new route without it breaks navigation |
+| Secret scan of the browser files | Did a **secret key leak** into the browser? | Our #1 rule; until now checked by a hand-run search that's easy to forget |
+| Embedding self-check | Do the migration and `types.ts` still agree on **1536**? | A size mismatch breaks search |
+| Expected type errors still fail | Are the listing types still **strict**? | If the 5 bad examples ever compile, the types got loose |
+| Signed-out smoke test | Do signed-out visitors still get **sent to login** / a 401? | The guard is what keeps the dashboard private |
+| `npm audit` (warn-only for now) | Any **known-vulnerable packages**? | Sprint 3's deploy was blocked by one nobody caught earlier. 16 high findings today |
+
+**Not in CI, and why:**
+- **Manual (needs keys or a live database):** seeding, migrations, data checks (10 rows, 0 empty),
+  search ranking queries, real sign-in, RLS probes with test accounts. CI holds **no secrets**.
+- **Human only (needs judgement):** RLS rules fit the data, `SECURITY INVOKER`, where secrets are
+  used, scope vs the client story, ranking quality, template deviations, CI changes (mentor), Merge.
+
+### Sorting rule for anything new
+
+| If the check… | It goes… |
+|---|---|
+| needs no keys or live services, and has a yes/no answer | **CI** (Bucket A) |
+| needs keys or a real database | **Manual for now** (Bucket B) |
+| needs someone to decide "is this right?" | **Human review** (Bucket C) |
+
+### Red X vs green check
+
+- **Red X:** one step failed. Open the run, read **which step**, fix it, push again; CI re-runs.
+  A red X is **CI working**: it caught a problem before `main` did.
+- **Green check:** every check passed. It's the signal to **start** human review, not to merge.
+
+### CI washing (looks like CI, isn't)
+
+- Building only on your laptop.
+- Merging because an AI said "typecheck passes" while no checks ran on the PR.
+- A workflow file that never runs on pull requests.
+- Checking only after merge.
+- Calling Vercel's deploy build "our CI" (no type-check, no secret scan).
+- Lint/test steps that "pass" when no script exists.
+
+Details: `docs/ci/pr-pain-and-goals.md`, `docs/ci/ci-concepts-notes.md`, `docs/ci/project-ci-inventory.md`.
+
 ## Quick answers (the tricky quiz ones)
 
 | Question | Honest answer | Why the others are wrong |
