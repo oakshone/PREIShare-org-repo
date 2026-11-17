@@ -410,6 +410,14 @@ SUPABASE_SERVICE_ROLE_KEY=                  # leave EMPTY: the app doesn't use i
 "quiet cabin near water with good rental upside" should find "lakefront retreat with steady
 bookings" even though they share no words.
 
+### The three concepts (memorise these)
+
+| Concept | One line |
+|---|---|
+| **Embeddings** | The model (OpenAI) turns text into **1536 numbers**: its point in space (the numbers are the coordinates). Similar meaning lands nearby, even with different words |
+| **Vector search** | Score every listing by **closeness** to the search's point, **best first**, keep the **top K** (the nearest neighbors). A filter (`city = 'Austin'`, price under $400k) only says **yes or no**; it doesn't rank |
+| **pgvector** | Adds a **`vector` column** (stores the 1536 numbers) and the **`<=>` operator** (measures closeness), so Postgres can store meaning and rank by it. `ILIKE` only matches **letters**: `'%cabin%'` drops the "log home with a dock" that ranked #2 by meaning |
+
 ### The words, in one line each
 
 | Word | Plain meaning |
