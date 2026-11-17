@@ -36,6 +36,13 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # Lint: gap. No lint tool is installed (docs/ci/project-ci-inventory.md), so no step, nothing faked.
+
+      # `test` script = node src/lib/embeddings/self-check.ts (real pass/fail checks, no test runner needed).
+      # Needs Node's built-in TypeScript support (unflagged in Node 22.18+; setup-node 22 gets the latest 22.x).
+      - name: Test
+        run: npm test
+
       # `build` script = vite build. Passes with no env vars (inventory), so no secrets here.
       - name: Build
         run: npm run build

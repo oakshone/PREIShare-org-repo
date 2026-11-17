@@ -24,7 +24,8 @@ It does **not** deploy anything and does **not** replace human review.
 5. **Typecheck** — TypeScript compiler check without emitting a full production bundle first when possible
    - `npm run typecheck` (`tsc --noEmit`). Needed even though there's a build: `vite build` does **not** type-check.
 6. **Test** — unit/integration tests the inventory marked CI-ready
-   - **Gap:** no test script or runner. Stage skipped; nothing faked.
+   - `npm test` (added 2026-11-17: `node src/lib/embeddings/self-check.ts`). Real pass/fail
+     checks with plain Node, no new package. Covers the embedding size only.
 7. **Build** — production or app build so broken imports/config fail on the PR, not after merge
    - `npm run build` (`vite build`). Passes with no env.
 
@@ -41,8 +42,8 @@ and grouped here so the core stages above stay as the template orders them:
    - DB URLs with a password
 
    Fails on any match. This replaces the hand-run search that is easy to forget.
-10. **Embedding size check**: `node src/lib/embeddings/self-check.ts`. The migration and
-    `src/lib/embeddings/types.ts` must agree on 1536.
+10. ~~Embedding size check~~: **moved into stage 6 (Test)**, since `npm test` runs the same
+    self-check. Don't add it again; the numbering is kept so other references still match.
 11. **Invalid listing fixture still fails**: `npx tsc --noEmit --ignoreConfig --skipLibCheck
     --strict --target ES2022 --module ESNext --moduleResolution bundler
     src/fixtures/invalid-listings.errors.ts` must fail with exactly **5** errors
@@ -63,11 +64,11 @@ and grouped here so the core stages above stay as the template orders them:
 | Install     | `npm ci`                                      | Yes             |
 | Lint        | **gap**: no lint script or config             | No (gap)        |
 | Typecheck   | `npm run typecheck` (`tsc --noEmit`)          | Yes             |
-| Test        | **gap**: no test script or runner             | No (gap)        |
+| Test        | `npm test` (`node src/lib/embeddings/self-check.ts`) | Yes             |
 | Build       | `npm run build` (`vite build`)                | Yes             |
 | Route tree committed | `git diff --exit-code src/routeTree.gen.ts` (after Build) | Yes |
 | No secrets in browser files | `grep -rlE` secret patterns over `.output/public` | Yes |
-| Embedding size check | `node src/lib/embeddings/self-check.ts` | Yes |
+| Embedding size check | covered by **Test** (`npm test`); not a separate step | — |
 | Invalid fixture still fails | `npx tsc --noEmit --ignoreConfig … src/fixtures/invalid-listings.errors.ts` → must fail with 5 errors | Yes |
 | Signed-out smoke test | `npm run preview` + `curl` status checks | Yes |
 | Dependency audit | `npm audit --audit-level=high` | **No (optional, separate job)**: fails today, 19 findings (16 high) |
@@ -121,18 +122,18 @@ PREIshare items from inventory Bucket B, also out:
   - Build ← Scripts table (`build`) + Bucket A #5
   - Route tree ← Bucket A #6 + Risks (don't use `generate-routes`)
   - No secrets ← Bucket A #7 + "Supabase / env caveats"
-  - Embedding size ← Bucket A #8
+  - Test (embedding size) ← Scripts table (`test`) + Bucket A #4 / #8
   - Invalid fixture ← Bucket A #9
   - Smoke test ← Bucket A #10
-  - Lint / Test gaps ← "Missing common checks" (MISSING)
+  - Lint gap ← "Missing common checks" (MISSING)
   - Dependency audit (optional) ← Bucket A #11
 - Human boundary: CI is a consistent signal; reviewers still own judgment (and later AI review prompts support—not replace—that judgment)
   - PREIshare examples: RLS rules vs data, `SECURITY INVOKER`, reading migrations, where secrets are used, scope, ranking quality (inventory Bucket C).
 
 ## Open questions / gaps
-- [x] Any CI-ready script missing from package.json? **Yes: `lint` and `test`** (stages 4 and 6 are gaps).
+- [x] Any CI-ready script missing from package.json? **Yes: `lint`** (stage 4 is a gap; no lint tool installed). `test` was added 2026-11-17 using the existing self-check.
 - [x] Node version source of truth unclear? **Partly:** only `README.md` / `AGENTS.md` say 22.12+. Add `"engines": { "node": ">=22.12.0" }` to `package.json`? (decision)
-- [x] Tests that need a database: skipped, mocked, or blocked until a safe test setup exists? **Skipped.** There are no tests, and everything database-backed is Bucket B (manual).
+- [x] Tests that need a database: skipped, mocked, or blocked until a safe test setup exists? **Skipped.** `npm test` needs no database, and everything database-backed is Bucket B (manual).
 - [ ] Also run on `push` to `main`? Most work so far was pushed straight to `main` (1 merged PR in ~100 commits), so a `pull_request`-only trigger wouldn't check those pushes.
 - [ ] Branch protection: make the required job a required check so a red X can't merge?
 - [ ] Dependency audit: when does it become required (after the 19 findings are fixed or accepted)?
