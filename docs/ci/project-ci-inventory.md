@@ -15,7 +15,7 @@ assumed. The local machine runs Node 24.12 / npm 11.6; CI should use Node 22 (�
 - Node/TypeScript app signals: `package.json` (`"type": "module"`), `tsconfig.json`, `src/`, `src/router.tsx`
 - Framework signals: **React 19 + TanStack Start**: `@tanstack/react-start`, `@tanstack/react-router` and `react` in `package.json`; `tanstackStart()` and `viteReact()` in `vite.config.ts`; file routes in `src/routes/`
 - Test runner (if any): **none found** (no vitest, jest or test files). The `test` script (added 2026-11-17) runs the existing self-check with plain Node, no runner needed
-- Lint tool (if any): **none found** (no eslint, biome or prettier config or script)
+- Lint tool (if any): **ESLint** (added 2026-11-17: `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `globals`; config `eslint.config.js`). Before that: none found
 
 ## Scripts discovered in package.json
 | Script name | Exact command (from package.json) | Role |
@@ -25,13 +25,14 @@ assumed. The local machine runs Node 24.12 / npm 11.6; CI should use Node 22 (�
 | `build` | `vite build` | build |
 | `preview` | `vite preview` | serves the build (used by the smoke test) |
 | `typecheck` | `tsc --noEmit` | typecheck |
+| `lint` | `eslint .` | lint (added 2026-11-17) |
 | `test` | `node src/lib/embeddings/self-check.ts` | test (added 2026-11-17; embedding size checks only) |
 
 Missing common checks (write MISSING if not present):
 - typecheck: present (`npm run typecheck`)
 - build: present (`npm run build`); note it does **not** type-check by itself
-- lint: **MISSING**
-- test: present since 2026-11-17 (`npm test` → `node src/lib/embeddings/self-check.ts`). Real pass/fail checks, but they only cover the embedding size; no test tool yet
+- lint: present since 2026-11-17 (`npm run lint` → `eslint .`)
+- test: present since 2026-11-17 (`npm run test` → `node src/lib/embeddings/self-check.ts`). Real pass/fail checks, but they only cover the embedding size; no test tool yet
 
 ## Bucket A — Headless-safe on GitHub-hosted runners
 Checks that need only a clean checkout, the lockfile install, and public tooling.
@@ -41,8 +42,8 @@ For each item: script name, why it belongs in PR CI, rough order (install → ty
    `package-lock.json` out of sync with `package.json`. *(Not run in the test copy; confirm on the first CI run.)*
 2. **`npm run typecheck`** ✅ pass (~2 s): catches type errors, including misspelled env names
    (strict `src/env.d.ts`). Needed because the build doesn't type-check.
-3. **lint**: MISSING. Leave it out, or show it as skipped; never fake a pass.
-4. **`npm test`** ✅ "All checks passed." (<1 s): runs `src/lib/embeddings/self-check.ts`, the same checks as #8 below. Needs Node 22.18+ to run `.ts` directly (`setup-node` 22 gets the latest 22.x).
+3. **`npm run lint`** ✅ 0 errors, 0 warnings on 60 files: ESLint with the JS/TS recommended rules + the React hooks rules. Ignores build output, `src/routeTree.gen.ts` and the deliberately broken type fixture. Proven real: a probe file with a conditional hook, an unused variable and an `any` failed with 3 errors.
+4. **`npm run test`** ✅ "All checks passed." (<1 s): runs `src/lib/embeddings/self-check.ts`, the same checks as #8 below. Needs Node 22.18+ to run `.ts` directly (`setup-node` 22 gets the latest 22.x).
 5. **`npm run build`** ✅ pass with no env at all (~2 s): catches anything that breaks the build
    before Vercel sees it.
 6. **Route tree up to date** ✅: after the build, `git diff --exit-code src/routeTree.gen.ts`.
@@ -52,7 +53,7 @@ For each item: script name, why it belongs in PR CI, rough order (install → ty
    key or the OpenAI address leaking into the browser.
 8. **`node src/lib/embeddings/self-check.ts`** ✅ "All checks passed." (<1 s): catches the
    migration and `src/lib/embeddings/types.ts` disagreeing on the vector size (1536). Offline, no key.
-   **Now run as `npm test` (#4);** don't add it to CI a second time.
+   **Now run as `npm run test` (#4);** don't add it to CI a second time.
 9. **Expected type errors still fail** ✅ exactly 5 errors: `npx tsc --noEmit --ignoreConfig
    --skipLibCheck --strict --target ES2022 --module ESNext --moduleResolution bundler
    src/fixtures/invalid-listings.errors.ts` must **fail** with the 5 errors documented in
@@ -65,8 +66,8 @@ For each item: script name, why it belongs in PR CI, rough order (install → ty
     - `?q=cabin` signed out → 401
 
     With no env, the app fails closed. Catches the guard or the API's sign-in check breaking.
-11. **`npm audit --audit-level=high`** ❌ **fails today: 19 vulnerabilities (16 high, 3
-    moderate)**, e.g. `nanoid`, `picomatch`, `source-map-js`. It needs no secrets, but it does need
+11. **`npm audit --audit-level=high`** ❌ **fails today: 25 vulnerabilities (22 high, 3
+    moderate)** (19 / 16 high before the ESLint packages were added), e.g. `nanoid`, `picomatch`, `source-map-js`. It needs no secrets, but it does need
     the npm registry (internet). Make it **warn-only** at first, or CI is red on day one.
 
 ## Bucket B — Needs secrets, env, or external services
@@ -117,7 +118,7 @@ Items CI must not pretend to decide: product intent, UX quality, security-sensit
 - **Multiple lockfiles?** No, only `package-lock.json`. There's a leftover `"pnpm"` block in
   `package.json`; it's harmless with npm.
 - **Scripts that call interactive tools?** No. None of the Bucket A commands prompt.
-- **Tests that need a browser or network?** No. `npm test` (the self-check) is offline. The smoke test needs a local
+- **Tests that need a browser or network?** No. `npm run test` (the self-check) and `npm run lint` are offline. The smoke test needs a local
   server (`npm run preview`) and `curl`, but no browser. `npm audit` needs the npm registry.
 - **Don't use `npm run generate-routes` in CI.** `tsr generate` writes a route tree **without**
   the TanStack Start `Register` block that `npm run build` adds, so its output differs from the
@@ -127,22 +128,23 @@ Items CI must not pretend to decide: product intent, UX quality, security-sensit
 - **`"latest"` versions** for several TanStack packages: safe with `npm ci` (the lockfile pins
   them), but `npm install` can drift.
 - **No `engines` field**, while Vercel needs Node ≥ 22.12. Add `"engines": { "node": ">=22.12.0" }`?
-- **`npm audit`**: warn-only now; block once the 19 findings are fixed or accepted?
-- **Lint tool**: which, and when? (Needs a new package and approval.) **Test tool**: `npm test` covers only the embedding size; real tests (auth, validation) still need a tool.
+- **`npm audit`**: warn-only now; block once the 25 findings are fixed or accepted?
+- **Lint tool**: ESLint, approved and added 2026-11-17. **Test tool**: `npm run test` covers only the embedding size; real tests (auth, validation) still need a tool (a new package, needs approval).
 
 ## Link back to earlier docs
 - Pain/goals addressed by Bucket A (from `docs/ci/pr-pain-and-goals.md`):
-  - "Build, typecheck, lint, and test are easy to skip": typecheck and build run on every PR.
+  - "Build, typecheck, lint, and test are easy to skip": lint, typecheck, test and build all run on every PR.
   - "Broken code can reach the main branch": checks run before merge.
   - "Reviewers spend energy re-running basic 'does it build?' work": the robot does it.
   - Vercel being the first to catch problems (Sprint 3 security issue): build + `npm audit` on the PR.
   - The hand-run secret search: the secret scan as a step.
 - CI idea used: automated checks on every PR before merge (from `docs/ci/ci-concepts-notes.md`).
-  Lint is left out rather than faked, per its "CI washing" non-examples; `test` uses a real check that already existed.
+  Nothing is faked, per its "CI washing" non-examples: lint is a real ESLint run (proven to fail on bad code), and `test` uses a real check that already existed.
 
 ## Source files inspected
 - `package.json`
 - `package-lock.json` (the only lockfile)
+- `eslint.config.js`, `.github/workflows/pr-ci.yml`
 - `tsconfig.json`, `vite.config.ts`, `app.config.ts`, `tsr.config.json`, `src/router.tsx`, `src/routes/`, `src/routeTree.gen.ts`
 - `.gitignore`, `.env.example` (names only)
 - `src/env.d.ts`, `src/lib/embeddings/self-check.ts`, `src/fixtures/invalid-listings.errors.ts`, `docs/type-safety/expected-type-errors.md`
